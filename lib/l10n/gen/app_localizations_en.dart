@@ -9,7 +9,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appTitle => 'Mazen Store';
+  String get appTitle => 'Maktabty';
 
   @override
   String get languageEnglish => 'English';
@@ -690,4 +690,26 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get scanning => 'Scanning...';
+
+  @override
+  String get unableToVerifySession =>
+      'Unable to verify your saved session. Check your connection and try again.';
+
+  @override
+  String get unexpectedServerResponse =>
+      'The server returned an unexpected response. Please try again.';
+
+  @override
+  String get bluetoothDisabled => 'Turn on Bluetooth and try again.';
+
+  @override
+  String get bluetoothPermissionRequired =>
+      'Bluetooth permission is required to find paired printers.';
+
+  @override
+  String get printerConnectionFailed =>
+      'Could not connect to the selected printer.';
+
+  @override
+  String get printerDisconnected => 'The printer disconnected while printing.';
 }

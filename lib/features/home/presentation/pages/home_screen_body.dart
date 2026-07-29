@@ -55,14 +55,15 @@ class HomeScreenBody extends StatelessWidget {
       return;
     }
 
-    final receipt = await _runWithLoading(
-      context,
-      () => context.read<TodaySalesCubit>().getReceiptForSale(sale.id),
-    ).onError((error, stackTrace) {
-      final message = error is String ? error : l10n.unableToLoadReceipt;
-      AppToast.show(message);
-      return null;
-    });
+    final receipt =
+        await _runWithLoading(
+          context,
+          () => context.read<TodaySalesCubit>().getReceiptForSale(sale.id),
+        ).onError((error, stackTrace) {
+          final message = error is String ? error : l10n.unableToLoadReceipt;
+          AppToast.show(context.localizeAppError(message));
+          return null;
+        });
 
     if (!context.mounted || receipt == null) return;
     if (receipt.receiptNo.isEmpty && receipt.items.isEmpty) {
@@ -101,28 +102,32 @@ class HomeScreenBody extends StatelessWidget {
     final summary = todaySalesState.response?.summary;
     final salesAmountLabel = _formatCurrency(
       summary?.totalAmount,
-      placeholder: todaySalesState.status == TodaySalesStatus.loading &&
+      placeholder:
+          todaySalesState.status == TodaySalesStatus.loading &&
               todaySalesState.response == null
           ? '--'
           : null,
     );
     final ordersLabel = _formatCount(
       todaySalesState.response?.data.length,
-      placeholder: todaySalesState.status == TodaySalesStatus.loading &&
+      placeholder:
+          todaySalesState.status == TodaySalesStatus.loading &&
               todaySalesState.response == null
           ? '--'
           : null,
     );
     final itemsSoldLabel = _formatCount(
       summary?.itemsCount,
-      placeholder: todaySalesState.status == TodaySalesStatus.loading &&
+      placeholder:
+          todaySalesState.status == TodaySalesStatus.loading &&
               todaySalesState.response == null
           ? '--'
           : null,
     );
     final workHoursLabel = _formatHours(
       _totalMinutes(workHoursState),
-      placeholder: workHoursState.loadStatus == WorkHoursStatus.loading &&
+      placeholder:
+          workHoursState.loadStatus == WorkHoursStatus.loading &&
               workHoursState.items.isEmpty
           ? '--'
           : null,
@@ -130,7 +135,8 @@ class HomeScreenBody extends StatelessWidget {
 
     final productsLabel = _formatCount(
       productsState.total,
-      placeholder: productsState.status == ProductsListStatus.loading &&
+      placeholder:
+          productsState.status == ProductsListStatus.loading &&
               productsState.products.isEmpty
           ? '--'
           : null,
@@ -158,7 +164,9 @@ class HomeScreenBody extends StatelessWidget {
           const SizedBox(height: AppSpacing.s),
           HomeActionsRow(
             onAddProduct: () {
-              Navigator.of(context).pushNamed(AppRoutes.addProduct).then((result) {
+              Navigator.of(context).pushNamed(AppRoutes.addProduct).then((
+                result,
+              ) {
                 if (result == true && context.mounted) {
                   context.read<ProductsListCubit>().refresh();
                 }
@@ -218,10 +226,12 @@ class HomeScreenBody extends StatelessWidget {
               if (state.status == TodaySalesStatus.failure &&
                   state.response == null) {
                 return Text(
-                  state.message ?? context.l10n.unableToLoadSales,
+                  state.message == null
+                      ? context.l10n.unableToLoadSales
+                      : context.localizeAppError(state.message!),
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.error,
-                      ),
+                    color: Theme.of(context).colorScheme.error,
+                  ),
                 );
               }
 
@@ -230,8 +240,8 @@ class HomeScreenBody extends StatelessWidget {
                 return Text(
                   context.l10n.noSalesToday,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.outline,
-                      ),
+                    color: Theme.of(context).colorScheme.outline,
+                  ),
                 );
               }
 

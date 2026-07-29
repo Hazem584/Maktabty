@@ -63,11 +63,11 @@ class _AddProductScreenBodyState extends State<AddProductScreenBody> {
     }
 
     context.read<ProductFormCubit>().createProduct(
-          name: name,
-          price: priceValue,
-          stock: stockValue,
-          code: _code,
-        );
+      name: name,
+      price: priceValue,
+      stock: stockValue,
+      code: _code,
+    );
   }
 
   @override
@@ -76,8 +76,8 @@ class _AddProductScreenBodyState extends State<AddProductScreenBody> {
       listenWhen: (previous, current) => previous.status != current.status,
       listener: (context, state) {
         if (state.status == ProductFormStatus.failure) {
-          final message = state.message ?? 'Something went wrong.';
-          AppToast.show(message);
+          final message = state.message ?? context.l10n.somethingWentWrong;
+          AppToast.show(context.localizeAppError(message));
         }
         if (state.status == ProductFormStatus.success) {
           AppToast.show(context.l10n.productSaved);
@@ -137,14 +137,12 @@ class _AddProductScreenBodyState extends State<AddProductScreenBody> {
                 ),
               ),
               const SizedBox(height: AppSpacing.l),
-              ScanCodeCard(
-                code: _code,
-                onScan: _scanCode,
-              ),
+              ScanCodeCard(code: _code, onScan: _scanCode),
               const SizedBox(height: AppSpacing.xl),
               PrimaryActionBar(
-                label:
-                    isLoading ? context.l10n.saving : context.l10n.saveProduct,
+                label: isLoading
+                    ? context.l10n.saving
+                    : context.l10n.saveProduct,
                 onPressed: isLoading ? () {} : _saveProduct,
               ),
             ],

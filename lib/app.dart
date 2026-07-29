@@ -25,7 +25,7 @@ class App extends StatelessWidget {
         builder: (context, state) {
           return MaterialApp(
             onGenerateTitle: (context) =>
-                AppLocalizations.of(context)?.appTitle ?? 'Mazen Store',
+                AppLocalizations.of(context)?.appTitle ?? 'Maktabty',
             debugShowCheckedModeBanner: false,
             theme: AppTheme.lightTheme(),
             scrollBehavior: const AppScrollBehavior(),

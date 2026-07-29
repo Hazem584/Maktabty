@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:maktabty/features/auth/data/models/auth_response_model.dart';
 import 'package:maktabty/features/auth/data/models/user_model.dart';
+import 'package:maktabty/core/network/data_parsing_exception.dart';
 
 class AuthRemoteDataSource {
   final Dio _dio;
@@ -23,8 +24,6 @@ class AuthRemoteDataSource {
         receiveTimeout: _authRequestTimeout,
       ),
     );
-    // ignore: avoid_print
-    print('LOGIN RESPONSE => ${response.data}');
     return _parseAuthResponse(response.data);
   }
 
@@ -54,14 +53,11 @@ class AuthRemoteDataSource {
 
   Future<UserModel> getMe() async {
     final response = await _dio.get('/auth/me');
-    final data = response.data;
-    if (data is Map<String, dynamic>) {
-      final userJson = data['user'] is Map<String, dynamic>
-          ? data['user']
-          : data;
-      return UserModel.fromJson(Map<String, dynamic>.from(userJson));
-    }
-    return const UserModel(id: '', email: '', fullName: '');
+    final data = requireStringMap(response.data, operation: 'GET /auth/me');
+    final userData = data['user'] ?? data;
+    return UserModel.fromJson(
+      requireStringMap(userData, operation: 'GET /auth/me', field: 'user'),
+    );
   }
 
   Future<AuthResponseModel> refresh({required String refreshToken}) async {
@@ -78,14 +74,8 @@ class AuthRemoteDataSource {
   }
 
   AuthResponseModel _parseAuthResponse(dynamic data) {
-    if (data is Map<String, dynamic>) {
-      return AuthResponseModel.fromJson(data);
-    }
-    return AuthResponseModel(
-      user: const UserModel(id: '', email: '', fullName: ''),
-      accessToken: '',
-      refreshToken: '',
-      tokenType: 'Bearer',
+    return AuthResponseModel.fromJson(
+      requireStringMap(data, operation: 'parse authentication response'),
     );
   }
 }

@@ -136,7 +136,9 @@ class _InventoryScreenBodyState extends State<InventoryScreenBody> {
           height: 240,
           child: Center(
             child: Text(
-              message ?? context.l10n.inventoryLoadFailed,
+              message == null
+                  ? context.l10n.inventoryLoadFailed
+                  : context.localizeAppError(message),
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: Theme.of(context).colorScheme.outline,
               ),
@@ -169,7 +171,7 @@ class _InventoryScreenBodyState extends State<InventoryScreenBody> {
               listener: (context, state) {
                 final message = state.errorMessage;
                 if (message != null && message.isNotEmpty) {
-                  AppToast.show(message);
+                  AppToast.show(context.localizeAppError(message));
                 }
               },
               builder: (context, state) {

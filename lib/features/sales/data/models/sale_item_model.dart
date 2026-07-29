@@ -1,5 +1,6 @@
-﻿import 'package:maktabty/features/sales/data/models/product_mini_model.dart';
+import 'package:maktabty/features/sales/data/models/product_mini_model.dart';
 import 'package:maktabty/features/sales/domain/entities/sale_item_entity.dart';
+import 'package:maktabty/core/network/data_parsing_exception.dart';
 
 class SaleItemModel {
   final ProductMiniModel? product;
@@ -15,12 +16,15 @@ class SaleItemModel {
   });
 
   factory SaleItemModel.fromJson(Map<String, dynamic> json) {
+    const operation = 'parse sale item';
     final productData = json['product'];
     ProductMiniModel? product;
     if (productData is Map<String, dynamic>) {
       product = ProductMiniModel.fromJson(productData);
     } else if (productData is Map) {
-      product = ProductMiniModel.fromJson(Map<String, dynamic>.from(productData));
+      product = ProductMiniModel.fromJson(
+        Map<String, dynamic>.from(productData),
+      );
     } else {
       final fallback = <String, dynamic>{
         'id': json['productId'] ?? '',
@@ -33,16 +37,21 @@ class SaleItemModel {
       }
     }
 
-    final quantity = _toInt(json['quantity']);
-    final unitPrice = _toDouble(json['unitPrice'] ?? json['price']);
-    final lineTotalRaw = _toDouble(json['lineTotal'] ?? json['total']);
+    final quantity = requireInt(json, const ['quantity'], operation: operation);
+    final unitPrice = requireDouble(json, const [
+      'unitPrice',
+      'price',
+    ], operation: operation);
+    final lineTotal = requireDouble(json, const [
+      'lineTotal',
+      'total',
+    ], operation: operation);
 
     return SaleItemModel(
       product: product,
       quantity: quantity,
       unitPrice: unitPrice,
-      lineTotal:
-          lineTotalRaw == 0 && quantity > 0 ? unitPrice * quantity : lineTotalRaw,
+      lineTotal: lineTotal,
     );
   }
 
@@ -54,15 +63,4 @@ class SaleItemModel {
       lineTotal: lineTotal,
     );
   }
-
-  static double _toDouble(dynamic value) {
-    if (value is num) return value.toDouble();
-    return double.tryParse(value?.toString() ?? '') ?? 0.0;
-  }
-
-  static int _toInt(dynamic value) {
-    if (value is num) return value.toInt();
-    return int.tryParse(value?.toString() ?? '') ?? 0;
-  }
 }
-

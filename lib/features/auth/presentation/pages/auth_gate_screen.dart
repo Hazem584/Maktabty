@@ -89,8 +89,40 @@ class _AuthGateScreenState extends State<AuthGateScreen> {
           return const AppStartupSplash();
         }
 
+        if (state.status == AuthStatus.loading) {
+          return const AppStartupSplash();
+        }
+
         if (state.status == AuthStatus.authenticated) {
           return const HomeScreen();
+        }
+
+        if (state.status == AuthStatus.startupFailure) {
+          return Scaffold(
+            body: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.cloud_off_outlined, size: 48),
+                    const SizedBox(height: 16),
+                    Text(
+                      _mapAuthMessage(context, state.message) ??
+                          context.l10n.unableToVerifySession,
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 16),
+                    FilledButton(
+                      onPressed: () =>
+                          context.read<AuthCubit>().retryInitialization(),
+                      child: Text(context.l10n.retry),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
         }
 
         return const LoginScreen();
@@ -130,6 +162,9 @@ class _AuthGateScreenState extends State<AuthGateScreen> {
     }
     if (lower.contains('unauthorized')) {
       return context.l10n.unauthorized;
+    }
+    if (lower.contains('unable to verify your session')) {
+      return context.l10n.unableToVerifySession;
     }
 
     return rawMessage;

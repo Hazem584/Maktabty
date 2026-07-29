@@ -5,7 +5,10 @@ import 'bluetooth_printer_adapter.dart';
 class _StubBluetoothPrinterAdapter implements BluetoothPrinterAdapter {
   @override
   Future<void> connect(PrinterDevice device) async {
-    throw UnsupportedError('Bluetooth printing not supported');
+    throw const BluetoothPrinterException(
+      BluetoothPrinterError.unsupportedPlatform,
+      'Bluetooth receipt printing is not supported on this platform.',
+    );
   }
 
   @override
@@ -20,7 +23,10 @@ class _StubBluetoothPrinterAdapter implements BluetoothPrinterAdapter {
 
   @override
   Future<void> writeBytes(List<int> bytes) async {
-    throw UnsupportedError('Bluetooth printing not supported');
+    throw const BluetoothPrinterException(
+      BluetoothPrinterError.unsupportedPlatform,
+      'Bluetooth receipt printing is not supported on this platform.',
+    );
   }
 }
 

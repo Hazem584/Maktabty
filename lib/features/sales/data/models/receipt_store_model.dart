@@ -1,4 +1,5 @@
 import 'package:maktabty/features/sales/domain/entities/receipt_store_entity.dart';
+import 'package:maktabty/core/network/data_parsing_exception.dart';
 
 class ReceiptStoreModel {
   final String name;
@@ -15,7 +16,9 @@ class ReceiptStoreModel {
 
   factory ReceiptStoreModel.fromJson(Map<String, dynamic> json) {
     return ReceiptStoreModel(
-      name: (json['name'] ?? '').toString(),
+      name: requireString(json, const [
+        'name',
+      ], operation: 'parse receipt store'),
       address: json['address']?.toString(),
       phone: json['phone']?.toString(),
       taxNumber: json['taxNumber']?.toString(),

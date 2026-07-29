@@ -1,4 +1,5 @@
 import 'package:maktabty/features/sales/domain/entities/receipt_item_entity.dart';
+import 'package:maktabty/core/network/data_parsing_exception.dart';
 
 class ReceiptItemModel {
   final String productId;
@@ -18,13 +19,23 @@ class ReceiptItemModel {
   });
 
   factory ReceiptItemModel.fromJson(Map<String, dynamic> json) {
+    const operation = 'parse receipt item';
     return ReceiptItemModel(
-      productId: (json['productId'] ?? json['product_id'] ?? '').toString(),
-      name: (json['name'] ?? '').toString(),
+      productId: requireString(json, const [
+        'productId',
+        'product_id',
+      ], operation: operation),
+      name: requireString(json, const ['name'], operation: operation),
       code: json['code']?.toString(),
-      qty: _toInt(json['qty'] ?? json['quantity']),
-      unitPrice: _toDouble(json['unitPrice'] ?? json['unit_price']),
-      lineTotal: _toDouble(json['lineTotal'] ?? json['line_total']),
+      qty: requireInt(json, const ['qty', 'quantity'], operation: operation),
+      unitPrice: requireDouble(json, const [
+        'unitPrice',
+        'unit_price',
+      ], operation: operation),
+      lineTotal: requireDouble(json, const [
+        'lineTotal',
+        'line_total',
+      ], operation: operation),
     );
   }
 
@@ -37,15 +48,5 @@ class ReceiptItemModel {
       lineTotal: lineTotal,
       code: code,
     );
-  }
-
-  static int _toInt(dynamic value) {
-    if (value is num) return value.toInt();
-    return int.tryParse(value?.toString() ?? '') ?? 0;
-  }
-
-  static double _toDouble(dynamic value) {
-    if (value is num) return value.toDouble();
-    return double.tryParse(value?.toString() ?? '') ?? 0.0;
   }
 }

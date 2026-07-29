@@ -5,6 +5,7 @@ import 'package:maktabty/core/routes/app_routes.dart';
 import 'package:maktabty/core/theme/app_theme.dart';
 import 'package:maktabty/core/widgets/app_toast.dart';
 import 'package:maktabty/core/services/receipt_printer_service.dart';
+import 'package:maktabty/core/services/bluetooth_printer_adapter.dart';
 import 'package:maktabty/features/sales/domain/entities/payment_method.dart';
 import 'package:maktabty/features/sales/domain/entities/receipt_entity.dart';
 
@@ -169,6 +170,16 @@ class ReceiptPreviewSheet extends StatelessWidget {
                     onPressed: () async {
                       try {
                         await printer.printPos(receipt);
+                      } on BluetoothPrinterException catch (error) {
+                        AppToast.show(switch (error.error) {
+                          BluetoothPrinterError.permissionDenied =>
+                            l10n.bluetoothPermissionRequired,
+                          BluetoothPrinterError.bluetoothDisabled =>
+                            l10n.bluetoothDisabled,
+                          BluetoothPrinterError.disconnected =>
+                            l10n.printerDisconnected,
+                          _ => l10n.printerConnectionFailed,
+                        });
                       } catch (_) {
                         AppToast.show(l10n.printFailed);
                       }

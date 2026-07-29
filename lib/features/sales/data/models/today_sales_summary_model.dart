@@ -1,4 +1,6 @@
-﻿import 'package:maktabty/features/sales/domain/entities/today_sales_summary_entity.dart';
+import 'package:maktabty/features/sales/domain/entities/today_sales_summary_entity.dart';
+
+import 'package:maktabty/core/network/data_parsing_exception.dart';
 
 class TodaySalesSummaryModel {
   final double totalAmount;
@@ -10,9 +12,16 @@ class TodaySalesSummaryModel {
   });
 
   factory TodaySalesSummaryModel.fromJson(Map<String, dynamic> json) {
+    const operation = 'parse today sales summary';
     return TodaySalesSummaryModel(
-      totalAmount: _toDouble(json['totalAmount'] ?? json['total']),
-      itemsCount: _toInt(json['itemsCount'] ?? json['count']),
+      totalAmount: requireDouble(json, const [
+        'totalAmount',
+        'total',
+      ], operation: operation),
+      itemsCount: requireInt(json, const [
+        'itemsCount',
+        'count',
+      ], operation: operation),
     );
   }
 
@@ -22,15 +31,4 @@ class TodaySalesSummaryModel {
       itemsCount: itemsCount,
     );
   }
-
-  static double _toDouble(dynamic value) {
-    if (value is num) return value.toDouble();
-    return double.tryParse(value?.toString() ?? '') ?? 0.0;
-  }
-
-  static int _toInt(dynamic value) {
-    if (value is num) return value.toInt();
-    return int.tryParse(value?.toString() ?? '') ?? 0;
-  }
 }
-

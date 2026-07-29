@@ -25,9 +25,7 @@ class ReportsPage extends StatelessWidget {
     if (!isOwner) {
       return Scaffold(
         body: SafeArea(
-          child: Center(
-            child: Text(context.l10n.accessDeniedOwner),
-          ),
+          child: Center(child: Text(context.l10n.accessDeniedOwner)),
         ),
       );
     }
@@ -50,10 +48,7 @@ class ReportsPage extends StatelessWidget {
           ),
           body: const SafeArea(
             child: TabBarView(
-              children: [
-                _DailyReportTab(),
-                _MonthlyReportTab(),
-              ],
+              children: [_DailyReportTab(), _MonthlyReportTab()],
             ),
           ),
         ),
@@ -121,10 +116,11 @@ class _DailyReportTabState extends State<_DailyReportTab> {
               const Center(child: AppLoading())
             else if (isFailure)
               _ErrorCard(
-                message: state.dailyMessage ?? context.l10n.unableToLoadReport,
-                onRetry: () => context.read<ReportsCubit>().loadDaily(
-                      date: _selectedDate,
-                    ),
+                message: state.dailyMessage == null
+                    ? context.l10n.unableToLoadReport
+                    : context.localizeAppError(state.dailyMessage!),
+                onRetry: () =>
+                    context.read<ReportsCubit>().loadDaily(date: _selectedDate),
               )
             else if (report == null)
               _EmptyCard(message: context.l10n.noReportData)
@@ -135,8 +131,10 @@ class _DailyReportTabState extends State<_DailyReportTab> {
                 totalItemsSold: report.totalItemsSold,
               ),
               const SizedBox(height: AppSpacing.l),
-              Text(context.l10n.topProducts,
-                  style: Theme.of(context).textTheme.titleMedium),
+              Text(
+                context.l10n.topProducts,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
               const SizedBox(height: AppSpacing.s),
               TopProductsList(items: report.topProducts),
             ],
@@ -207,10 +205,12 @@ class _MonthlyReportTabState extends State<_MonthlyReportTab> {
               const Center(child: AppLoading())
             else if (isFailure)
               _ErrorCard(
-                message: state.monthlyMessage ?? context.l10n.unableToLoadReport,
+                message: state.monthlyMessage == null
+                    ? context.l10n.unableToLoadReport
+                    : context.localizeAppError(state.monthlyMessage!),
                 onRetry: () => context.read<ReportsCubit>().loadMonthly(
-                      month: _selectedMonth,
-                    ),
+                  month: _selectedMonth,
+                ),
               )
             else if (report == null)
               _EmptyCard(message: context.l10n.noReportData)
@@ -221,18 +221,18 @@ class _MonthlyReportTabState extends State<_MonthlyReportTab> {
                 totalItemsSold: report.totalItemsSold,
               ),
               const SizedBox(height: AppSpacing.l),
-              Text(context.l10n.dailyBreakdown,
-                  style: Theme.of(context).textTheme.titleMedium),
+              Text(
+                context.l10n.dailyBreakdown,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
               const SizedBox(height: AppSpacing.s),
               DailyBreakdownList(
                 items: report.dailyBreakdown,
                 onItemTap: (item) {
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (_) => SalesByDateScreen(
-                        date: item.date,
-                        sales: item.sales,
-                      ),
+                      builder: (_) =>
+                          SalesByDateScreen(date: item.date, sales: item.sales),
                     ),
                   );
                 },
@@ -294,10 +294,7 @@ class _HeaderCard extends StatelessWidget {
               ],
             ),
           ),
-          OutlinedButton(
-            onPressed: onAction,
-            child: Text(actionLabel),
-          ),
+          OutlinedButton(onPressed: onAction, child: Text(actionLabel)),
         ],
       ),
     );
@@ -308,10 +305,7 @@ class _ErrorCard extends StatelessWidget {
   final String message;
   final VoidCallback onRetry;
 
-  const _ErrorCard({
-    required this.message,
-    required this.onRetry,
-  });
+  const _ErrorCard({required this.message, required this.onRetry});
 
   @override
   Widget build(BuildContext context) {
@@ -329,16 +323,12 @@ class _ErrorCard extends StatelessWidget {
           Expanded(
             child: Text(
               message,
-              style: Theme.of(context)
-                  .textTheme
-                  .bodySmall
-                  ?.copyWith(color: colorScheme.error),
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: colorScheme.error),
             ),
           ),
-          TextButton(
-            onPressed: onRetry,
-            child: Text(context.l10n.retry),
-          ),
+          TextButton(onPressed: onRetry, child: Text(context.l10n.retry)),
         ],
       ),
     );
@@ -360,10 +350,9 @@ class _EmptyCard extends StatelessWidget {
       ),
       child: Text(
         message,
-        style: Theme.of(context)
-            .textTheme
-            .bodySmall
-            ?.copyWith(color: Theme.of(context).colorScheme.outline),
+        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+          color: Theme.of(context).colorScheme.outline,
+        ),
       ),
     );
   }

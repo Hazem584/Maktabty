@@ -6,6 +6,7 @@ import 'package:maktabty/core/theme/app_theme.dart';
 import 'package:maktabty/core/widgets/app_loading.dart';
 import 'package:maktabty/core/widgets/app_toast.dart';
 import 'package:maktabty/core/services/printer_device.dart';
+import 'package:maktabty/core/services/bluetooth_printer_adapter.dart';
 import 'package:maktabty/core/services/receipt_printer_service.dart';
 
 class PrinterSettingsScreen extends StatefulWidget {
@@ -42,11 +43,29 @@ class _PrinterSettingsScreenState extends State<PrinterSettingsScreen> {
     setState(() {
       _scanning = true;
     });
-    final devices = await _printerService.getBluetoothDevices();
-    setState(() {
-      _devices = devices;
-      _scanning = false;
-    });
+    try {
+      final devices = await _printerService.getBluetoothDevices();
+      if (!mounted) return;
+      setState(() {
+        _devices = devices;
+      });
+    } on BluetoothPrinterException catch (error) {
+      if (!mounted) return;
+      final message = switch (error.error) {
+        BluetoothPrinterError.permissionDenied =>
+          context.l10n.bluetoothPermissionRequired,
+        BluetoothPrinterError.bluetoothDisabled =>
+          context.l10n.bluetoothDisabled,
+        _ => context.l10n.printerConnectionFailed,
+      };
+      AppToast.show(message);
+    } finally {
+      if (mounted) {
+        setState(() {
+          _scanning = false;
+        });
+      }
+    }
   }
 
   Future<void> _save() async {
@@ -60,15 +79,16 @@ class _PrinterSettingsScreenState extends State<PrinterSettingsScreen> {
     final l10n = context.l10n;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.printerSettings),
-      ),
+      appBar: AppBar(title: Text(l10n.printerSettings)),
       body: _loading
           ? const Center(child: AppLoading())
           : ListView(
               padding: const EdgeInsets.all(AppSpacing.l),
               children: [
-                Text(l10n.printerModeLabel, style: Theme.of(context).textTheme.titleMedium),
+                Text(
+                  l10n.printerModeLabel,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
                 const SizedBox(height: AppSpacing.s),
                 SegmentedButton<PrinterMode>(
                   segments: [
@@ -100,9 +120,7 @@ class _PrinterSettingsScreenState extends State<PrinterSettingsScreen> {
                       ),
                       TextButton(
                         onPressed: _scanning ? null : _scan,
-                        child: Text(
-                          _scanning ? l10n.scanning : l10n.scan,
-                        ),
+                        child: Text(_scanning ? l10n.scanning : l10n.scan),
                       ),
                     ],
                   ),
@@ -111,8 +129,8 @@ class _PrinterSettingsScreenState extends State<PrinterSettingsScreen> {
                     Text(
                       l10n.noBluetoothPrinters,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Theme.of(context).colorScheme.outline,
-                          ),
+                        color: Theme.of(context).colorScheme.outline,
+                      ),
                     )
                   else
                     ..._devices.map(
@@ -136,10 +154,7 @@ class _PrinterSettingsScreenState extends State<PrinterSettingsScreen> {
                 ],
                 SizedBox(
                   width: double.infinity,
-                  child: FilledButton(
-                    onPressed: _save,
-                    child: Text(l10n.save),
-                  ),
+                  child: FilledButton(onPressed: _save, child: Text(l10n.save)),
                 ),
               ],
             ),

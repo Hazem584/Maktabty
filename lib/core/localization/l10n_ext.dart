@@ -12,4 +12,12 @@ extension L10nX on BuildContext {
     }
     return localizations;
   }
+
+  String localizeAppError(String message) {
+    if (message ==
+        'The server returned an unexpected response. Please try again.') {
+      return l10n.unexpectedServerResponse;
+    }
+    return message;
+  }
 }

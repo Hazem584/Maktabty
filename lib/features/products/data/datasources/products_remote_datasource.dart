@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:maktabty/core/network/data_parsing_exception.dart';
 import 'package:maktabty/features/products/data/models/paginated_products_model.dart';
 import 'package:maktabty/features/products/data/models/product_model.dart';
 
@@ -23,19 +24,8 @@ class ProductsRemoteDataSource {
       },
     );
 
-    final data = response.data;
-    if (data is Map<String, dynamic>) {
-      return PaginatedProductsModel.fromJson(data);
-    }
-    if (data is Map) {
-      return PaginatedProductsModel.fromJson(Map<String, dynamic>.from(data));
-    }
-
-    return PaginatedProductsModel(
-      data: const [],
-      page: page,
-      limit: limit,
-      total: 0,
+    return PaginatedProductsModel.fromJson(
+      requireStringMap(response.data, operation: 'GET /products'),
     );
   }
 
@@ -88,12 +78,8 @@ class ProductsRemoteDataSource {
   }
 
   ProductModel _parseProduct(dynamic data) {
-    if (data is Map<String, dynamic>) {
-      return ProductModel.fromJson(data);
-    }
-    if (data is Map) {
-      return ProductModel.fromJson(Map<String, dynamic>.from(data));
-    }
-    return const ProductModel(id: '', name: '', price: 0, stock: 0);
+    return ProductModel.fromJson(
+      requireStringMap(data, operation: 'parse product response'),
+    );
   }
 }

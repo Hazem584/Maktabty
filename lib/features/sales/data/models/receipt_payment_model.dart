@@ -1,5 +1,6 @@
 import 'package:maktabty/features/sales/domain/entities/payment_method.dart';
 import 'package:maktabty/features/sales/domain/entities/receipt_payment_entity.dart';
+import 'package:maktabty/core/network/data_parsing_exception.dart';
 
 class ReceiptPaymentModel {
   final PaymentMethod method;
@@ -39,6 +40,12 @@ class ReceiptPaymentModel {
   static double? _toNullableDouble(dynamic value) {
     if (value == null) return null;
     if (value is num) return value.toDouble();
-    return double.tryParse(value.toString());
+    final parsed = double.tryParse(value.toString());
+    if (parsed != null) return parsed;
+    throw const DataParsingException(
+      operation: 'parse receipt payment',
+      expected: 'number or numeric string',
+      field: 'payment amount',
+    );
   }
 }

@@ -1,6 +1,6 @@
 {
   "@@locale": "en",
-  "appTitle": "Mazen Store",
+  "appTitle": "Maktabty",
   "languageEnglish": "English",
   "languageArabic": "العربية",
   "welcomeBackTitle": "Welcome back",
@@ -234,5 +234,11 @@
   "bluetoothPrintersLabel": "Bluetooth printers",
   "noBluetoothPrinters": "No bluetooth printers found.",
   "settingsSaved": "Settings saved.",
-  "scanning": "Scanning..."
+  "scanning": "Scanning...",
+  "unableToVerifySession": "Unable to verify your saved session. Check your connection and try again.",
+  "unexpectedServerResponse": "The server returned an unexpected response. Please try again.",
+  "bluetoothDisabled": "Turn on Bluetooth and try again.",
+  "bluetoothPermissionRequired": "Bluetooth permission is required to find paired printers.",
+  "printerConnectionFailed": "Could not connect to the selected printer.",
+  "printerDisconnected": "The printer disconnected while printing."
 }

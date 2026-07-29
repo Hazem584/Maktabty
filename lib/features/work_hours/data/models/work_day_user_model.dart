@@ -1,5 +1,6 @@
-﻿import 'package:maktabty/core/utils/text_sanitizer.dart';
+import 'package:maktabty/core/utils/text_sanitizer.dart';
 import 'package:maktabty/features/work_hours/domain/entities/work_day_user.dart';
+import 'package:maktabty/core/network/data_parsing_exception.dart';
 
 class WorkDayUserModel {
   final String id;
@@ -15,11 +16,14 @@ class WorkDayUserModel {
   });
 
   factory WorkDayUserModel.fromJson(Map<String, dynamic> json) {
+    const operation = 'parse work day user';
     return WorkDayUserModel(
-      id: (json['id'] ?? '').toString(),
-      fullName: TextSanitizer.fixMojibake((json['fullName'] ?? '').toString()),
-      email: (json['email'] ?? '').toString(),
-      role: (json['role'] ?? '').toString(),
+      id: requireString(json, const ['id'], operation: operation),
+      fullName: TextSanitizer.fixMojibake(
+        requireString(json, const ['fullName'], operation: operation),
+      ),
+      email: requireString(json, const ['email'], operation: operation),
+      role: requireString(json, const ['role'], operation: operation),
     );
   }
 

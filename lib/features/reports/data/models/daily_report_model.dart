@@ -1,5 +1,6 @@
-﻿import 'package:maktabty/core/utils/text_sanitizer.dart';
+import 'package:maktabty/core/utils/text_sanitizer.dart';
 import 'package:maktabty/features/reports/domain/entities/daily_report.dart';
+import 'package:maktabty/core/network/data_parsing_exception.dart';
 
 class TopProductModel {
   final String productId;
@@ -15,11 +16,17 @@ class TopProductModel {
   });
 
   factory TopProductModel.fromJson(Map<String, dynamic> json) {
+    const operation = 'parse top product report row';
     return TopProductModel(
-      productId: (json['productId'] ?? '').toString(),
-      name: TextSanitizer.fixMojibake((json['name'] ?? '').toString()),
-      quantitySold: _toInt(json['quantitySold'] ?? json['quantity']),
-      amount: _toDouble(json['amount']),
+      productId: requireString(json, const ['productId'], operation: operation),
+      name: TextSanitizer.fixMojibake(
+        requireString(json, const ['name'], operation: operation),
+      ),
+      quantitySold: requireInt(json, const [
+        'quantitySold',
+        'quantity',
+      ], operation: operation),
+      amount: requireDouble(json, const ['amount'], operation: operation),
     );
   }
 
@@ -30,16 +37,6 @@ class TopProductModel {
       quantitySold: quantitySold,
       amount: amount,
     );
-  }
-
-  static double _toDouble(dynamic value) {
-    if (value is num) return value.toDouble();
-    return double.tryParse(value?.toString() ?? '') ?? 0.0;
-  }
-
-  static int _toInt(dynamic value) {
-    if (value is num) return value.toInt();
-    return int.tryParse(value?.toString() ?? '') ?? 0;
   }
 }
 
@@ -59,22 +56,30 @@ class DailyReportModel {
   });
 
   factory DailyReportModel.fromJson(Map<String, dynamic> json) {
-    final rawTop = json['topProducts'];
-    List<TopProductModel> topProducts = const [];
-    if (rawTop is List) {
-      topProducts = rawTop
-          .whereType<Map>()
-          .map((item) => TopProductModel.fromJson(Map<String, dynamic>.from(item)))
-          .toList();
-    } else if (rawTop is List<Map<String, dynamic>>) {
-      topProducts = rawTop.map(TopProductModel.fromJson).toList();
-    }
+    const operation = 'parse daily report';
+    final topProducts = requireList(json, 'topProducts', operation: operation)
+        .map(
+          (item) => TopProductModel.fromJson(
+            requireStringMap(
+              item,
+              operation: operation,
+              field: 'topProducts[]',
+            ),
+          ),
+        )
+        .toList(growable: false);
 
     return DailyReportModel(
-      date: (json['date'] ?? '').toString(),
-      totalSalesAmount: _toDouble(json['totalSalesAmount']),
-      totalOrders: _toInt(json['totalOrders']),
-      totalItemsSold: _toInt(json['totalItemsSold']),
+      date: requireString(json, const ['date'], operation: operation),
+      totalSalesAmount: requireDouble(json, const [
+        'totalSalesAmount',
+      ], operation: operation),
+      totalOrders: requireInt(json, const [
+        'totalOrders',
+      ], operation: operation),
+      totalItemsSold: requireInt(json, const [
+        'totalItemsSold',
+      ], operation: operation),
       topProducts: topProducts,
     );
   }
@@ -87,15 +92,5 @@ class DailyReportModel {
       totalItemsSold: totalItemsSold,
       topProducts: topProducts.map((item) => item.toEntity()).toList(),
     );
-  }
-
-  static double _toDouble(dynamic value) {
-    if (value is num) return value.toDouble();
-    return double.tryParse(value?.toString() ?? '') ?? 0.0;
-  }
-
-  static int _toInt(dynamic value) {
-    if (value is num) return value.toInt();
-    return int.tryParse(value?.toString() ?? '') ?? 0;
   }
 }

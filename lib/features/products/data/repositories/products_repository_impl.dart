@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:maktabty/core/network/api_exceptions.dart';
+import 'package:maktabty/core/network/data_parsing_exception.dart';
 import 'package:maktabty/features/products/data/datasources/products_remote_datasource.dart';
 import 'package:maktabty/features/products/domain/entities/paginated_products_entity.dart';
 import 'package:maktabty/features/products/domain/entities/product_entity.dart';
@@ -9,7 +10,7 @@ class ProductsRepositoryImpl implements ProductsRepository {
   final ProductsRemoteDataSource _remoteDataSource;
 
   ProductsRepositoryImpl({required ProductsRemoteDataSource remoteDataSource})
-      : _remoteDataSource = remoteDataSource;
+    : _remoteDataSource = remoteDataSource;
 
   @override
   Future<PaginatedProductsEntity> getProducts({
@@ -28,6 +29,8 @@ class ProductsRepositoryImpl implements ProductsRepository {
       return response.toEntity();
     } on DioException catch (error) {
       throw ApiExceptions.fromDio(error);
+    } on DataParsingException catch (error) {
+      throw ApiExceptions.fromParsing(error);
     }
   }
 
@@ -38,6 +41,8 @@ class ProductsRepositoryImpl implements ProductsRepository {
       return product.toEntity();
     } on DioException catch (error) {
       throw ApiExceptions.fromDio(error);
+    } on DataParsingException catch (error) {
+      throw ApiExceptions.fromParsing(error);
     }
   }
 
@@ -48,6 +53,8 @@ class ProductsRepositoryImpl implements ProductsRepository {
       return product.toEntity();
     } on DioException catch (error) {
       throw ApiExceptions.fromDio(error);
+    } on DataParsingException catch (error) {
+      throw ApiExceptions.fromParsing(error);
     }
   }
 
@@ -68,6 +75,8 @@ class ProductsRepositoryImpl implements ProductsRepository {
       return product.toEntity();
     } on DioException catch (error) {
       throw ApiExceptions.fromDio(error);
+    } on DataParsingException catch (error) {
+      throw ApiExceptions.fromParsing(error);
     }
   }
 
@@ -90,6 +99,8 @@ class ProductsRepositoryImpl implements ProductsRepository {
       return product.toEntity();
     } on DioException catch (error) {
       throw ApiExceptions.fromDio(error);
+    } on DataParsingException catch (error) {
+      throw ApiExceptions.fromParsing(error);
     }
   }
 
@@ -100,6 +111,8 @@ class ProductsRepositoryImpl implements ProductsRepository {
       return product.toEntity();
     } on DioException catch (error) {
       throw ApiExceptions.fromDio(error);
+    } on DataParsingException catch (error) {
+      throw ApiExceptions.fromParsing(error);
     }
   }
 }

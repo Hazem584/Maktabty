@@ -1,13 +1,11 @@
 ﻿import 'package:dio/dio.dart';
 import 'package:maktabty/features/sales/data/models/receipt_model.dart';
-import 'package:maktabty/features/sales/data/models/receipt_store_model.dart';
-import 'package:maktabty/features/sales/data/models/receipt_totals_model.dart';
 import 'package:maktabty/features/sales/data/models/sale_model.dart';
 import 'package:maktabty/features/sales/data/models/sale_response_model.dart';
 import 'package:maktabty/features/sales/data/models/today_sales_response_model.dart';
-import 'package:maktabty/features/sales/data/models/today_sales_summary_model.dart';
 import 'package:maktabty/features/sales/domain/entities/payment_method.dart';
 import 'package:maktabty/features/sales/domain/entities/sale_item_input.dart';
+import 'package:maktabty/core/network/data_parsing_exception.dart';
 
 class SalesRemoteDataSource {
   final Dio _dio;
@@ -77,43 +75,14 @@ class SalesRemoteDataSource {
   }
 
   SaleResponseModel _parseSaleResponse(dynamic data) {
-    if (data is Map<String, dynamic>) {
-      return SaleResponseModel.fromJson(data);
-    }
-    if (data is Map) {
-      return SaleResponseModel.fromJson(Map<String, dynamic>.from(data));
-    }
-    return const SaleResponseModel(
-      sale: SaleModel(
-        id: '',
-        items: [],
-        totalAmount: 0,
-        createdAt: null,
-        user: null,
-      ),
-      receipt: ReceiptModel(
-        receiptNo: '',
-        createdAt: null,
-        store: ReceiptStoreModel(name: ''),
-        cashier: null,
-        items: [],
-        totals: ReceiptTotalsModel(subtotal: 0, total: 0),
-        payment: null,
-        footerLines: [],
-      ),
+    return SaleResponseModel.fromJson(
+      requireStringMap(data, operation: 'POST /sales'),
     );
   }
 
   TodaySalesResponseModel _parseTodaySales(dynamic data) {
-    if (data is Map<String, dynamic>) {
-      return TodaySalesResponseModel.fromJson(data);
-    }
-    if (data is Map) {
-      return TodaySalesResponseModel.fromJson(Map<String, dynamic>.from(data));
-    }
-    return const TodaySalesResponseModel(
-      data: [],
-      summary: TodaySalesSummaryModel(totalAmount: 0, itemsCount: 0),
+    return TodaySalesResponseModel.fromJson(
+      requireStringMap(data, operation: 'GET /sales/today'),
     );
   }
 
@@ -135,12 +104,9 @@ class SalesRemoteDataSource {
       }
       return SaleModel.fromJson(Map<String, dynamic>.from(data));
     }
-    return const SaleModel(
-      id: '',
-      items: [],
-      totalAmount: 0,
-      createdAt: null,
-      user: null,
+    throw const DataParsingException(
+      operation: 'DELETE /sales/:id',
+      expected: 'sale JSON object',
     );
   }
 
@@ -151,15 +117,9 @@ class SalesRemoteDataSource {
     if (data is Map) {
       return _parseReceiptMap(Map<String, dynamic>.from(data));
     }
-    return const ReceiptModel(
-      receiptNo: '',
-      createdAt: null,
-      store: ReceiptStoreModel(name: ''),
-      cashier: null,
-      items: [],
-      totals: ReceiptTotalsModel(subtotal: 0, total: 0),
-      payment: null,
-      footerLines: [],
+    throw const DataParsingException(
+      operation: 'GET /sales/:id/receipt',
+      expected: 'receipt JSON object',
     );
   }
 
@@ -177,15 +137,9 @@ class SalesRemoteDataSource {
         data.containsKey('totals')) {
       return ReceiptModel.fromJson(data);
     }
-    return const ReceiptModel(
-      receiptNo: '',
-      createdAt: null,
-      store: ReceiptStoreModel(name: ''),
-      cashier: null,
-      items: [],
-      totals: ReceiptTotalsModel(subtotal: 0, total: 0),
-      payment: null,
-      footerLines: [],
+    throw const DataParsingException(
+      operation: 'GET /sales/:id/receipt',
+      expected: 'receipt JSON object',
     );
   }
 }

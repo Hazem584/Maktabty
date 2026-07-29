@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
+import 'package:maktabty/core/config/api_config.dart';
 import 'package:maktabty/core/localization/locale_cubit.dart';
 import 'package:maktabty/core/localization/locale_storage.dart';
 import 'package:maktabty/core/network/dio_client.dart';
@@ -60,8 +61,8 @@ import 'package:maktabty/features/work_hours/presentation/cubit/work_hours_cubit
 
 final sl = GetIt.instance;
 
-void setupAppDependencies() {
-  setupAuthDependencies();
+void setupAppDependencies({required ApiConfig apiConfig}) {
+  setupAuthDependencies(apiConfig: apiConfig);
 
   if (!sl.isRegistered<BarcodeScannerService>()) {
     sl.registerLazySingleton<BarcodeScannerService>(() {
@@ -92,7 +93,7 @@ void setupAppDependencies() {
   setupWorkHoursDependencies(dioClient: dioClient);
 }
 
-void setupAuthDependencies() {
+void setupAuthDependencies({required ApiConfig apiConfig}) {
   if (!sl.isRegistered<LocaleStorage>()) {
     sl.registerLazySingleton<LocaleStorage>(() => LocaleStorage());
   }
@@ -111,7 +112,11 @@ void setupAuthDependencies() {
 
   if (!sl.isRegistered<DioClient>()) {
     sl.registerLazySingleton<DioClient>(
-      () => DioClient(tokenStorage: sl(), sessionManager: sl()),
+      () => DioClient(
+        tokenStorage: sl(),
+        sessionManager: sl(),
+        baseUrl: apiConfig.baseUrl,
+      ),
     );
   }
 

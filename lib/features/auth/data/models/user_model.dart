@@ -1,5 +1,6 @@
 import 'package:maktabty/core/utils/text_sanitizer.dart';
 import 'package:maktabty/features/auth/domain/entities/user_entity.dart';
+import 'package:maktabty/core/network/data_parsing_exception.dart';
 
 class UserModel {
   final String id;
@@ -15,23 +16,18 @@ class UserModel {
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
-    final id = json['id'] ?? json['sub'] ?? '';
+    const operation = 'parse authenticated user';
     return UserModel(
-      id: id.toString(),
-      email: (json['email'] ?? '').toString(),
+      id: requireString(json, const ['id', 'sub'], operation: operation),
+      email: requireString(json, const ['email'], operation: operation),
       fullName: TextSanitizer.fixMojibake(
-        (json['fullName'] ?? json['name'] ?? '').toString(),
+        requireString(json, const ['fullName', 'name'], operation: operation),
       ),
       role: json['role']?.toString(),
     );
   }
 
   UserEntity toEntity() {
-    return UserEntity(
-      id: id,
-      email: email,
-      fullName: fullName,
-      role: role,
-    );
+    return UserEntity(id: id, email: email, fullName: fullName, role: role);
   }
 }

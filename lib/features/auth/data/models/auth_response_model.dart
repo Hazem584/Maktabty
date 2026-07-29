@@ -1,4 +1,5 @@
 import 'package:maktabty/features/auth/data/models/user_model.dart';
+import 'package:maktabty/core/network/data_parsing_exception.dart';
 
 class AuthResponseModel {
   final UserModel user;
@@ -14,11 +15,18 @@ class AuthResponseModel {
   });
 
   factory AuthResponseModel.fromJson(Map<String, dynamic> json) {
+    const operation = 'parse authentication response';
     final userJson = _extractUserJson(json);
     return AuthResponseModel(
       user: UserModel.fromJson(userJson),
-      accessToken: (json['accessToken'] ?? '').toString(),
-      refreshToken: (json['refreshToken'] ?? '').toString(),
+      accessToken: requireString(json, const [
+        'accessToken',
+        'access_token',
+      ], operation: operation),
+      refreshToken: requireString(json, const [
+        'refreshToken',
+        'refresh_token',
+      ], operation: operation),
       tokenType: (json['tokenType'] ?? 'Bearer').toString(),
     );
   }
@@ -28,6 +36,17 @@ class AuthResponseModel {
     if (user is Map<String, dynamic>) {
       return user;
     }
-    return json;
+    if (user is Map) {
+      return requireStringMap(
+        user,
+        operation: 'parse authentication response',
+        field: 'user',
+      );
+    }
+    throw const DataParsingException(
+      operation: 'parse authentication response',
+      expected: 'user JSON object',
+      field: 'user',
+    );
   }
 }

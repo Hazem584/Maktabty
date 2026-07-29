@@ -23,16 +23,13 @@ class MonthlyWorkHoursScreen extends StatelessWidget {
     if (!isOwner) {
       return Scaffold(
         body: SafeArea(
-          child: Center(
-            child: Text(context.l10n.accessDeniedOwner),
-          ),
+          child: Center(child: Text(context.l10n.accessDeniedOwner)),
         ),
       );
     }
 
     return BlocProvider<MonthlyWorkHoursCubit>(
-      create: (_) => sl<MonthlyWorkHoursCubit>()
-        ..load(month: DateTime.now()),
+      create: (_) => sl<MonthlyWorkHoursCubit>()..load(month: DateTime.now()),
       child: const _MonthlyWorkHoursBody(),
     );
   }
@@ -68,14 +65,16 @@ class _MonthlyWorkHoursBodyState extends State<_MonthlyWorkHoursBody> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(context.l10n.monthlyWorkHours),
-      ),
+      appBar: AppBar(title: Text(context.l10n.monthlyWorkHours)),
       body: BlocConsumer<MonthlyWorkHoursCubit, MonthlyWorkHoursState>(
         listenWhen: (previous, current) => previous.status != current.status,
         listener: (context, state) {
           if (state.status == MonthlyWorkHoursStatus.failure) {
-            AppToast.show(state.message ?? context.l10n.unableToLoadReport);
+            AppToast.show(
+              state.message == null
+                  ? context.l10n.unableToLoadReport
+                  : context.localizeAppError(state.message!),
+            );
           }
         },
         builder: (context, state) {
@@ -88,7 +87,9 @@ class _MonthlyWorkHoursBodyState extends State<_MonthlyWorkHoursBody> {
           if (report == null) {
             return Center(
               child: Text(
-                state.message ?? context.l10n.noReportData,
+                state.message == null
+                    ? context.l10n.noReportData
+                    : context.localizeAppError(state.message!),
                 style: Theme.of(context).textTheme.bodySmall,
               ),
             );
@@ -102,13 +103,17 @@ class _MonthlyWorkHoursBodyState extends State<_MonthlyWorkHoursBody> {
                 onPick: _pickMonth,
               ),
               const SizedBox(height: AppSpacing.l),
-              Text(context.l10n.totalsByUser,
-                  style: Theme.of(context).textTheme.titleMedium),
+              Text(
+                context.l10n.totalsByUser,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
               const SizedBox(height: AppSpacing.s),
               _TotalsByUserList(items: report.totalsByUser),
               const SizedBox(height: AppSpacing.l),
-              Text(context.l10n.totalsByDay,
-                  style: Theme.of(context).textTheme.titleMedium),
+              Text(
+                context.l10n.totalsByDay,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
               const SizedBox(height: AppSpacing.s),
               _TotalsByDayList(items: report.totalsByDay),
             ],
@@ -128,10 +133,7 @@ class _MonthHeader extends StatelessWidget {
   final String monthLabel;
   final VoidCallback onPick;
 
-  const _MonthHeader({
-    required this.monthLabel,
-    required this.onPick,
-  });
+  const _MonthHeader({required this.monthLabel, required this.onPick});
 
   @override
   Widget build(BuildContext context) {
@@ -157,20 +159,16 @@ class _MonthHeader extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(context.l10n.selectMonth,
-                    style: Theme.of(context).textTheme.titleMedium),
-                const SizedBox(height: AppSpacing.xs),
                 Text(
-                  monthLabel,
-                  style: Theme.of(context).textTheme.bodySmall,
+                  context.l10n.selectMonth,
+                  style: Theme.of(context).textTheme.titleMedium,
                 ),
+                const SizedBox(height: AppSpacing.xs),
+                Text(monthLabel, style: Theme.of(context).textTheme.bodySmall),
               ],
             ),
           ),
-          OutlinedButton(
-            onPressed: onPick,
-            child: Text(context.l10n.pick),
-          ),
+          OutlinedButton(onPressed: onPick, child: Text(context.l10n.pick)),
         ],
       ),
     );
@@ -187,10 +185,9 @@ class _TotalsByUserList extends StatelessWidget {
     if (items.isEmpty) {
       return Text(
         context.l10n.noUsersYet,
-        style: Theme.of(context)
-            .textTheme
-            .bodySmall
-            ?.copyWith(color: Theme.of(context).colorScheme.outline),
+        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+          color: Theme.of(context).colorScheme.outline,
+        ),
       );
     }
 
@@ -221,27 +218,25 @@ class _TotalsByUserList extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(item.fullName,
-                        style: Theme.of(context).textTheme.titleMedium),
+                    Text(
+                      item.fullName,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
                     const SizedBox(height: AppSpacing.xs),
                     Text(
                       item.email,
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodySmall
-                          ?.copyWith(
-                            color: Theme.of(context).colorScheme.outline,
-                          ),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).colorScheme.outline,
+                      ),
                     ),
                   ],
                 ),
               ),
               Text(
                 _formatMinutes(item.totalMinutes),
-                style: Theme.of(context)
-                    .textTheme
-                    .titleMedium
-                    ?.copyWith(color: Theme.of(context).colorScheme.primary),
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.primary,
+                ),
               ),
             ],
           ),
@@ -261,10 +256,9 @@ class _TotalsByDayList extends StatelessWidget {
     if (items.isEmpty) {
       return Text(
         context.l10n.noDaysYet,
-        style: Theme.of(context)
-            .textTheme
-            .bodySmall
-            ?.copyWith(color: Theme.of(context).colorScheme.outline),
+        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+          color: Theme.of(context).colorScheme.outline,
+        ),
       );
     }
 
@@ -299,10 +293,9 @@ class _TotalsByDayList extends StatelessWidget {
               ),
               Text(
                 _formatMinutes(item.totalMinutes),
-                style: Theme.of(context)
-                    .textTheme
-                    .titleMedium
-                    ?.copyWith(color: Theme.of(context).colorScheme.primary),
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.primary,
+                ),
               ),
             ],
           ),
@@ -319,4 +312,3 @@ String _formatMinutes(int minutes) {
   if (mins == 0) return '${hours}h';
   return '${hours}h ${mins}m';
 }
-

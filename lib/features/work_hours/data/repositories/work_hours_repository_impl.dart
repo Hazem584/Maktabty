@@ -1,5 +1,6 @@
-﻿import 'package:dio/dio.dart';
+import 'package:dio/dio.dart';
 import 'package:maktabty/core/network/api_exceptions.dart';
+import 'package:maktabty/core/network/data_parsing_exception.dart';
 import 'package:maktabty/features/work_hours/data/datasources/work_hours_remote_datasource.dart';
 import 'package:maktabty/features/work_hours/domain/entities/monthly_work_hours_report.dart';
 import 'package:maktabty/features/work_hours/domain/entities/work_day.dart';
@@ -9,7 +10,7 @@ class WorkHoursRepositoryImpl implements WorkHoursRepository {
   final WorkHoursRemoteDataSource _remoteDataSource;
 
   WorkHoursRepositoryImpl({required WorkHoursRemoteDataSource remoteDataSource})
-      : _remoteDataSource = remoteDataSource;
+    : _remoteDataSource = remoteDataSource;
 
   @override
   Future<WorkDayEntity> upsertWorkDay({
@@ -30,6 +31,8 @@ class WorkHoursRepositoryImpl implements WorkHoursRepository {
       return workDay.toEntity();
     } on DioException catch (error) {
       throw ApiExceptions.fromDio(error);
+    } on DataParsingException catch (error) {
+      throw ApiExceptions.fromParsing(error);
     }
   }
 
@@ -46,6 +49,8 @@ class WorkHoursRepositoryImpl implements WorkHoursRepository {
       return days.map((item) => item.toEntity()).toList();
     } on DioException catch (error) {
       throw ApiExceptions.fromDio(error);
+    } on DataParsingException catch (error) {
+      throw ApiExceptions.fromParsing(error);
     }
   }
 
@@ -58,6 +63,8 @@ class WorkHoursRepositoryImpl implements WorkHoursRepository {
       return report.toEntity();
     } on DioException catch (error) {
       throw ApiExceptions.fromDio(error);
+    } on DataParsingException catch (error) {
+      throw ApiExceptions.fromParsing(error);
     }
   }
 }

@@ -4,6 +4,7 @@ import 'package:maktabty/features/sales/data/models/receipt_payment_model.dart';
 import 'package:maktabty/features/sales/data/models/receipt_store_model.dart';
 import 'package:maktabty/features/sales/data/models/receipt_totals_model.dart';
 import 'package:maktabty/features/sales/domain/entities/receipt_entity.dart';
+import 'package:maktabty/core/network/data_parsing_exception.dart';
 
 class ReceiptModel {
   final String receiptId;
@@ -39,15 +40,10 @@ class ReceiptModel {
   });
 
   factory ReceiptModel.fromJson(Map<String, dynamic> json) {
-    final storeData = json['store'];
-    ReceiptStoreModel store;
-    if (storeData is Map<String, dynamic>) {
-      store = ReceiptStoreModel.fromJson(storeData);
-    } else if (storeData is Map) {
-      store = ReceiptStoreModel.fromJson(Map<String, dynamic>.from(storeData));
-    } else {
-      store = const ReceiptStoreModel(name: '');
-    }
+    const operation = 'parse receipt';
+    final store = ReceiptStoreModel.fromJson(
+      requireStringMap(json['store'], operation: operation, field: 'store'),
+    );
 
     final cashierData = json['cashier'];
     ReceiptCashierModel? cashier;
@@ -59,30 +55,17 @@ class ReceiptModel {
       );
     }
 
-    final rawItems = json['items'];
-    List<ReceiptItemModel> items = const [];
-    if (rawItems is List) {
-      items = rawItems
-          .whereType<Map>()
-          .map((item) => ReceiptItemModel.fromJson(
-                Map<String, dynamic>.from(item),
-              ))
-          .toList();
-    } else if (rawItems is List<Map<String, dynamic>>) {
-      items = rawItems.map(ReceiptItemModel.fromJson).toList();
-    }
+    final items = requireList(json, 'items', operation: operation)
+        .map(
+          (item) => ReceiptItemModel.fromJson(
+            requireStringMap(item, operation: operation, field: 'items[]'),
+          ),
+        )
+        .toList(growable: false);
 
-    final totalsData = json['totals'];
-    ReceiptTotalsModel totals;
-    if (totalsData is Map<String, dynamic>) {
-      totals = ReceiptTotalsModel.fromJson(totalsData);
-    } else if (totalsData is Map) {
-      totals = ReceiptTotalsModel.fromJson(
-        Map<String, dynamic>.from(totalsData),
-      );
-    } else {
-      totals = const ReceiptTotalsModel(subtotal: 0, total: 0);
-    }
+    final totals = ReceiptTotalsModel.fromJson(
+      requireStringMap(json['totals'], operation: operation, field: 'totals'),
+    );
 
     final paymentData = json['payment'];
     ReceiptPaymentModel? payment;
@@ -114,8 +97,13 @@ class ReceiptModel {
 
     return ReceiptModel(
       receiptId: (json['receiptId'] ?? json['receipt_id'] ?? '').toString(),
-      receiptNo: (json['receiptNo'] ?? json['receipt_no'] ?? '').toString(),
-      createdAt: _toDate(json['createdAt']),
+      receiptNo: requireString(json, const [
+        'receiptNo',
+        'receipt_no',
+      ], operation: operation),
+      createdAt: requireDateTime(json, const [
+        'createdAt',
+      ], operation: operation),
       displayDate: json['displayDate']?.toString(),
       displayTime: json['displayTime']?.toString(),
       currency: json['currency']?.toString(),
@@ -147,13 +135,6 @@ class ReceiptModel {
       payment: payment?.toEntity(),
       footerLines: footerLines,
     );
-  }
-
-  static DateTime? _toDate(dynamic value) {
-    if (value is String) {
-      return DateTime.tryParse(value);
-    }
-    return null;
   }
 
   static int? _toInt(dynamic value) {

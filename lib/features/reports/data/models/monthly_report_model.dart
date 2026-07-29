@@ -1,5 +1,6 @@
-﻿import 'package:maktabty/features/reports/domain/entities/monthly_report.dart';
+import 'package:maktabty/features/reports/domain/entities/monthly_report.dart';
 import 'package:maktabty/features/sales/data/models/sale_model.dart';
+import 'package:maktabty/core/network/data_parsing_exception.dart';
 
 class DailyBreakdownModel {
   final String date;
@@ -15,21 +16,22 @@ class DailyBreakdownModel {
   });
 
   factory DailyBreakdownModel.fromJson(Map<String, dynamic> json) {
-    final rawSales = json['sales'];
-    List<SaleModel> sales = const [];
-    if (rawSales is List) {
-      sales = rawSales
-          .whereType<Map>()
-          .map((item) => SaleModel.fromJson(Map<String, dynamic>.from(item)))
-          .toList();
-    } else if (rawSales is List<Map<String, dynamic>>) {
-      sales = rawSales.map(SaleModel.fromJson).toList();
-    }
+    const operation = 'parse monthly report day';
+    final sales = requireList(json, 'sales', operation: operation)
+        .map(
+          (item) => SaleModel.fromJson(
+            requireStringMap(item, operation: operation, field: 'sales[]'),
+          ),
+        )
+        .toList(growable: false);
 
     return DailyBreakdownModel(
-      date: (json['date'] ?? '').toString(),
-      amount: _toDouble(json['amount']),
-      orders: _toInt(json['orders'] ?? json['totalOrders']),
+      date: requireString(json, const ['date'], operation: operation),
+      amount: requireDouble(json, const ['amount'], operation: operation),
+      orders: requireInt(json, const [
+        'orders',
+        'totalOrders',
+      ], operation: operation),
       sales: sales,
     );
   }
@@ -41,16 +43,6 @@ class DailyBreakdownModel {
       orders: orders,
       sales: sales.map((item) => item.toEntity()).toList(),
     );
-  }
-
-  static double _toDouble(dynamic value) {
-    if (value is num) return value.toDouble();
-    return double.tryParse(value?.toString() ?? '') ?? 0.0;
-  }
-
-  static int _toInt(dynamic value) {
-    if (value is num) return value.toInt();
-    return int.tryParse(value?.toString() ?? '') ?? 0;
   }
 }
 
@@ -70,25 +62,30 @@ class MonthlyReportModel {
   });
 
   factory MonthlyReportModel.fromJson(Map<String, dynamic> json) {
-    final rawDaily = json['dailyBreakdown'];
-    List<DailyBreakdownModel> breakdown = const [];
-    if (rawDaily is List) {
-      breakdown = rawDaily
-          .whereType<Map>()
-          .map(
-            (item) =>
-                DailyBreakdownModel.fromJson(Map<String, dynamic>.from(item)),
-          )
-          .toList();
-    } else if (rawDaily is List<Map<String, dynamic>>) {
-      breakdown = rawDaily.map(DailyBreakdownModel.fromJson).toList();
-    }
+    const operation = 'parse monthly report';
+    final breakdown = requireList(json, 'dailyBreakdown', operation: operation)
+        .map(
+          (item) => DailyBreakdownModel.fromJson(
+            requireStringMap(
+              item,
+              operation: operation,
+              field: 'dailyBreakdown[]',
+            ),
+          ),
+        )
+        .toList(growable: false);
 
     return MonthlyReportModel(
-      month: (json['month'] ?? '').toString(),
-      totalSalesAmount: _toDouble(json['totalSalesAmount']),
-      totalOrders: _toInt(json['totalOrders']),
-      totalItemsSold: _toInt(json['totalItemsSold']),
+      month: requireString(json, const ['month'], operation: operation),
+      totalSalesAmount: requireDouble(json, const [
+        'totalSalesAmount',
+      ], operation: operation),
+      totalOrders: requireInt(json, const [
+        'totalOrders',
+      ], operation: operation),
+      totalItemsSold: requireInt(json, const [
+        'totalItemsSold',
+      ], operation: operation),
       dailyBreakdown: breakdown,
     );
   }
@@ -101,15 +98,5 @@ class MonthlyReportModel {
       totalItemsSold: totalItemsSold,
       dailyBreakdown: dailyBreakdown.map((item) => item.toEntity()).toList(),
     );
-  }
-
-  static double _toDouble(dynamic value) {
-    if (value is num) return value.toDouble();
-    return double.tryParse(value?.toString() ?? '') ?? 0.0;
-  }
-
-  static int _toInt(dynamic value) {
-    if (value is num) return value.toInt();
-    return int.tryParse(value?.toString() ?? '') ?? 0;
   }
 }

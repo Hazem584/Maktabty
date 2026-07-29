@@ -13,6 +13,7 @@ import 'package:maktabty/features/auth/presentation/cubit/auth_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
   static const Duration _loginTimeout = Duration(seconds: 20);
+  static const Duration _startupTimeout = Duration(seconds: 20);
 
   final LoginUseCase _loginUseCase;
   final RegisterUseCase _registerUseCase;
@@ -24,6 +25,7 @@ class AuthCubit extends Cubit<AuthState> {
   final AuthSessionManager _sessionManager;
   StreamSubscription<AuthSessionEvent>? _sessionSubscription;
   bool _initialized = false;
+  bool _initializing = false;
 
   AuthCubit({
     required LoginUseCase loginUseCase,
@@ -33,55 +35,69 @@ class AuthCubit extends Cubit<AuthState> {
     required RefreshUseCase refreshUseCase,
     required TokenStorage tokenStorage,
     required AuthSessionManager sessionManager,
-  })  : _loginUseCase = loginUseCase,
-        _registerUseCase = registerUseCase,
-        _logoutUseCase = logoutUseCase,
-        _getMeUseCase = getMeUseCase,
-        _refreshUseCase = refreshUseCase,
-        _tokenStorage = tokenStorage,
-        _sessionManager = sessionManager,
-        super(AuthState.initial()) {
+  }) : _loginUseCase = loginUseCase,
+       _registerUseCase = registerUseCase,
+       _logoutUseCase = logoutUseCase,
+       _getMeUseCase = getMeUseCase,
+       _refreshUseCase = refreshUseCase,
+       _tokenStorage = tokenStorage,
+       _sessionManager = sessionManager,
+       super(AuthState.initial()) {
     _sessionSubscription = _sessionManager.stream.listen((event) {
       if (event == AuthSessionEvent.expired) {
-        emit(AuthState.unauthenticated(
-          message: 'Session expired. Please sign in again.',
-        ));
+        emit(
+          AuthState.unauthenticated(
+            message: 'Session expired. Please sign in again.',
+          ),
+        );
       }
     });
   }
 
   Future<void> initialize() async {
-    if (_initialized) return;
-    _initialized = true;
+    if (_initialized || _initializing) return;
+    _initializing = true;
 
     emit(AuthState.loading());
-    final refreshToken = await _tokenStorage.getRefreshToken();
-    if (refreshToken == null || refreshToken.isEmpty) {
-      emit(AuthState.unauthenticated());
-      return;
-    }
-
     try {
-      // avoid infinite loading if refresh hangs
-      final user = await _refreshUseCase()
-          .timeout(const Duration(seconds: 60));
+      final refreshToken = await _tokenStorage.getRefreshToken();
+      if (refreshToken == null || refreshToken.isEmpty) {
+        _initialized = true;
+        emit(AuthState.unauthenticated());
+        return;
+      }
+
+      final user = await _refreshUseCase().timeout(_startupTimeout);
+      _initialized = true;
       emit(AuthState.authenticated(user));
-    } on ApiException {
-      await _tokenStorage.clearAll();
-      emit(AuthState.unauthenticated());
+    } on ApiException catch (error) {
+      if (error.isUnauthorized) {
+        await _tokenStorage.clearAll();
+        _initialized = true;
+        emit(
+          AuthState.unauthenticated(
+            message: 'Session expired. Please sign in again.',
+          ),
+        );
+      } else {
+        emit(AuthState.startupFailure(error.message));
+      }
     } on TimeoutException {
-      await _tokenStorage.clearAll();
-      emit(AuthState.unauthenticated(message: 'Request timed out.'));
+      emit(AuthState.startupFailure('Request timed out. Please try again.'));
     } catch (_) {
-      await _tokenStorage.clearAll();
-      emit(AuthState.unauthenticated());
+      emit(
+        AuthState.startupFailure(
+          'Unable to verify your session. Please try again.',
+        ),
+      );
+    } finally {
+      _initializing = false;
     }
   }
 
-  Future<void> login({
-    required String email,
-    required String password,
-  }) async {
+  Future<void> retryInitialization() => initialize();
+
+  Future<void> login({required String email, required String password}) async {
     emit(AuthState.loading());
     try {
       final user = await _loginUseCase(
@@ -133,8 +149,14 @@ class AuthCubit extends Cubit<AuthState> {
 
   Future<void> logout() async {
     emit(AuthState.loading());
-    await _logoutUseCase();
-    emit(AuthState.unauthenticated());
+    try {
+      await _logoutUseCase().timeout(_loginTimeout);
+    } catch (_) {
+      await _tokenStorage.clearAll();
+    } finally {
+      _initialized = true;
+      emit(AuthState.unauthenticated());
+    }
   }
 
   @override

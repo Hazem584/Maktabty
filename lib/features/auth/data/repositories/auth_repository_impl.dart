@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:maktabty/core/network/api_exceptions.dart';
+import 'package:maktabty/core/network/data_parsing_exception.dart';
 import 'package:maktabty/core/storage/token_storage.dart';
 import 'package:maktabty/features/auth/data/datasources/auth_remote_datasource.dart';
 import 'package:maktabty/features/auth/domain/entities/user_entity.dart';
@@ -12,8 +13,8 @@ class AuthRepositoryImpl implements AuthRepository {
   AuthRepositoryImpl({
     required AuthRemoteDataSource remoteDataSource,
     required TokenStorage tokenStorage,
-  })  : _remoteDataSource = remoteDataSource,
-        _tokenStorage = tokenStorage;
+  }) : _remoteDataSource = remoteDataSource,
+       _tokenStorage = tokenStorage;
 
   @override
   Future<UserEntity> login({
@@ -25,8 +26,6 @@ class AuthRepositoryImpl implements AuthRepository {
         email: email,
         password: password,
       );
-      // ignore: avoid_print
-      print('ACCESS TOKEN => ${response.accessToken}');
       if (response.accessToken.isNotEmpty) {
         await _tokenStorage.saveAccessToken(response.accessToken);
       }
@@ -40,6 +39,8 @@ class AuthRepositoryImpl implements AuthRepository {
         throw const ApiException('Invalid email or password');
       }
       throw apiException;
+    } on DataParsingException catch (error) {
+      throw ApiExceptions.fromParsing(error);
     }
   }
 
@@ -66,6 +67,8 @@ class AuthRepositoryImpl implements AuthRepository {
       return response.user.toEntity();
     } on DioException catch (error) {
       throw ApiExceptions.fromDio(error);
+    } on DataParsingException catch (error) {
+      throw ApiExceptions.fromParsing(error);
     }
   }
 
@@ -73,7 +76,10 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<UserEntity> refresh() async {
     final refreshToken = await _tokenStorage.getRefreshToken();
     if (refreshToken == null || refreshToken.isEmpty) {
-      throw const ApiException('Missing refresh token');
+      throw const ApiException(
+        'Missing refresh token',
+        kind: ApiErrorKind.unauthorized,
+      );
     }
 
     try {
@@ -89,6 +95,8 @@ class AuthRepositoryImpl implements AuthRepository {
       return response.user.toEntity();
     } on DioException catch (error) {
       throw ApiExceptions.fromDio(error);
+    } on DataParsingException catch (error) {
+      throw ApiExceptions.fromParsing(error);
     }
   }
 
@@ -99,6 +107,8 @@ class AuthRepositoryImpl implements AuthRepository {
       return user.toEntity();
     } on DioException catch (error) {
       throw ApiExceptions.fromDio(error);
+    } on DataParsingException catch (error) {
+      throw ApiExceptions.fromParsing(error);
     }
   }
 

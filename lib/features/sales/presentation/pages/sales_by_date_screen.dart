@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:maktabty/core/di/service_locator.dart';
@@ -150,7 +150,9 @@ class _SalesByDateRemoteView extends StatelessWidget {
 
                 if (state.status == TodaySalesStatus.failure) {
                   return _ErrorCard(
-                    message: state.message ?? context.l10n.unableToLoadSales,
+                    message: state.message == null
+                        ? context.l10n.unableToLoadSales
+                        : context.localizeAppError(state.message!),
                     onRetry: () =>
                         context.read<TodaySalesCubit>().load(date: requestDate),
                   );
@@ -430,7 +432,7 @@ Future<void> _openReceipt(BuildContext context, SaleEntity sale) async {
         () => context.read<TodaySalesCubit>().getReceiptForSale(sale.id),
       ).onError((error, stackTrace) {
         final message = error is String ? error : l10n.unableToLoadReceipt;
-        AppToast.show(message);
+        AppToast.show(context.localizeAppError(message));
         return null;
       });
 

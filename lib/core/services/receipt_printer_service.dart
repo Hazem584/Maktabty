@@ -1,4 +1,3 @@
-
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -38,12 +37,14 @@ class ReceiptPrinterService {
   /// - Windows: verify system print dialog opens.
   /// - Android: select a bluetooth printer in settings then Print POS.
   final PrinterSettingsStorage _settingsStorage;
-  final BluetoothPrinterAdapter _bluetoothPrinter =
-      getBluetoothPrinterAdapter();
+  final BluetoothPrinterAdapter _bluetoothPrinter;
   final ArabicReshaper _arabicReshaper = ArabicReshaper();
 
-  ReceiptPrinterService({required PrinterSettingsStorage settingsStorage})
-    : _settingsStorage = settingsStorage;
+  ReceiptPrinterService({
+    required PrinterSettingsStorage settingsStorage,
+    BluetoothPrinterAdapter? bluetoothPrinter,
+  }) : _settingsStorage = settingsStorage,
+       _bluetoothPrinter = bluetoothPrinter ?? getBluetoothPrinterAdapter();
 
   Future<void> printPdf(ReceiptEntity receipt) async {
     final doc = await _buildPdf(receipt);
@@ -93,7 +94,15 @@ class ReceiptPrinterService {
     }
 
     final bytes = await _buildEscPos(receipt);
-    await _bluetoothPrinter.writeBytes(bytes);
+    try {
+      await _bluetoothPrinter.writeBytes(bytes);
+    } on BluetoothPrinterException catch (error) {
+      if (error.error != BluetoothPrinterError.disconnected) {
+        rethrow;
+      }
+      await _bluetoothPrinter.connect(device);
+      await _bluetoothPrinter.writeBytes(bytes);
+    }
   }
 
   PrinterDevice? _deviceFromSettings(PrinterSettings settings) {
@@ -521,8 +530,9 @@ class ReceiptPrinterService {
 
       final regularBytes = await regularFile.readAsBytes();
       final boldFile = File(boldPath);
-      final boldBytes =
-          boldFile.existsSync() ? await boldFile.readAsBytes() : regularBytes;
+      final boldBytes = boldFile.existsSync()
+          ? await boldFile.readAsBytes()
+          : regularBytes;
 
       final base = pw.Font.ttf(ByteData.sublistView(regularBytes));
       final bold = pw.Font.ttf(ByteData.sublistView(boldBytes));

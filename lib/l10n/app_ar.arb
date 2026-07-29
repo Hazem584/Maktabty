@@ -1,6 +1,6 @@
 ﻿{
   "@@locale": "ar",
-  "appTitle": "Mazen Store",
+  "appTitle": "مكتبتي",
   "languageEnglish": "English",
   "languageArabic": "العربية",
   "welcomeBackTitle": "مرحبًا بعودتك",
@@ -165,6 +165,7 @@
   "noTopProductsYet": "لا توجد منتجات مميزة بعد.",
   "noBreakdownDataYet": "لا توجد بيانات تفصيلية بعد.",
   "scanBarcodeTitle": "مسح الباركود",
+  "scanBarcodeHint": "امسح رمز QR أو الباركود الخاص بالمنتج لربطه.",
   "toggleFlashlight": "تشغيل / إيقاف الفلاش",
   "flipCamera": "تبديل الكاميرا",
   "scanOverlayHint": "ضع الباركود أو رمز QR داخل الإطار",
@@ -238,5 +239,11 @@
   "bluetoothPrintersLabel": "طابعات البلوتوث",
   "noBluetoothPrinters": "لا توجد طابعات بلوتوث.",
   "settingsSaved": "تم حفظ الإعدادات.",
-  "scanning": "جارٍ المسح..."
+  "scanning": "جارٍ المسح...",
+  "unableToVerifySession": "تعذّر التحقق من الجلسة المحفوظة. تحقق من الاتصال وحاول مرة أخرى.",
+  "unexpectedServerResponse": "أعاد الخادم استجابة غير متوقعة. حاول مرة أخرى.",
+  "bluetoothDisabled": "شغّل البلوتوث ثم حاول مرة أخرى.",
+  "bluetoothPermissionRequired": "يلزم إذن البلوتوث للعثور على الطابعات المقترنة.",
+  "printerConnectionFailed": "تعذّر الاتصال بالطابعة المحددة.",
+  "printerDisconnected": "انقطع اتصال الطابعة أثناء الطباعة."
 }

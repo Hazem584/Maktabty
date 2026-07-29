@@ -1,6 +1,7 @@
 ﻿import 'package:dio/dio.dart';
 import 'package:maktabty/features/work_hours/data/models/monthly_work_hours_report_model.dart';
 import 'package:maktabty/features/work_hours/data/models/work_day_model.dart';
+import 'package:maktabty/core/network/data_parsing_exception.dart';
 
 class WorkHoursRemoteDataSource {
   final Dio _dio;
@@ -48,7 +49,10 @@ class WorkHoursRemoteDataSource {
       final items = Map<String, dynamic>.from(data)['data'];
       return _parseList(items);
     }
-    return const [];
+    throw const DataParsingException(
+      operation: 'GET /work-hours',
+      expected: 'JSON object containing a data array',
+    );
   }
 
   Future<MonthlyWorkHoursReportModel> getMonthly({
@@ -62,16 +66,24 @@ class WorkHoursRemoteDataSource {
   }
 
   List<WorkDayModel> _parseList(dynamic items) {
-    if (items is List) {
-      return items
-          .whereType<Map>()
-          .map((item) => WorkDayModel.fromJson(Map<String, dynamic>.from(item)))
-          .toList();
+    if (items is! List) {
+      throw const DataParsingException(
+        operation: 'GET /work-hours',
+        expected: 'JSON array',
+        field: 'data',
+      );
     }
-    if (items is List<Map<String, dynamic>>) {
-      return items.map(WorkDayModel.fromJson).toList();
-    }
-    return const [];
+    return items
+        .map(
+          (item) => WorkDayModel.fromJson(
+            requireStringMap(
+              item,
+              operation: 'GET /work-hours',
+              field: 'data[]',
+            ),
+          ),
+        )
+        .toList(growable: false);
   }
 
   WorkDayModel _parseWorkDay(dynamic data) {
@@ -81,18 +93,9 @@ class WorkHoursRemoteDataSource {
     if (data is Map) {
       return WorkDayModel.fromJson(Map<String, dynamic>.from(data));
     }
-    return const WorkDayModel(
-      id: '',
-      userId: '',
-      date: null,
-      shift1Start: null,
-      shift1End: null,
-      shift2Start: null,
-      shift2End: null,
-      totalMinutes: 0,
-      createdAt: null,
-      updatedAt: null,
-      user: null,
+    throw const DataParsingException(
+      operation: 'POST /work-hours',
+      expected: 'work day JSON object',
     );
   }
 
@@ -105,10 +108,9 @@ class WorkHoursRemoteDataSource {
         Map<String, dynamic>.from(data),
       );
     }
-    return const MonthlyWorkHoursReportModel(
-      month: '',
-      totalsByUser: [],
-      totalsByDay: [],
+    throw const DataParsingException(
+      operation: 'GET /work-hours/monthly',
+      expected: 'monthly work-hours JSON object',
     );
   }
 }

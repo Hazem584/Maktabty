@@ -1,6 +1,7 @@
-﻿import 'package:maktabty/features/sales/data/models/sale_item_model.dart';
+import 'package:maktabty/features/sales/data/models/sale_item_model.dart';
 import 'package:maktabty/features/sales/data/models/user_mini_model.dart';
 import 'package:maktabty/features/sales/domain/entities/sale_entity.dart';
+import 'package:maktabty/core/network/data_parsing_exception.dart';
 
 class SaleModel {
   final String id;
@@ -18,16 +19,14 @@ class SaleModel {
   });
 
   factory SaleModel.fromJson(Map<String, dynamic> json) {
-    final rawItems = json['items'];
-    List<SaleItemModel> items = const [];
-    if (rawItems is List) {
-      items = rawItems
-          .whereType<Map>()
-          .map((item) => SaleItemModel.fromJson(Map<String, dynamic>.from(item)))
-          .toList();
-    } else if (rawItems is List<Map<String, dynamic>>) {
-      items = rawItems.map(SaleItemModel.fromJson).toList();
-    }
+    const operation = 'parse sale';
+    final items = requireList(json, 'items', operation: operation)
+        .map(
+          (item) => SaleItemModel.fromJson(
+            requireStringMap(item, operation: operation, field: 'items[]'),
+          ),
+        )
+        .toList(growable: false);
 
     final userData = json['user'] ?? json['cashier'];
     UserMiniModel? user;
@@ -38,15 +37,20 @@ class SaleModel {
     }
 
     return SaleModel(
-      id: (json['id'] ??
-              json['_id'] ??
-              json['saleId'] ??
-              json['sale_id'] ??
-              '')
-          .toString(),
+      id: requireString(json, const [
+        'id',
+        '_id',
+        'saleId',
+        'sale_id',
+      ], operation: operation),
       items: items,
-      totalAmount: _toDouble(json['totalAmount'] ?? json['total']),
-      createdAt: _toDate(json['createdAt']),
+      totalAmount: requireDouble(json, const [
+        'totalAmount',
+        'total',
+      ], operation: operation),
+      createdAt: requireDateTime(json, const [
+        'createdAt',
+      ], operation: operation),
       user: user,
     );
   }
@@ -60,17 +64,4 @@ class SaleModel {
       user: user?.toEntity(),
     );
   }
-
-  static double _toDouble(dynamic value) {
-    if (value is num) return value.toDouble();
-    return double.tryParse(value?.toString() ?? '') ?? 0.0;
-  }
-
-  static DateTime? _toDate(dynamic value) {
-    if (value is String) {
-      return DateTime.tryParse(value);
-    }
-    return null;
-  }
 }
-

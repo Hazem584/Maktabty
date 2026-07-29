@@ -225,7 +225,11 @@ class _NewSaleTabState extends State<_NewSaleTab> {
       listenWhen: (previous, current) => previous.status != current.status,
       listener: (context, state) {
         if (state.status == CreateSaleStatus.failure) {
-          AppToast.show(state.message ?? context.l10n.unableToCreateSale);
+          AppToast.show(
+            state.message == null
+                ? context.l10n.unableToCreateSale
+                : context.localizeAppError(state.message!),
+          );
         }
         if (state.status == CreateSaleStatus.success) {
           AppToast.show(context.l10n.saleCreated);
@@ -271,7 +275,9 @@ class _NewSaleTabState extends State<_NewSaleTab> {
 
               if (state.status == ProductsListStatus.failure) {
                 return Text(
-                  state.errorMessage ?? context.l10n.inventoryLoadFailed,
+                  state.errorMessage == null
+                      ? context.l10n.inventoryLoadFailed
+                      : context.localizeAppError(state.errorMessage!),
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: Theme.of(context).colorScheme.error,
                   ),
@@ -489,7 +495,11 @@ class _NewSaleByCodeTabState extends State<_NewSaleByCodeTab> {
       listenWhen: (previous, current) => previous.status != current.status,
       listener: (context, state) {
         if (state.status == CreateSaleByCodeStatus.failure) {
-          AppToast.show(state.message ?? context.l10n.unableToCreateSale);
+          AppToast.show(
+            state.message == null
+                ? context.l10n.unableToCreateSale
+                : context.localizeAppError(state.message!),
+          );
         }
         if (state.status == CreateSaleByCodeStatus.success) {
           AppToast.show(context.l10n.saleCreated);
@@ -844,7 +854,9 @@ class _TodaySalesSection extends StatelessWidget {
                     const SizedBox(width: AppSpacing.s),
                     Expanded(
                       child: Text(
-                        state.message ?? context.l10n.unableToLoadSales,
+                        state.message == null
+                            ? context.l10n.unableToLoadSales
+                            : context.localizeAppError(state.message!),
                         style: textTheme.bodySmall?.copyWith(
                           color: Theme.of(context).colorScheme.error,
                         ),

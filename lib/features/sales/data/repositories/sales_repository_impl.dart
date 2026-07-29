@@ -1,5 +1,6 @@
-﻿import 'package:dio/dio.dart';
+import 'package:dio/dio.dart';
 import 'package:maktabty/core/network/api_exceptions.dart';
+import 'package:maktabty/core/network/data_parsing_exception.dart';
 import 'package:maktabty/features/sales/data/datasources/sales_remote_datasource.dart';
 import 'package:maktabty/features/sales/domain/entities/payment_method.dart';
 import 'package:maktabty/features/sales/domain/entities/receipt_entity.dart';
@@ -13,7 +14,7 @@ class SalesRepositoryImpl implements SalesRepository {
   final SalesRemoteDataSource _remoteDataSource;
 
   SalesRepositoryImpl({required SalesRemoteDataSource remoteDataSource})
-      : _remoteDataSource = remoteDataSource;
+    : _remoteDataSource = remoteDataSource;
 
   @override
   Future<SaleResponseEntity> createSale({
@@ -34,6 +35,8 @@ class SalesRepositoryImpl implements SalesRepository {
       return response.toEntity();
     } on DioException catch (error) {
       throw ApiExceptions.fromDio(error);
+    } on DataParsingException catch (error) {
+      throw ApiExceptions.fromParsing(error);
     }
   }
 
@@ -60,6 +63,8 @@ class SalesRepositoryImpl implements SalesRepository {
       return response.toEntity();
     } on DioException catch (error) {
       throw ApiExceptions.fromDio(error);
+    } on DataParsingException catch (error) {
+      throw ApiExceptions.fromParsing(error);
     }
   }
 
@@ -70,6 +75,8 @@ class SalesRepositoryImpl implements SalesRepository {
       return response.toEntity();
     } on DioException catch (error) {
       throw ApiExceptions.fromDio(error);
+    } on DataParsingException catch (error) {
+      throw ApiExceptions.fromParsing(error);
     }
   }
 
@@ -80,6 +87,8 @@ class SalesRepositoryImpl implements SalesRepository {
       return response.toEntity();
     } on DioException catch (error) {
       throw ApiExceptions.fromDio(error);
+    } on DataParsingException catch (error) {
+      throw ApiExceptions.fromParsing(error);
     }
   }
 
@@ -90,7 +99,8 @@ class SalesRepositoryImpl implements SalesRepository {
       return response.toEntity();
     } on DioException catch (error) {
       throw ApiExceptions.fromDio(error);
+    } on DataParsingException catch (error) {
+      throw ApiExceptions.fromParsing(error);
     }
   }
 }
-

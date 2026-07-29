@@ -1,3 +1,4 @@
+import 'package:maktabty/core/network/data_parsing_exception.dart';
 import 'package:maktabty/features/products/data/models/product_model.dart';
 import 'package:maktabty/features/products/domain/entities/paginated_products_entity.dart';
 
@@ -15,17 +16,15 @@ class PaginatedProductsModel {
   });
 
   factory PaginatedProductsModel.fromJson(Map<String, dynamic> json) {
-    final rawData = json['data'];
-    final items = <ProductModel>[];
-    if (rawData is List) {
-      for (final item in rawData) {
-        if (item is Map<String, dynamic>) {
-          items.add(ProductModel.fromJson(item));
-        } else if (item is Map) {
-          items.add(ProductModel.fromJson(Map<String, dynamic>.from(item)));
-        }
-      }
-    }
+    const operation = 'parse products list';
+    final rawData = requireList(json, 'data', operation: operation);
+    final items = rawData
+        .map(
+          (item) => ProductModel.fromJson(
+            requireStringMap(item, operation: operation, field: 'data[]'),
+          ),
+        )
+        .toList(growable: false);
 
     final meta = json['meta'];
     int page = 1;
@@ -33,14 +32,14 @@ class PaginatedProductsModel {
     int total = items.length;
 
     if (meta is Map<String, dynamic>) {
-      page = _toInt(meta['page'], fallback: page);
-      limit = _toInt(meta['limit'], fallback: limit);
-      total = _toInt(meta['total'], fallback: total);
+      page = _toInt(meta['page'], fallback: page, operation: operation);
+      limit = _toInt(meta['limit'], fallback: limit, operation: operation);
+      total = _toInt(meta['total'], fallback: total, operation: operation);
     } else if (meta is Map) {
       final metaMap = Map<String, dynamic>.from(meta);
-      page = _toInt(metaMap['page'], fallback: page);
-      limit = _toInt(metaMap['limit'], fallback: limit);
-      total = _toInt(metaMap['total'], fallback: total);
+      page = _toInt(metaMap['page'], fallback: page, operation: operation);
+      limit = _toInt(metaMap['limit'], fallback: limit, operation: operation);
+      total = _toInt(metaMap['total'], fallback: total, operation: operation);
     }
 
     return PaginatedProductsModel(
@@ -60,8 +59,19 @@ class PaginatedProductsModel {
     );
   }
 
-  static int _toInt(dynamic value, {required int fallback}) {
+  static int _toInt(
+    dynamic value, {
+    required int fallback,
+    required String operation,
+  }) {
+    if (value == null) return fallback;
     if (value is num) return value.toInt();
-    return int.tryParse(value?.toString() ?? '') ?? fallback;
+    final parsed = int.tryParse(value.toString());
+    if (parsed != null) return parsed;
+    throw DataParsingException(
+      operation: operation,
+      expected: 'integer or integer string',
+      field: 'pagination metadata',
+    );
   }
 }

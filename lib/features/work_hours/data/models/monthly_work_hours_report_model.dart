@@ -1,5 +1,6 @@
-﻿import 'package:maktabty/core/utils/text_sanitizer.dart';
+import 'package:maktabty/core/utils/text_sanitizer.dart';
 import 'package:maktabty/features/work_hours/domain/entities/monthly_work_hours_report.dart';
+import 'package:maktabty/core/network/data_parsing_exception.dart';
 
 class TotalsByUserItemModel {
   final String userId;
@@ -15,11 +16,16 @@ class TotalsByUserItemModel {
   });
 
   factory TotalsByUserItemModel.fromJson(Map<String, dynamic> json) {
+    const operation = 'parse monthly work-hours user';
     return TotalsByUserItemModel(
-      userId: (json['userId'] ?? '').toString(),
-      fullName: TextSanitizer.fixMojibake((json['fullName'] ?? '').toString()),
-      email: (json['email'] ?? '').toString(),
-      totalMinutes: _toInt(json['totalMinutes']),
+      userId: requireString(json, const ['userId'], operation: operation),
+      fullName: TextSanitizer.fixMojibake(
+        requireString(json, const ['fullName'], operation: operation),
+      ),
+      email: requireString(json, const ['email'], operation: operation),
+      totalMinutes: requireInt(json, const [
+        'totalMinutes',
+      ], operation: operation),
     );
   }
 
@@ -31,39 +37,26 @@ class TotalsByUserItemModel {
       totalMinutes: totalMinutes,
     );
   }
-
-  static int _toInt(dynamic value) {
-    if (value is num) return value.toInt();
-    return int.tryParse(value?.toString() ?? '') ?? 0;
-  }
 }
 
 class TotalsByDayItemModel {
   final String date;
   final int totalMinutes;
 
-  const TotalsByDayItemModel({
-    required this.date,
-    required this.totalMinutes,
-  });
+  const TotalsByDayItemModel({required this.date, required this.totalMinutes});
 
   factory TotalsByDayItemModel.fromJson(Map<String, dynamic> json) {
+    const operation = 'parse monthly work-hours day';
     return TotalsByDayItemModel(
-      date: (json['date'] ?? '').toString(),
-      totalMinutes: _toInt(json['totalMinutes']),
+      date: requireString(json, const ['date'], operation: operation),
+      totalMinutes: requireInt(json, const [
+        'totalMinutes',
+      ], operation: operation),
     );
   }
 
   TotalsByDayItemEntity toEntity() {
-    return TotalsByDayItemEntity(
-      date: date,
-      totalMinutes: totalMinutes,
-    );
-  }
-
-  static int _toInt(dynamic value) {
-    if (value is num) return value.toInt();
-    return int.tryParse(value?.toString() ?? '') ?? 0;
+    return TotalsByDayItemEntity(date: date, totalMinutes: totalMinutes);
   }
 }
 
@@ -79,32 +72,32 @@ class MonthlyWorkHoursReportModel {
   });
 
   factory MonthlyWorkHoursReportModel.fromJson(Map<String, dynamic> json) {
-    final rawUsers = json['totalsByUser'];
-    List<TotalsByUserItemModel> totalsByUser = const [];
-    if (rawUsers is List) {
-      totalsByUser = rawUsers
-          .whereType<Map>()
-          .map((item) =>
-              TotalsByUserItemModel.fromJson(Map<String, dynamic>.from(item)))
-          .toList();
-    } else if (rawUsers is List<Map<String, dynamic>>) {
-      totalsByUser = rawUsers.map(TotalsByUserItemModel.fromJson).toList();
-    }
-
-    final rawDays = json['totalsByDay'];
-    List<TotalsByDayItemModel> totalsByDay = const [];
-    if (rawDays is List) {
-      totalsByDay = rawDays
-          .whereType<Map>()
-          .map((item) =>
-              TotalsByDayItemModel.fromJson(Map<String, dynamic>.from(item)))
-          .toList();
-    } else if (rawDays is List<Map<String, dynamic>>) {
-      totalsByDay = rawDays.map(TotalsByDayItemModel.fromJson).toList();
-    }
+    const operation = 'parse monthly work-hours report';
+    final totalsByUser = requireList(json, 'totalsByUser', operation: operation)
+        .map(
+          (item) => TotalsByUserItemModel.fromJson(
+            requireStringMap(
+              item,
+              operation: operation,
+              field: 'totalsByUser[]',
+            ),
+          ),
+        )
+        .toList(growable: false);
+    final totalsByDay = requireList(json, 'totalsByDay', operation: operation)
+        .map(
+          (item) => TotalsByDayItemModel.fromJson(
+            requireStringMap(
+              item,
+              operation: operation,
+              field: 'totalsByDay[]',
+            ),
+          ),
+        )
+        .toList(growable: false);
 
     return MonthlyWorkHoursReportModel(
-      month: (json['month'] ?? '').toString(),
+      month: requireString(json, const ['month'], operation: operation),
       totalsByUser: totalsByUser,
       totalsByDay: totalsByDay,
     );

@@ -9,7 +9,7 @@ class AppLocalizationsAr extends AppLocalizations {
   AppLocalizationsAr([String locale = 'ar']) : super(locale);
 
   @override
-  String get appTitle => 'Mazen Store';
+  String get appTitle => 'مكتبتي';
 
   @override
   String get languageEnglish => 'English';
@@ -367,7 +367,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get productCode => 'كود المنتج';
 
   @override
-  String get scanBarcodeHint => 'Scan the product QR or barcode to link it.';
+  String get scanBarcodeHint => 'امسح رمز QR أو الباركود الخاص بالمنتج لربطه.';
 
   @override
   String get createAccountSuccess => 'تم إنشاء الحساب بنجاح';
@@ -691,4 +691,25 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get scanning => 'جارٍ المسح...';
+
+  @override
+  String get unableToVerifySession =>
+      'تعذّر التحقق من الجلسة المحفوظة. تحقق من الاتصال وحاول مرة أخرى.';
+
+  @override
+  String get unexpectedServerResponse =>
+      'أعاد الخادم استجابة غير متوقعة. حاول مرة أخرى.';
+
+  @override
+  String get bluetoothDisabled => 'شغّل البلوتوث ثم حاول مرة أخرى.';
+
+  @override
+  String get bluetoothPermissionRequired =>
+      'يلزم إذن البلوتوث للعثور على الطابعات المقترنة.';
+
+  @override
+  String get printerConnectionFailed => 'تعذّر الاتصال بالطابعة المحددة.';
+
+  @override
+  String get printerDisconnected => 'انقطع اتصال الطابعة أثناء الطباعة.';
 }

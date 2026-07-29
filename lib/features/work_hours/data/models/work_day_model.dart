@@ -1,5 +1,6 @@
-﻿import 'package:maktabty/features/work_hours/data/models/work_day_user_model.dart';
+import 'package:maktabty/features/work_hours/data/models/work_day_user_model.dart';
 import 'package:maktabty/features/work_hours/domain/entities/work_day.dart';
+import 'package:maktabty/core/network/data_parsing_exception.dart';
 
 class WorkDayModel {
   final String id;
@@ -29,6 +30,7 @@ class WorkDayModel {
   });
 
   factory WorkDayModel.fromJson(Map<String, dynamic> json) {
+    const operation = 'parse work day';
     WorkDayUserModel? user;
     final rawUser = json['user'];
     if (rawUser is Map<String, dynamic>) {
@@ -38,16 +40,18 @@ class WorkDayModel {
     }
 
     return WorkDayModel(
-      id: (json['id'] ?? '').toString(),
-      userId: (json['userId'] ?? '').toString(),
-      date: _toDate(json['date']),
-      shift1Start: _toDate(json['shift1Start']),
-      shift1End: _toDate(json['shift1End']),
-      shift2Start: _toDate(json['shift2Start']),
-      shift2End: _toDate(json['shift2End']),
-      totalMinutes: _toInt(json['totalMinutes']),
-      createdAt: _toDate(json['createdAt']),
-      updatedAt: _toDate(json['updatedAt']),
+      id: requireString(json, const ['id'], operation: operation),
+      userId: requireString(json, const ['userId'], operation: operation),
+      date: requireDateTime(json, const ['date'], operation: operation),
+      shift1Start: optionalDateTime(json, 'shift1Start', operation: operation),
+      shift1End: optionalDateTime(json, 'shift1End', operation: operation),
+      shift2Start: optionalDateTime(json, 'shift2Start', operation: operation),
+      shift2End: optionalDateTime(json, 'shift2End', operation: operation),
+      totalMinutes: requireInt(json, const [
+        'totalMinutes',
+      ], operation: operation),
+      createdAt: optionalDateTime(json, 'createdAt', operation: operation),
+      updatedAt: optionalDateTime(json, 'updatedAt', operation: operation),
       user: user,
     );
   }
@@ -66,17 +70,5 @@ class WorkDayModel {
       updatedAt: updatedAt,
       user: user?.toEntity(),
     );
-  }
-
-  static DateTime? _toDate(dynamic value) {
-    if (value is String) {
-      return DateTime.tryParse(value);
-    }
-    return null;
-  }
-
-  static int _toInt(dynamic value) {
-    if (value is num) return value.toInt();
-    return int.tryParse(value?.toString() ?? '') ?? 0;
   }
 }

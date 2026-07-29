@@ -5,6 +5,7 @@ enum AuthStatus {
   loading,
   authenticated,
   unauthenticated,
+  startupFailure,
   failure,
 }
 
@@ -13,11 +14,7 @@ class AuthState {
   final UserEntity? user;
   final String? message;
 
-  const AuthState({
-    required this.status,
-    this.user,
-    this.message,
-  });
+  const AuthState({required this.status, this.user, this.message});
 
   factory AuthState.initial() => const AuthState(status: AuthStatus.initial);
 
@@ -29,14 +26,13 @@ class AuthState {
   factory AuthState.unauthenticated({String? message}) =>
       AuthState(status: AuthStatus.unauthenticated, message: message);
 
+  factory AuthState.startupFailure(String message) =>
+      AuthState(status: AuthStatus.startupFailure, message: message);
+
   factory AuthState.failure(String message) =>
       AuthState(status: AuthStatus.failure, message: message);
 
-  AuthState copyWith({
-    AuthStatus? status,
-    UserEntity? user,
-    String? message,
-  }) {
+  AuthState copyWith({AuthStatus? status, UserEntity? user, String? message}) {
     return AuthState(
       status: status ?? this.status,
       user: user ?? this.user,

@@ -101,7 +101,7 @@ abstract class AppLocalizations {
   /// No description provided for @appTitle.
   ///
   /// In en, this message translates to:
-  /// **'Mazen Store'**
+  /// **'Maktabty'**
   String get appTitle;
 
   /// No description provided for @languageEnglish.
@@ -1447,6 +1447,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Scanning...'**
   String get scanning;
+
+  /// No description provided for @unableToVerifySession.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to verify your saved session. Check your connection and try again.'**
+  String get unableToVerifySession;
+
+  /// No description provided for @unexpectedServerResponse.
+  ///
+  /// In en, this message translates to:
+  /// **'The server returned an unexpected response. Please try again.'**
+  String get unexpectedServerResponse;
+
+  /// No description provided for @bluetoothDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn on Bluetooth and try again.'**
+  String get bluetoothDisabled;
+
+  /// No description provided for @bluetoothPermissionRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Bluetooth permission is required to find paired printers.'**
+  String get bluetoothPermissionRequired;
+
+  /// No description provided for @printerConnectionFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not connect to the selected printer.'**
+  String get printerConnectionFailed;
+
+  /// No description provided for @printerDisconnected.
+  ///
+  /// In en, this message translates to:
+  /// **'The printer disconnected while printing.'**
+  String get printerDisconnected;
 }
 
 class _AppLocalizationsDelegate

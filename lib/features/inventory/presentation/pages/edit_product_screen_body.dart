@@ -11,10 +11,7 @@ import 'package:maktabty/features/products/presentation/cubit/product_form_state
 class EditProductScreenBody extends StatefulWidget {
   final ProductEntity product;
 
-  const EditProductScreenBody({
-    super.key,
-    required this.product,
-  });
+  const EditProductScreenBody({super.key, required this.product});
 
   @override
   State<EditProductScreenBody> createState() => _EditProductScreenBodyState();
@@ -29,8 +26,9 @@ class _EditProductScreenBodyState extends State<EditProductScreenBody> {
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.product.name);
-    _priceController =
-        TextEditingController(text: widget.product.price.toStringAsFixed(2));
+    _priceController = TextEditingController(
+      text: widget.product.price.toStringAsFixed(2),
+    );
     _stock = widget.product.stock;
   }
 
@@ -59,12 +57,12 @@ class _EditProductScreenBodyState extends State<EditProductScreenBody> {
     }
 
     context.read<ProductFormCubit>().updateProduct(
-          id: widget.product.id,
-          name: name,
-          price: priceValue,
-          stock: _stock,
-          code: widget.product.code,
-        );
+      id: widget.product.id,
+      name: name,
+      price: priceValue,
+      stock: _stock,
+      code: widget.product.code,
+    );
   }
 
   @override
@@ -74,7 +72,7 @@ class _EditProductScreenBodyState extends State<EditProductScreenBody> {
       listener: (context, state) {
         if (state.status == ProductFormStatus.failure) {
           final message = state.message ?? context.l10n.somethingWentWrong;
-          AppToast.show(message);
+          AppToast.show(context.localizeAppError(message));
         }
         if (state.status == ProductFormStatus.success) {
           final product = state.product;

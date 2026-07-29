@@ -1,11 +1,11 @@
 {
-    "name": "Mazen Store",
-    "short_name": "Mazen Store",
+    "name": "Maktabty",
+    "short_name": "Maktabty",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "Maktabty point-of-sale and inventory application.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
