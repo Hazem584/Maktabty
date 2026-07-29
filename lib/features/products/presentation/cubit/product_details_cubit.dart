@@ -13,28 +13,31 @@ class ProductDetailsCubit extends Cubit<ProductDetailsState> {
   ProductDetailsCubit({
     required GetProductByIdUseCase getProductByIdUseCase,
     required GetProductByCodeUseCase getProductByCodeUseCase,
-  })  : _getProductByIdUseCase = getProductByIdUseCase,
-        _getProductByCodeUseCase = getProductByCodeUseCase,
-        super(ProductDetailsState.initial());
+  }) : _getProductByIdUseCase = getProductByIdUseCase,
+       _getProductByCodeUseCase = getProductByCodeUseCase,
+       super(ProductDetailsState.initial());
 
   Future<void> loadById(String id) async {
     emit(state.copyWith(status: ProductDetailsStatus.loading, message: null));
     try {
       final product = await _getProductByIdUseCase(id);
-      emit(state.copyWith(
-        status: ProductDetailsStatus.success,
-        product: product,
-      ));
+      emit(
+        state.copyWith(status: ProductDetailsStatus.success, product: product),
+      );
     } on ApiException catch (error) {
-      emit(state.copyWith(
-        status: ProductDetailsStatus.failure,
-        message: mapProductError(error),
-      ));
+      emit(
+        state.copyWith(
+          status: ProductDetailsStatus.failure,
+          message: mapProductError(error),
+        ),
+      );
     } catch (_) {
-      emit(state.copyWith(
-        status: ProductDetailsStatus.failure,
-        message: 'Something went wrong. Please try again.',
-      ));
+      emit(
+        state.copyWith(
+          status: ProductDetailsStatus.failure,
+          message: 'Something went wrong. Please try again.',
+        ),
+      );
     }
   }
 
@@ -42,28 +45,33 @@ class ProductDetailsCubit extends Cubit<ProductDetailsState> {
     emit(state.copyWith(status: ProductDetailsStatus.loading, message: null));
     try {
       final product = await _getProductByCodeUseCase(code);
-      emit(state.copyWith(
-        status: ProductDetailsStatus.success,
-        product: product,
-      ));
+      emit(
+        state.copyWith(status: ProductDetailsStatus.success, product: product),
+      );
     } on ApiException catch (error) {
-      emit(state.copyWith(
-        status: ProductDetailsStatus.failure,
-        message: mapProductError(error),
-      ));
+      emit(
+        state.copyWith(
+          status: ProductDetailsStatus.failure,
+          message: mapProductError(error),
+        ),
+      );
     } catch (_) {
-      emit(state.copyWith(
-        status: ProductDetailsStatus.failure,
-        message: 'Something went wrong. Please try again.',
-      ));
+      emit(
+        state.copyWith(
+          status: ProductDetailsStatus.failure,
+          message: 'Something went wrong. Please try again.',
+        ),
+      );
     }
   }
 
   void setSelected(ProductEntity? product) {
-    emit(state.copyWith(
-      status: ProductDetailsStatus.success,
-      product: product,
-      message: null,
-    ));
+    emit(
+      state.copyWith(
+        status: ProductDetailsStatus.success,
+        product: product,
+        message: null,
+      ),
+    );
   }
 }

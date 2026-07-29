@@ -1,4 +1,4 @@
-﻿import 'package:maktabty/features/sales/domain/entities/today_sales_response_entity.dart';
+import 'package:maktabty/features/sales/domain/entities/today_sales_response_entity.dart';
 
 enum TodaySalesStatus { idle, loading, success, failure }
 
@@ -33,4 +33,3 @@ class TodaySalesState {
     );
   }
 }
-

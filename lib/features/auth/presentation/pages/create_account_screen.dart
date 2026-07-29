@@ -82,8 +82,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
           previous.message != current.message,
       listener: (context, state) {
         if (state.status == AuthStatus.failure) {
-          final message =
-              state.message ?? context.l10n.registrationFailed;
+          final message = state.message ?? context.l10n.registrationFailed;
           _showToast(message);
         }
 

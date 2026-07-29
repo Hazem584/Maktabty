@@ -20,10 +20,9 @@ class ProductSearchResults extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: AppSpacing.m),
         child: Text(
           context.l10n.noMatchingProducts,
-          style: Theme.of(context)
-              .textTheme
-              .bodySmall
-              ?.copyWith(color: Theme.of(context).colorScheme.outline),
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+            color: Theme.of(context).colorScheme.outline,
+          ),
         ),
       );
     }
@@ -66,9 +65,7 @@ class ProductSearchResults extends StatelessWidget {
                         const SizedBox(height: AppSpacing.xs),
                         Text(
                           '\$${product.price.toStringAsFixed(2)}',
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodySmall
+                          style: Theme.of(context).textTheme.bodySmall
                               ?.copyWith(
                                 color: Theme.of(context).colorScheme.outline,
                               ),
@@ -78,12 +75,9 @@ class ProductSearchResults extends StatelessWidget {
                   ),
                   Text(
                     '${context.l10n.stockLabel}: ${product.stock}',
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodySmall
-                        ?.copyWith(
-                          color: Theme.of(context).colorScheme.outline,
-                        ),
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Theme.of(context).colorScheme.outline,
+                    ),
                   ),
                 ],
               ),

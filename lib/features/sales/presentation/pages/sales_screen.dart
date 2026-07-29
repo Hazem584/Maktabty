@@ -27,9 +27,7 @@ class SalesScreen extends StatelessWidget {
         BlocProvider<ProductsListCubit>(
           create: (_) => sl<ProductsListCubit>()..loadInitial(),
         ),
-      BlocProvider<CreateSaleCubit>(
-        create: (_) => sl<CreateSaleCubit>(),
-      ),
+      BlocProvider<CreateSaleCubit>(create: (_) => sl<CreateSaleCubit>()),
       BlocProvider<CreateSaleByCodeCubit>(
         create: (_) => sl<CreateSaleByCodeCubit>(),
       ),
@@ -43,18 +41,16 @@ class SalesScreen extends StatelessWidget {
       child: DefaultTabController(
         length: 2,
         child: Scaffold(
-        appBar: AppBar(
-          title: Text(context.l10n.sales),
-          bottom: TabBar(
-            tabs: [
-              Tab(text: context.l10n.newSaleTab),
-              Tab(text: context.l10n.byCodeTab),
-            ],
+          appBar: AppBar(
+            title: Text(context.l10n.sales),
+            bottom: TabBar(
+              tabs: [
+                Tab(text: context.l10n.newSaleTab),
+                Tab(text: context.l10n.byCodeTab),
+              ],
+            ),
           ),
-        ),
-          body: const SafeArea(
-            child: SalesScreenBody(),
-          ),
+          body: const SafeArea(child: SalesScreenBody()),
         ),
       ),
     );

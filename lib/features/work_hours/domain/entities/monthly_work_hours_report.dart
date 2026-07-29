@@ -1,4 +1,4 @@
-﻿class TotalsByUserItemEntity {
+class TotalsByUserItemEntity {
   final String userId;
   final String fullName;
   final String email;
@@ -16,10 +16,7 @@ class TotalsByDayItemEntity {
   final String date;
   final int totalMinutes;
 
-  const TotalsByDayItemEntity({
-    required this.date,
-    required this.totalMinutes,
-  });
+  const TotalsByDayItemEntity({required this.date, required this.totalMinutes});
 }
 
 class MonthlyWorkHoursReportEntity {

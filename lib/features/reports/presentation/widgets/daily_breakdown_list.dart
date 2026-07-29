@@ -7,21 +7,16 @@ class DailyBreakdownList extends StatelessWidget {
   final List<DailyBreakdownEntity> items;
   final ValueChanged<DailyBreakdownEntity>? onItemTap;
 
-  const DailyBreakdownList({
-    super.key,
-    required this.items,
-    this.onItemTap,
-  });
+  const DailyBreakdownList({super.key, required this.items, this.onItemTap});
 
   @override
   Widget build(BuildContext context) {
     if (items.isEmpty) {
       return Text(
         context.l10n.noBreakdownDataYet,
-        style: Theme.of(context)
-            .textTheme
-            .bodySmall
-            ?.copyWith(color: Theme.of(context).colorScheme.outline),
+        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+          color: Theme.of(context).colorScheme.outline,
+        ),
       );
     }
 
@@ -58,22 +53,18 @@ class DailyBreakdownList extends StatelessWidget {
                     const SizedBox(height: AppSpacing.xs),
                     Text(
                       '${context.l10n.orders}: ${item.orders}',
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodySmall
-                          ?.copyWith(
-                            color: Theme.of(context).colorScheme.outline,
-                          ),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).colorScheme.outline,
+                      ),
                     ),
                   ],
                 ),
               ),
               Text(
                 '\$${item.amount.toStringAsFixed(2)}',
-                style: Theme.of(context)
-                    .textTheme
-                    .titleMedium
-                    ?.copyWith(color: Theme.of(context).colorScheme.primary),
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.primary,
+                ),
               ),
             ],
           ),

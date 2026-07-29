@@ -1,4 +1,4 @@
-﻿class SaleItemInput {
+class SaleItemInput {
   final String productId;
   final int quantity;
   final double? unitPriceOverride;
@@ -17,4 +17,3 @@
     };
   }
 }
-

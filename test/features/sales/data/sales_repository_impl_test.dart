@@ -17,8 +17,7 @@ import 'package:maktabty/features/sales/data/repositories/sales_repository_impl.
 import 'package:maktabty/features/sales/domain/entities/payment_method.dart';
 import 'package:maktabty/features/sales/domain/entities/sale_item_input.dart';
 
-class MockSalesRemoteDataSource extends Mock
-    implements SalesRemoteDataSource {}
+class MockSalesRemoteDataSource extends Mock implements SalesRemoteDataSource {}
 
 void main() {
   late MockSalesRemoteDataSource remoteDataSource;
@@ -76,11 +75,7 @@ void main() {
 
   test('createSale returns SaleResponseEntity', () async {
     final items = [
-      const SaleItemInput(
-        productId: 'p1',
-        quantity: 2,
-        unitPriceOverride: 10,
-      ),
+      const SaleItemInput(productId: 'p1', quantity: 2, unitPriceOverride: 10),
     ];
 
     when(
@@ -104,9 +99,7 @@ void main() {
   });
 
   test('createSale throws ApiException on DioException', () async {
-    final items = [
-      const SaleItemInput(productId: 'p1', quantity: 1),
-    ];
+    final items = [const SaleItemInput(productId: 'p1', quantity: 1)];
 
     when(
       () => remoteDataSource.createSale(
@@ -137,8 +130,9 @@ void main() {
   });
 
   test('getTodaySales returns TodaySalesResponseEntity', () async {
-    when(() => remoteDataSource.getTodaySales(date: null))
-        .thenAnswer((_) async => todayResponseModel);
+    when(
+      () => remoteDataSource.getTodaySales(date: null),
+    ).thenAnswer((_) async => todayResponseModel);
 
     final result = await repository.getTodaySales();
 
@@ -147,8 +141,9 @@ void main() {
   });
 
   test('getReceiptForSale returns ReceiptEntity', () async {
-    when(() => remoteDataSource.getReceiptForSale('sale-1'))
-        .thenAnswer((_) async => receiptModel);
+    when(
+      () => remoteDataSource.getReceiptForSale('sale-1'),
+    ).thenAnswer((_) async => receiptModel);
 
     final result = await repository.getReceiptForSale('sale-1');
 

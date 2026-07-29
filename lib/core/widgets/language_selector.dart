@@ -10,7 +10,8 @@ class LanguageSelector extends StatelessWidget {
   Widget build(BuildContext context) {
     final state = context.watch<LocaleCubit>().state;
     final currentCode =
-        state.locale?.languageCode ?? Localizations.localeOf(context).languageCode;
+        state.locale?.languageCode ??
+        Localizations.localeOf(context).languageCode;
 
     return Wrap(
       spacing: 8,

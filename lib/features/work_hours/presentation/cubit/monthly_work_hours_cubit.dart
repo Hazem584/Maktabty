@@ -1,4 +1,4 @@
-﻿import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:maktabty/core/network/api_exceptions.dart';
 import 'package:maktabty/features/work_hours/domain/usecases/get_monthly_work_hours.dart';
 import 'package:maktabty/features/work_hours/presentation/cubit/monthly_work_hours_state.dart';
@@ -8,8 +8,8 @@ class MonthlyWorkHoursCubit extends Cubit<MonthlyWorkHoursState> {
 
   MonthlyWorkHoursCubit({
     required GetMonthlyWorkHoursUseCase getMonthlyWorkHoursUseCase,
-  })  : _getMonthlyWorkHoursUseCase = getMonthlyWorkHoursUseCase,
-        super(MonthlyWorkHoursState.initial());
+  }) : _getMonthlyWorkHoursUseCase = getMonthlyWorkHoursUseCase,
+       super(MonthlyWorkHoursState.initial());
 
   Future<void> load({required DateTime month}) async {
     emit(state.copyWith(status: MonthlyWorkHoursStatus.loading, message: null));
@@ -18,20 +18,23 @@ class MonthlyWorkHoursCubit extends Cubit<MonthlyWorkHoursState> {
       final report = await _getMonthlyWorkHoursUseCase(
         month: _formatMonth(month),
       );
-      emit(state.copyWith(
-        status: MonthlyWorkHoursStatus.success,
-        report: report,
-      ));
+      emit(
+        state.copyWith(status: MonthlyWorkHoursStatus.success, report: report),
+      );
     } on ApiException catch (error) {
-      emit(state.copyWith(
-        status: MonthlyWorkHoursStatus.failure,
-        message: _mapError(error),
-      ));
+      emit(
+        state.copyWith(
+          status: MonthlyWorkHoursStatus.failure,
+          message: _mapError(error),
+        ),
+      );
     } catch (_) {
-      emit(state.copyWith(
-        status: MonthlyWorkHoursStatus.failure,
-        message: 'Something went wrong. Please try again.',
-      ));
+      emit(
+        state.copyWith(
+          status: MonthlyWorkHoursStatus.failure,
+          message: 'Something went wrong. Please try again.',
+        ),
+      );
     }
   }
 

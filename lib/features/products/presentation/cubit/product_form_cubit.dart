@@ -12,9 +12,9 @@ class ProductFormCubit extends Cubit<ProductFormState> {
   ProductFormCubit({
     required CreateProductUseCase createProductUseCase,
     required UpdateProductUseCase updateProductUseCase,
-  })  : _createProductUseCase = createProductUseCase,
-        _updateProductUseCase = updateProductUseCase,
-        super(ProductFormState.initial());
+  }) : _createProductUseCase = createProductUseCase,
+       _updateProductUseCase = updateProductUseCase,
+       super(ProductFormState.initial());
 
   Future<void> createProduct({
     required String name,
@@ -32,20 +32,21 @@ class ProductFormCubit extends Cubit<ProductFormState> {
         stock: stock,
         code: code,
       );
-      emit(state.copyWith(
-        status: ProductFormStatus.success,
-        product: product,
-      ));
+      emit(state.copyWith(status: ProductFormStatus.success, product: product));
     } on ApiException catch (error) {
-      emit(state.copyWith(
-        status: ProductFormStatus.failure,
-        message: mapProductError(error),
-      ));
+      emit(
+        state.copyWith(
+          status: ProductFormStatus.failure,
+          message: mapProductError(error),
+        ),
+      );
     } catch (_) {
-      emit(state.copyWith(
-        status: ProductFormStatus.failure,
-        message: 'Something went wrong. Please try again.',
-      ));
+      emit(
+        state.copyWith(
+          status: ProductFormStatus.failure,
+          message: 'Something went wrong. Please try again.',
+        ),
+      );
     }
   }
 
@@ -67,20 +68,21 @@ class ProductFormCubit extends Cubit<ProductFormState> {
         stock: stock,
         code: code,
       );
-      emit(state.copyWith(
-        status: ProductFormStatus.success,
-        product: product,
-      ));
+      emit(state.copyWith(status: ProductFormStatus.success, product: product));
     } on ApiException catch (error) {
-      emit(state.copyWith(
-        status: ProductFormStatus.failure,
-        message: mapProductError(error),
-      ));
+      emit(
+        state.copyWith(
+          status: ProductFormStatus.failure,
+          message: mapProductError(error),
+        ),
+      );
     } catch (_) {
-      emit(state.copyWith(
-        status: ProductFormStatus.failure,
-        message: 'Something went wrong. Please try again.',
-      ));
+      emit(
+        state.copyWith(
+          status: ProductFormStatus.failure,
+          message: 'Something went wrong. Please try again.',
+        ),
+      );
     }
   }
 

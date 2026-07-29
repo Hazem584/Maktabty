@@ -39,25 +39,18 @@ class SelectedProductCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(product.name, style: textTheme.titleMedium),
-              TextButton(
-                onPressed: onChange,
-                child: Text(context.l10n.change),
-              ),
+              TextButton(onPressed: onChange, child: Text(context.l10n.change)),
             ],
           ),
           const SizedBox(height: AppSpacing.xs),
           Text(
             '\$${product.price.toStringAsFixed(2)}',
-            style: textTheme.bodyMedium?.copyWith(
-              color: colorScheme.outline,
-            ),
+            style: textTheme.bodyMedium?.copyWith(color: colorScheme.outline),
           ),
           const SizedBox(height: AppSpacing.xs),
           Text(
             context.l10n.inStock(product.stock),
-            style: textTheme.bodySmall?.copyWith(
-              color: colorScheme.outline,
-            ),
+            style: textTheme.bodySmall?.copyWith(color: colorScheme.outline),
           ),
         ],
       ),

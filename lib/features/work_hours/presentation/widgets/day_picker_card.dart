@@ -40,17 +40,11 @@ class DayPickerCard extends StatelessWidget {
               children: [
                 Text(context.l10n.selectDay, style: textTheme.titleMedium),
                 const SizedBox(height: AppSpacing.xs),
-                Text(
-                  dateLabel,
-                  style: textTheme.bodyMedium,
-                ),
+                Text(dateLabel, style: textTheme.bodyMedium),
               ],
             ),
           ),
-          OutlinedButton(
-            onPressed: onPick,
-            child: Text(context.l10n.pick),
-          ),
+          OutlinedButton(onPressed: onPick, child: Text(context.l10n.pick)),
         ],
       ),
     );

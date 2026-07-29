@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:maktabty/core/network/auth_interceptor.dart';
 import 'package:maktabty/core/network/auth_session_manager.dart';
+import 'package:maktabty/core/network/network_diagnostics_interceptor.dart';
 import 'package:maktabty/core/storage/token_storage.dart';
 
 class DioClient {
@@ -16,9 +17,9 @@ class DioClient {
   }) {
     final options = BaseOptions(
       baseUrl: baseUrl,
-      connectTimeout: const Duration(seconds: 20),
-      receiveTimeout: const Duration(seconds: 20),
-      sendTimeout: const Duration(seconds: 20),
+      connectTimeout: const Duration(seconds: 90),
+      receiveTimeout: const Duration(seconds: 90),
+      sendTimeout: const Duration(seconds: 90),
       headers: const {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
@@ -29,6 +30,7 @@ class DioClient {
     final dio = Dio(options);
     final refreshDio = Dio(options);
 
+    dio.interceptors.add(NetworkDiagnosticsInterceptor());
     dio.interceptors.add(
       AuthInterceptor(
         tokenStorage: tokenStorage,
@@ -36,6 +38,7 @@ class DioClient {
         sessionManager: sessionManager,
       ),
     );
+    refreshDio.interceptors.add(NetworkDiagnosticsInterceptor());
 
     return DioClient._(dio: dio, refreshDio: refreshDio);
   }

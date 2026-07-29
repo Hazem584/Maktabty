@@ -64,8 +64,7 @@ class AppToast {
 
     final lower = message.trim().toLowerCase();
 
-    if (lower == 'internal server error' ||
-        lower == 'internal server error.') {
+    if (lower == 'internal server error' || lower == 'internal server error.') {
       return context.l10n.internalServerError;
     }
     if (lower.contains('unauthorized')) {
@@ -76,6 +75,24 @@ class AppToast {
     }
     if (lower.contains('request timed out')) {
       return context.l10n.requestTimedOut;
+    }
+    if (lower.contains('api server is unreachable')) {
+      return context.l10n.apiServerUnreachable;
+    }
+    if (lower.contains('connection to the api server timed out')) {
+      return context.l10n.apiConnectionTimedOut;
+    }
+    if (lower.contains('request could not be sent in time')) {
+      return context.l10n.requestSendTimedOut;
+    }
+    if (lower.contains('api server did not respond in time')) {
+      return context.l10n.apiResponseTimedOut;
+    }
+    if (lower.contains('secure connection to the api server')) {
+      return context.l10n.apiSecureConnectionFailed;
+    }
+    if (lower.contains('server is temporarily unavailable')) {
+      return context.l10n.backendServerUnavailable;
     }
     if (lower.contains('something went wrong')) {
       return context.l10n.somethingWentWrong;

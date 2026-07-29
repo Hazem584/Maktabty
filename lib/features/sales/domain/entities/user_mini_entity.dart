@@ -1,4 +1,4 @@
-﻿class UserMiniEntity {
+class UserMiniEntity {
   final String id;
   final String fullName;
   final String email;
@@ -11,4 +11,3 @@
     required this.role,
   });
 }
-

@@ -6,12 +6,7 @@ class AppLoading extends StatelessWidget {
   final double lineWidth;
   final Color? color;
 
-  const AppLoading({
-    super.key,
-    this.size = 28,
-    this.lineWidth = 3,
-    this.color,
-  });
+  const AppLoading({super.key, this.size = 28, this.lineWidth = 3, this.color});
 
   @override
   Widget build(BuildContext context) {

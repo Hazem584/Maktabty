@@ -1,4 +1,4 @@
-﻿import 'package:maktabty/features/sales/domain/entities/product_mini_entity.dart';
+import 'package:maktabty/features/sales/domain/entities/product_mini_entity.dart';
 
 class SaleItemEntity {
   final ProductMiniEntity? product;
@@ -13,4 +13,3 @@ class SaleItemEntity {
     required this.lineTotal,
   });
 }
-

@@ -6,10 +6,7 @@ import 'package:maktabty/features/products/domain/entities/product_entity.dart';
 class EditProductScreenBody extends StatelessWidget {
   final ProductEntity product;
 
-  const EditProductScreenBody({
-    super.key,
-    required this.product,
-  });
+  const EditProductScreenBody({super.key, required this.product});
 
   @override
   Widget build(BuildContext context) {

@@ -7,10 +7,7 @@ import 'package:maktabty/features/work_hours/domain/entities/work_day.dart';
 class SavedDayTile extends StatelessWidget {
   final WorkDayEntity entry;
 
-  const SavedDayTile({
-    super.key,
-    required this.entry,
-  });
+  const SavedDayTile({super.key, required this.entry});
 
   @override
   Widget build(BuildContext context) {
@@ -40,8 +37,10 @@ class SavedDayTile extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(_formatDate(entry.date, context),
-                    style: textTheme.titleMedium),
+                Text(
+                  _formatDate(entry.date, context),
+                  style: textTheme.titleMedium,
+                ),
                 const SizedBox(height: AppSpacing.xs),
                 if (entry.user != null)
                   Text(

@@ -12,8 +12,8 @@ import 'package:maktabty/features/auth/domain/usecases/register_usecase.dart';
 import 'package:maktabty/features/auth/presentation/cubit/auth_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
-  static const Duration _loginTimeout = Duration(seconds: 20);
-  static const Duration _startupTimeout = Duration(seconds: 20);
+  static const Duration _loginTimeout = Duration(seconds: 90);
+  static const Duration _startupTimeout = Duration(seconds: 90);
 
   final LoginUseCase _loginUseCase;
   final RegisterUseCase _registerUseCase;
@@ -100,10 +100,7 @@ class AuthCubit extends Cubit<AuthState> {
   Future<void> login({required String email, required String password}) async {
     emit(AuthState.loading());
     try {
-      final user = await _loginUseCase(
-        email: email,
-        password: password,
-      ).timeout(_loginTimeout);
+      final user = await _loginUseCase(email: email, password: password);
       emit(AuthState.authenticated(user));
     } on ApiException catch (error) {
       emit(AuthState.failure(error.message));

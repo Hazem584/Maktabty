@@ -16,9 +16,9 @@ class ProductsListCubit extends Cubit<ProductsListState> {
   ProductsListCubit({
     required GetProductsUseCase getProductsUseCase,
     required DeleteProductUseCase deleteProductUseCase,
-  })  : _getProductsUseCase = getProductsUseCase,
-        _deleteProductUseCase = deleteProductUseCase,
-        super(ProductsListState.initial());
+  }) : _getProductsUseCase = getProductsUseCase,
+       _deleteProductUseCase = deleteProductUseCase,
+       super(ProductsListState.initial());
 
   void loadInitial() {
     if (_initialized) return;
@@ -63,16 +63,20 @@ class ProductsListCubit extends Cubit<ProductsListState> {
       await _fetch(page: 1, replace: true, showLoading: false);
       return true;
     } on ApiException catch (error) {
-      emit(state.copyWith(
-        status: ProductsListStatus.failure,
-        errorMessage: mapProductError(error),
-      ));
+      emit(
+        state.copyWith(
+          status: ProductsListStatus.failure,
+          errorMessage: mapProductError(error),
+        ),
+      );
       return false;
     } catch (_) {
-      emit(state.copyWith(
-        status: ProductsListStatus.failure,
-        errorMessage: 'Something went wrong. Please try again.',
-      ));
+      emit(
+        state.copyWith(
+          status: ProductsListStatus.failure,
+          errorMessage: 'Something went wrong. Please try again.',
+        ),
+      );
       return false;
     }
   }
@@ -87,10 +91,9 @@ class ProductsListCubit extends Cubit<ProductsListState> {
     if (isClosed) return;
     if (showLoading) {
       if (isClosed) return;
-      emit(state.copyWith(
-        status: ProductsListStatus.loading,
-        errorMessage: null,
-      ));
+      emit(
+        state.copyWith(status: ProductsListStatus.loading, errorMessage: null),
+      );
     } else if (refreshing) {
       if (isClosed) return;
       emit(state.copyWith(isRefreshing: true, errorMessage: null));
@@ -112,33 +115,39 @@ class ProductsListCubit extends Cubit<ProductsListState> {
           : [...state.products, ...response.items];
 
       if (isClosed) return;
-      emit(state.copyWith(
-        status: ProductsListStatus.success,
-        products: updated,
-        page: response.page,
-        limit: response.limit,
-        total: response.total,
-        isLoadingMore: false,
-        isRefreshing: false,
-        errorMessage: null,
-      ));
+      emit(
+        state.copyWith(
+          status: ProductsListStatus.success,
+          products: updated,
+          page: response.page,
+          limit: response.limit,
+          total: response.total,
+          isLoadingMore: false,
+          isRefreshing: false,
+          errorMessage: null,
+        ),
+      );
     } on ApiException catch (error) {
       final message = mapProductError(error);
       if (isClosed) return;
-      emit(state.copyWith(
-        status: ProductsListStatus.failure,
-        isLoadingMore: false,
-        isRefreshing: false,
-        errorMessage: message,
-      ));
+      emit(
+        state.copyWith(
+          status: ProductsListStatus.failure,
+          isLoadingMore: false,
+          isRefreshing: false,
+          errorMessage: message,
+        ),
+      );
     } catch (_) {
       if (isClosed) return;
-      emit(state.copyWith(
-        status: ProductsListStatus.failure,
-        isLoadingMore: false,
-        isRefreshing: false,
-        errorMessage: 'Something went wrong. Please try again.',
-      ));
+      emit(
+        state.copyWith(
+          status: ProductsListStatus.failure,
+          isLoadingMore: false,
+          isRefreshing: false,
+          errorMessage: 'Something went wrong. Please try again.',
+        ),
+      );
     }
   }
 

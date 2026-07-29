@@ -9,22 +9,15 @@ import 'package:maktabty/features/products/presentation/cubit/product_form_cubit
 class EditProductScreen extends StatelessWidget {
   final ProductEntity product;
 
-  const EditProductScreen({
-    super.key,
-    required this.product,
-  });
+  const EditProductScreen({super.key, required this.product});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider<ProductFormCubit>(
       create: (_) => sl<ProductFormCubit>(),
       child: Scaffold(
-        appBar: AppBar(
-          title: Text(context.l10n.editProduct),
-        ),
-        body: SafeArea(
-          child: EditProductScreenBody(product: product),
-        ),
+        appBar: AppBar(title: Text(context.l10n.editProduct)),
+        body: SafeArea(child: EditProductScreenBody(product: product)),
       ),
     );
   }

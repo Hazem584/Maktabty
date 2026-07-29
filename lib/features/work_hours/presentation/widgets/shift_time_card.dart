@@ -51,10 +51,7 @@ class ShiftTimeCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(title, style: textTheme.titleMedium),
-              Switch(
-                value: worked,
-                onChanged: onToggleWorked,
-              ),
+              Switch(value: worked, onChanged: onToggleWorked),
             ],
           ),
           const SizedBox(height: AppSpacing.s),

@@ -6,11 +6,7 @@ class ScanCodeCard extends StatelessWidget {
   final String? code;
   final Future<void> Function() onScan;
 
-  const ScanCodeCard({
-    super.key,
-    required this.code,
-    required this.onScan,
-  });
+  const ScanCodeCard({super.key, required this.code, required this.onScan});
 
   @override
   Widget build(BuildContext context) {

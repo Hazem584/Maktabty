@@ -1,4 +1,4 @@
-﻿import 'package:maktabty/features/sales/domain/entities/today_sales_response_entity.dart';
+import 'package:maktabty/features/sales/domain/entities/today_sales_response_entity.dart';
 import 'package:maktabty/features/sales/domain/repositories/sales_repository.dart';
 
 class GetTodaySalesUseCase {
@@ -10,4 +10,3 @@ class GetTodaySalesUseCase {
     return _repository.getTodaySales(date: date);
   }
 }
-

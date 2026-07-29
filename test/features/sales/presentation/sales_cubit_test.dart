@@ -26,8 +26,10 @@ import 'package:maktabty/features/sales/presentation/cubit/today_sales_state.dar
 class MockCreateSaleUseCase extends Mock implements CreateSaleUseCase {}
 
 class MockGetTodaySalesUseCase extends Mock implements GetTodaySalesUseCase {}
+
 class MockGetReceiptForSaleUseCase extends Mock
     implements GetReceiptForSaleUseCase {}
+
 class MockDeleteSaleUseCase extends Mock implements DeleteSaleUseCase {}
 
 void main() {
@@ -68,12 +70,8 @@ void main() {
 
   final response = SaleResponseEntity(sale: sale, receipt: receipt);
 
-  final itemsForSuccess = [
-    const SaleItemInput(productId: 'p1', quantity: 2),
-  ];
-  final itemsForFailure = [
-    const SaleItemInput(productId: 'p1', quantity: 1),
-  ];
+  final itemsForSuccess = [const SaleItemInput(productId: 'p1', quantity: 2)];
+  final itemsForFailure = [const SaleItemInput(productId: 'p1', quantity: 1)];
 
   group('CreateSaleCubit', () {
     late MockCreateSaleUseCase useCase;
@@ -156,7 +154,10 @@ void main() {
       build: () {
         final response = TodaySalesResponseEntity(
           data: [sale],
-          summary: const TodaySalesSummaryEntity(totalAmount: 10, itemsCount: 2),
+          summary: const TodaySalesSummaryEntity(
+            totalAmount: 10,
+            itemsCount: 2,
+          ),
         );
         when(() => useCase(date: null)).thenAnswer((_) async => response);
         return TodaySalesCubit(
@@ -183,8 +184,9 @@ void main() {
     blocTest<TodaySalesCubit, TodaySalesState>(
       'emits failure on ApiException',
       build: () {
-        when(() => useCase(date: null))
-            .thenThrow(const ApiException('Unauthorized', statusCode: 401));
+        when(
+          () => useCase(date: null),
+        ).thenThrow(const ApiException('Unauthorized', statusCode: 401));
         return TodaySalesCubit(
           getTodaySalesUseCase: useCase,
           getReceiptForSaleUseCase: receiptUseCase,

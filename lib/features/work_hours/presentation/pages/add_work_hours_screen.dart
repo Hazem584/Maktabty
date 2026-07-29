@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:maktabty/core/di/service_locator.dart';
 import 'package:maktabty/core/localization/l10n_ext.dart';
@@ -13,12 +13,8 @@ class AddWorkHoursScreen extends StatelessWidget {
     return BlocProvider<WorkHoursCubit>(
       create: (_) => sl<WorkHoursCubit>(),
       child: Scaffold(
-        appBar: AppBar(
-          title: Text(context.l10n.workHours),
-        ),
-        body: const SafeArea(
-          child: AddWorkHoursScreenBody(),
-        ),
+        appBar: AppBar(title: Text(context.l10n.workHours)),
+        body: const SafeArea(child: AddWorkHoursScreenBody()),
       ),
     );
   }

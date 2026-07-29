@@ -63,10 +63,7 @@ class SaleListItem extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      name,
-                      style: textTheme.titleMedium,
-                    ),
+                    Text(name, style: textTheme.titleMedium),
                     const SizedBox(height: AppSpacing.xs),
                     Text(
                       price,

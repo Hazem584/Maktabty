@@ -67,9 +67,7 @@ class ScanCodeCard extends StatelessWidget {
             const SizedBox(height: AppSpacing.s),
             Text(
               message!,
-              style: textTheme.bodySmall?.copyWith(
-                color: colorScheme.error,
-              ),
+              style: textTheme.bodySmall?.copyWith(color: colorScheme.error),
             ),
           ],
           const SizedBox(height: AppSpacing.s),

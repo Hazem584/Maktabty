@@ -61,11 +61,7 @@ class _LoginScreenState extends State<LoginScreen> {
           final lower = rawMessage.toLowerCase();
           final message = lower.contains('invalid email or password')
               ? context.l10n.invalidEmailOrPassword
-              : lower.contains('request timed out')
-                  ? context.l10n.requestTimedOut
-                  : lower.contains('no internet')
-                      ? context.l10n.noInternet
-                      : rawMessage;
+              : context.localizeAppError(rawMessage);
           AppToast.show(message);
         }
 

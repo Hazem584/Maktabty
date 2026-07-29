@@ -145,10 +145,7 @@ class _SellProductScreenBodyState extends State<SellProductScreenBody> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ScanOrSearchToggle(
-              mode: _mode,
-              onModeChanged: _onModeChanged,
-            ),
+            ScanOrSearchToggle(mode: _mode, onModeChanged: _onModeChanged),
             const SizedBox(height: AppSpacing.l),
             if (_mode == SellMode.scan) ...[
               ScanCodeCard(

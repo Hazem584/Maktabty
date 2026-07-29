@@ -55,8 +55,10 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
                 ),
               ),
               const SizedBox(height: AppSpacing.m),
-              Text(context.l10n.accountSettings,
-                  style: textTheme.headlineSmall),
+              Text(
+                context.l10n.accountSettings,
+                style: textTheme.headlineSmall,
+              ),
               const SizedBox(height: AppSpacing.xs),
               Text(
                 context.l10n.updateEmailPassword,

@@ -129,9 +129,7 @@ class _PaymentSelectionSheetState extends State<PaymentSelectionSheet> {
                 keyboardType: const TextInputType.numberWithOptions(
                   decimal: true,
                 ),
-                decoration: InputDecoration(
-                  labelText: l10n.paidAmountLabel,
-                ),
+                decoration: InputDecoration(labelText: l10n.paidAmountLabel),
                 onChanged: (value) => widget.onPaidChanged(_parse(value)),
               ),
               if (_discountValue != null) ...[
@@ -151,9 +149,7 @@ class _PaymentSelectionSheetState extends State<PaymentSelectionSheet> {
                 keyboardType: const TextInputType.numberWithOptions(
                   decimal: true,
                 ),
-                decoration: InputDecoration(
-                  labelText: l10n.cashAmountLabel,
-                ),
+                decoration: InputDecoration(labelText: l10n.cashAmountLabel),
                 onChanged: (value) => widget.onCashChanged(_parse(value)),
               ),
               const SizedBox(height: AppSpacing.s),
@@ -162,9 +158,7 @@ class _PaymentSelectionSheetState extends State<PaymentSelectionSheet> {
                 keyboardType: const TextInputType.numberWithOptions(
                   decimal: true,
                 ),
-                decoration: InputDecoration(
-                  labelText: l10n.cardAmountLabel,
-                ),
+                decoration: InputDecoration(labelText: l10n.cardAmountLabel),
                 onChanged: (value) => widget.onCardChanged(_parse(value)),
               ),
               if (_discountValue != null) ...[

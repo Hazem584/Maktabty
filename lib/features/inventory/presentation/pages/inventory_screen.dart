@@ -8,12 +8,8 @@ class InventoryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(context.l10n.inventory),
-      ),
-      body: const SafeArea(
-        child: InventoryScreenBody(),
-      ),
+      appBar: AppBar(title: Text(context.l10n.inventory)),
+      body: const SafeArea(child: InventoryScreenBody()),
     );
   }
 }

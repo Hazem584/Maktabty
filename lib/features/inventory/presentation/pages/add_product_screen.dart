@@ -13,12 +13,8 @@ class AddProductScreen extends StatelessWidget {
     return BlocProvider<ProductFormCubit>(
       create: (_) => sl<ProductFormCubit>(),
       child: Scaffold(
-        appBar: AppBar(
-        title: Text(context.l10n.addProduct),
-        ),
-        body: const SafeArea(
-          child: AddProductScreenBody(),
-        ),
+        appBar: AppBar(title: Text(context.l10n.addProduct)),
+        body: const SafeArea(child: AddProductScreenBody()),
       ),
     );
   }

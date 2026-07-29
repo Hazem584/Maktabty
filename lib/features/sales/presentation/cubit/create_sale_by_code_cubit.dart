@@ -8,15 +8,13 @@ import 'package:maktabty/features/sales/presentation/cubit/sales_error_mapper.da
 class CreateSaleByCodeCubit extends Cubit<CreateSaleByCodeState> {
   final CreateSaleByCodeUseCase _createSaleByCodeUseCase;
 
-  CreateSaleByCodeCubit({required CreateSaleByCodeUseCase createSaleByCodeUseCase})
-      : _createSaleByCodeUseCase = createSaleByCodeUseCase,
-        super(CreateSaleByCodeState.initial());
+  CreateSaleByCodeCubit({
+    required CreateSaleByCodeUseCase createSaleByCodeUseCase,
+  }) : _createSaleByCodeUseCase = createSaleByCodeUseCase,
+       super(CreateSaleByCodeState.initial());
 
   void setPaymentMethod(PaymentMethod method) {
-    emit(state.copyWith(
-      paymentMethod: method,
-      clearAmounts: true,
-    ));
+    emit(state.copyWith(paymentMethod: method, clearAmounts: true));
   }
 
   void setPaidAmount(double? value) {
@@ -49,21 +47,27 @@ class CreateSaleByCodeCubit extends Cubit<CreateSaleByCodeState> {
         cashAmount: state.cashAmount,
         cardAmount: state.cardAmount,
       );
-      emit(state.copyWith(
-        status: CreateSaleByCodeStatus.success,
-        response: response,
-        lastReceipt: response.receipt,
-      ));
+      emit(
+        state.copyWith(
+          status: CreateSaleByCodeStatus.success,
+          response: response,
+          lastReceipt: response.receipt,
+        ),
+      );
     } on ApiException catch (error) {
-      emit(state.copyWith(
-        status: CreateSaleByCodeStatus.failure,
-        message: mapSalesError(error),
-      ));
+      emit(
+        state.copyWith(
+          status: CreateSaleByCodeStatus.failure,
+          message: mapSalesError(error),
+        ),
+      );
     } catch (_) {
-      emit(state.copyWith(
-        status: CreateSaleByCodeStatus.failure,
-        message: 'Something went wrong. Please try again.',
-      ));
+      emit(
+        state.copyWith(
+          status: CreateSaleByCodeStatus.failure,
+          message: 'Something went wrong. Please try again.',
+        ),
+      );
     }
   }
 

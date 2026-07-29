@@ -6,10 +6,7 @@ import 'package:maktabty/features/sales/domain/entities/sale_entity.dart';
 class SaleResultCard extends StatelessWidget {
   final SaleEntity sale;
 
-  const SaleResultCard({
-    super.key,
-    required this.sale,
-  });
+  const SaleResultCard({super.key, required this.sale});
 
   @override
   Widget build(BuildContext context) {
@@ -37,16 +34,12 @@ class SaleResultCard extends StatelessWidget {
           const SizedBox(height: AppSpacing.s),
           Text(
             '${context.l10n.idLabel}: ${_shortId(sale.id)}',
-            style: textTheme.bodySmall?.copyWith(
-              color: colorScheme.outline,
-            ),
+            style: textTheme.bodySmall?.copyWith(color: colorScheme.outline),
           ),
           const SizedBox(height: AppSpacing.s),
           Text(
             '${context.l10n.totalLabel}: \$${sale.totalAmount.toStringAsFixed(2)}',
-            style: textTheme.titleMedium?.copyWith(
-              color: colorScheme.primary,
-            ),
+            style: textTheme.titleMedium?.copyWith(color: colorScheme.primary),
           ),
           const SizedBox(height: AppSpacing.m),
           Text(context.l10n.itemsLabel, style: textTheme.titleSmall),
@@ -54,9 +47,7 @@ class SaleResultCard extends StatelessWidget {
           if (sale.items.isEmpty)
             Text(
               context.l10n.noItemsAvailable,
-              style: textTheme.bodySmall?.copyWith(
-                color: colorScheme.outline,
-              ),
+              style: textTheme.bodySmall?.copyWith(color: colorScheme.outline),
             )
           else
             ...sale.items.map((item) {
@@ -92,4 +83,3 @@ class SaleResultCard extends StatelessWidget {
     return id.substring(0, 8);
   }
 }
-

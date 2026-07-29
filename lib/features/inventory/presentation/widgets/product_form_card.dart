@@ -61,7 +61,10 @@ class ProductFormCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: AppSpacing.m),
-          Text(context.l10n.quantity, style: Theme.of(context).textTheme.titleMedium),
+          Text(
+            context.l10n.quantity,
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
           const SizedBox(height: AppSpacing.s),
           QuantityStepper(
             quantity: stock,

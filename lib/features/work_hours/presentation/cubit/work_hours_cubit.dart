@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:maktabty/core/network/api_exceptions.dart';
 import 'package:maktabty/features/work_hours/domain/usecases/get_work_hours_by_date.dart';
@@ -12,16 +12,15 @@ class WorkHoursCubit extends Cubit<WorkHoursState> {
   WorkHoursCubit({
     required UpsertWorkDayUseCase upsertWorkDayUseCase,
     required GetWorkHoursByDateUseCase getWorkHoursByDateUseCase,
-  })  : _upsertWorkDayUseCase = upsertWorkDayUseCase,
-        _getWorkHoursByDateUseCase = getWorkHoursByDateUseCase,
-        super(WorkHoursState.initial());
+  }) : _upsertWorkDayUseCase = upsertWorkDayUseCase,
+       _getWorkHoursByDateUseCase = getWorkHoursByDateUseCase,
+       super(WorkHoursState.initial());
 
   Future<void> loadByDate({required DateTime date, String? userId}) async {
     if (isClosed) return;
-    emit(state.copyWith(
-      loadStatus: WorkHoursStatus.loading,
-      loadMessage: null,
-    ));
+    emit(
+      state.copyWith(loadStatus: WorkHoursStatus.loading, loadMessage: null),
+    );
 
     try {
       final result = await _getWorkHoursByDateUseCase(
@@ -29,22 +28,23 @@ class WorkHoursCubit extends Cubit<WorkHoursState> {
         userId: userId,
       );
       if (isClosed) return;
-      emit(state.copyWith(
-        loadStatus: WorkHoursStatus.success,
-        items: result,
-      ));
+      emit(state.copyWith(loadStatus: WorkHoursStatus.success, items: result));
     } on ApiException catch (error) {
       if (isClosed) return;
-      emit(state.copyWith(
-        loadStatus: WorkHoursStatus.failure,
-        loadMessage: _mapError(error),
-      ));
+      emit(
+        state.copyWith(
+          loadStatus: WorkHoursStatus.failure,
+          loadMessage: _mapError(error),
+        ),
+      );
     } catch (_) {
       if (isClosed) return;
-      emit(state.copyWith(
-        loadStatus: WorkHoursStatus.failure,
-        loadMessage: 'Something went wrong. Please try again.',
-      ));
+      emit(
+        state.copyWith(
+          loadStatus: WorkHoursStatus.failure,
+          loadMessage: 'Something went wrong. Please try again.',
+        ),
+      );
     }
   }
 
@@ -57,27 +57,30 @@ class WorkHoursCubit extends Cubit<WorkHoursState> {
   }) async {
     if ((shift1Start != null && shift1End == null) ||
         (shift1Start == null && shift1End != null)) {
-      emit(state.copyWith(
-        saveStatus: WorkHoursStatus.failure,
-        saveMessage: 'Shift 1 requires both start and end time.',
-      ));
+      emit(
+        state.copyWith(
+          saveStatus: WorkHoursStatus.failure,
+          saveMessage: 'Shift 1 requires both start and end time.',
+        ),
+      );
       return;
     }
     if ((shift2Start != null && shift2End == null) ||
         (shift2Start == null && shift2End != null)) {
       if (isClosed) return;
-      emit(state.copyWith(
-        saveStatus: WorkHoursStatus.failure,
-        saveMessage: 'Shift 2 requires both start and end time.',
-      ));
+      emit(
+        state.copyWith(
+          saveStatus: WorkHoursStatus.failure,
+          saveMessage: 'Shift 2 requires both start and end time.',
+        ),
+      );
       return;
     }
 
     if (isClosed) return;
-    emit(state.copyWith(
-      saveStatus: WorkHoursStatus.loading,
-      saveMessage: null,
-    ));
+    emit(
+      state.copyWith(saveStatus: WorkHoursStatus.loading, saveMessage: null),
+    );
 
     try {
       await _upsertWorkDayUseCase(
@@ -93,16 +96,20 @@ class WorkHoursCubit extends Cubit<WorkHoursState> {
       await loadByDate(date: date);
     } on ApiException catch (error) {
       if (isClosed) return;
-      emit(state.copyWith(
-        saveStatus: WorkHoursStatus.failure,
-        saveMessage: _mapError(error),
-      ));
+      emit(
+        state.copyWith(
+          saveStatus: WorkHoursStatus.failure,
+          saveMessage: _mapError(error),
+        ),
+      );
     } catch (_) {
       if (isClosed) return;
-      emit(state.copyWith(
-        saveStatus: WorkHoursStatus.failure,
-        saveMessage: 'Something went wrong. Please try again.',
-      ));
+      emit(
+        state.copyWith(
+          saveStatus: WorkHoursStatus.failure,
+          saveMessage: 'Something went wrong. Please try again.',
+        ),
+      );
     }
   }
 

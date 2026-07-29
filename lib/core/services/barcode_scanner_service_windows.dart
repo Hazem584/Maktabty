@@ -29,9 +29,7 @@ class WindowsBarcodeScannerService implements BarcodeScannerService {
                 onSubmitted: (value) {
                   Navigator.of(dialogContext).pop(value);
                 },
-                decoration: InputDecoration(
-                  labelText: l10n.scanBarcodeTitle,
-                ),
+                decoration: InputDecoration(labelText: l10n.scanBarcodeTitle),
               ),
             ],
           ),

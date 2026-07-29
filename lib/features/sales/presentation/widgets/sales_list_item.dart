@@ -8,11 +8,7 @@ class SalesListItem extends StatelessWidget {
   final SaleEntity sale;
   final VoidCallback? onTap;
 
-  const SalesListItem({
-    super.key,
-    required this.sale,
-    this.onTap,
-  });
+  const SalesListItem({super.key, required this.sale, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -109,5 +105,4 @@ class SalesListItem extends StatelessWidget {
       ),
     );
   }
-
 }

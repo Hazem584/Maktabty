@@ -85,10 +85,7 @@ class _SummaryCard extends StatelessWidget {
         children: [
           Text(title, style: textTheme.bodySmall),
           const SizedBox(height: AppSpacing.xs),
-          Text(
-            value,
-            style: textTheme.titleMedium?.copyWith(color: accent),
-          ),
+          Text(value, style: textTheme.titleMedium?.copyWith(color: accent)),
         ],
       ),
     );

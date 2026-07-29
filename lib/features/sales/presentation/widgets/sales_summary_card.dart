@@ -52,8 +52,10 @@ class SalesSummaryCard extends StatelessWidget {
             children: [
               Text(context.l10n.itemsSold, style: textTheme.bodySmall),
               const SizedBox(height: AppSpacing.xs),
-              Text('$itemsSold ${context.l10n.items}',
-                  style: textTheme.titleMedium),
+              Text(
+                '$itemsSold ${context.l10n.items}',
+                style: textTheme.titleMedium,
+              ),
             ],
           ),
         ],

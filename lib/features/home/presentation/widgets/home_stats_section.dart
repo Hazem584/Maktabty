@@ -5,10 +5,7 @@ import 'package:maktabty/features/home/presentation/widgets/home_stat_card.dart'
 class HomeStatsSection extends StatelessWidget {
   final List<HomeStatItem> items;
 
-  const HomeStatsSection({
-    super.key,
-    required this.items,
-  });
+  const HomeStatsSection({super.key, required this.items});
 
   @override
   Widget build(BuildContext context) {

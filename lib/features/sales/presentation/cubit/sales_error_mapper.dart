@@ -1,4 +1,4 @@
-﻿import 'package:maktabty/core/network/api_exceptions.dart';
+import 'package:maktabty/core/network/api_exceptions.dart';
 
 String mapSalesError(ApiException error) {
   final status = error.statusCode;
@@ -16,4 +16,3 @@ String mapSalesError(ApiException error) {
   }
   return error.message;
 }
-

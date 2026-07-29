@@ -10,14 +10,11 @@ class CreateSaleCubit extends Cubit<CreateSaleState> {
   final CreateSaleUseCase _createSaleUseCase;
 
   CreateSaleCubit({required CreateSaleUseCase createSaleUseCase})
-      : _createSaleUseCase = createSaleUseCase,
-        super(CreateSaleState.initial());
+    : _createSaleUseCase = createSaleUseCase,
+      super(CreateSaleState.initial());
 
   void setPaymentMethod(PaymentMethod method) {
-    emit(state.copyWith(
-      paymentMethod: method,
-      clearAmounts: true,
-    ));
+    emit(state.copyWith(paymentMethod: method, clearAmounts: true));
   }
 
   void setPaidAmount(double? value) {
@@ -44,21 +41,27 @@ class CreateSaleCubit extends Cubit<CreateSaleState> {
         cashAmount: state.cashAmount,
         cardAmount: state.cardAmount,
       );
-      emit(state.copyWith(
-        status: CreateSaleStatus.success,
-        response: response,
-        lastReceipt: response.receipt,
-      ));
+      emit(
+        state.copyWith(
+          status: CreateSaleStatus.success,
+          response: response,
+          lastReceipt: response.receipt,
+        ),
+      );
     } on ApiException catch (error) {
-      emit(state.copyWith(
-        status: CreateSaleStatus.failure,
-        message: mapSalesError(error),
-      ));
+      emit(
+        state.copyWith(
+          status: CreateSaleStatus.failure,
+          message: mapSalesError(error),
+        ),
+      );
     } catch (_) {
-      emit(state.copyWith(
-        status: CreateSaleStatus.failure,
-        message: 'Something went wrong. Please try again.',
-      ));
+      emit(
+        state.copyWith(
+          status: CreateSaleStatus.failure,
+          message: 'Something went wrong. Please try again.',
+        ),
+      );
     }
   }
 

@@ -58,7 +58,7 @@ class PrinterSettingsStorage {
   final FlutterSecureStorage _storage;
 
   PrinterSettingsStorage({FlutterSecureStorage? storage})
-      : _storage = storage ?? const FlutterSecureStorage();
+    : _storage = storage ?? const FlutterSecureStorage();
 
   Future<PrinterSettings> load() async {
     final raw = await _storage.read(key: _key);
@@ -71,9 +71,7 @@ class PrinterSettingsStorage {
         return PrinterSettings.fromJson(decoded);
       }
       if (decoded is Map) {
-        return PrinterSettings.fromJson(
-          Map<String, dynamic>.from(decoded),
-        );
+        return PrinterSettings.fromJson(Map<String, dynamic>.from(decoded));
       }
     } catch (_) {}
     return PrinterSettings.defaults();

@@ -5,8 +5,5 @@ class SaleResponseEntity {
   final SaleEntity sale;
   final ReceiptEntity receipt;
 
-  const SaleResponseEntity({
-    required this.sale,
-    required this.receipt,
-  });
+  const SaleResponseEntity({required this.sale, required this.receipt});
 }

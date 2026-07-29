@@ -551,6 +551,30 @@ class AppLocalizationsAr extends AppLocalizations {
   String get requestTimedOut => 'انتهت مهلة الطلب.';
 
   @override
+  String get apiServerUnreachable =>
+      'يتعذّر الوصول إلى خادم الواجهة البرمجية. حاول مرة أخرى لاحقًا.';
+
+  @override
+  String get apiConnectionTimedOut =>
+      'انتهت مهلة الاتصال بخادم الواجهة البرمجية. حاول مرة أخرى.';
+
+  @override
+  String get requestSendTimedOut =>
+      'تعذّر إرسال الطلب في الوقت المحدد. حاول مرة أخرى.';
+
+  @override
+  String get apiResponseTimedOut =>
+      'لم يستجب خادم الواجهة البرمجية في الوقت المحدد. حاول مرة أخرى.';
+
+  @override
+  String get apiSecureConnectionFailed =>
+      'تعذّر إنشاء اتصال آمن بخادم الواجهة البرمجية.';
+
+  @override
+  String get backendServerUnavailable =>
+      'الخادم غير متاح مؤقتًا. حاول مرة أخرى.';
+
+  @override
   String get noPermission => 'ليست لديك صلاحية.';
 
   @override

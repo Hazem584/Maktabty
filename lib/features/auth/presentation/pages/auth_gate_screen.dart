@@ -167,6 +167,6 @@ class _AuthGateScreenState extends State<AuthGateScreen> {
       return context.l10n.unableToVerifySession;
     }
 
-    return rawMessage;
+    return context.localizeAppError(rawMessage);
   }
 }

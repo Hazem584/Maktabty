@@ -5,19 +5,11 @@ import 'package:maktabty/core/localization/l10n_ext.dart';
 class BarcodeScannerPage extends StatefulWidget {
   final String? title;
 
-  const BarcodeScannerPage({
-    super.key,
-    this.title,
-  });
+  const BarcodeScannerPage({super.key, this.title});
 
-  static Future<String?> scan(
-    BuildContext context, {
-    String? title,
-  }) {
+  static Future<String?> scan(BuildContext context, {String? title}) {
     return Navigator.of(context).push<String>(
-      MaterialPageRoute(
-        builder: (_) => BarcodeScannerPage(title: title),
-      ),
+      MaterialPageRoute(builder: (_) => BarcodeScannerPage(title: title)),
     );
   }
 
@@ -77,10 +69,7 @@ class _BarcodeScannerPageState extends State<BarcodeScannerPage> {
       ),
       body: Stack(
         children: [
-          MobileScanner(
-            controller: _controller,
-            onDetect: _handleDetection,
-          ),
+          MobileScanner(controller: _controller, onDetect: _handleDetection),
           Positioned(
             left: 16,
             right: 16,

@@ -550,6 +550,30 @@ class AppLocalizationsEn extends AppLocalizations {
   String get requestTimedOut => 'Request timed out. Please try again.';
 
   @override
+  String get apiServerUnreachable =>
+      'The API server is unreachable. Please try again later.';
+
+  @override
+  String get apiConnectionTimedOut =>
+      'Connection to the API server timed out. Please try again.';
+
+  @override
+  String get requestSendTimedOut =>
+      'The request could not be sent in time. Please try again.';
+
+  @override
+  String get apiResponseTimedOut =>
+      'The API server did not respond in time. Please try again.';
+
+  @override
+  String get apiSecureConnectionFailed =>
+      'Could not establish a secure connection to the API server.';
+
+  @override
+  String get backendServerUnavailable =>
+      'The server is temporarily unavailable. Please try again.';
+
+  @override
   String get noPermission => 'You don\'t have permission.';
 
   @override

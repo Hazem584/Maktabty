@@ -1166,6 +1166,42 @@ abstract class AppLocalizations {
   /// **'Request timed out. Please try again.'**
   String get requestTimedOut;
 
+  /// No description provided for @apiServerUnreachable.
+  ///
+  /// In en, this message translates to:
+  /// **'The API server is unreachable. Please try again later.'**
+  String get apiServerUnreachable;
+
+  /// No description provided for @apiConnectionTimedOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection to the API server timed out. Please try again.'**
+  String get apiConnectionTimedOut;
+
+  /// No description provided for @requestSendTimedOut.
+  ///
+  /// In en, this message translates to:
+  /// **'The request could not be sent in time. Please try again.'**
+  String get requestSendTimedOut;
+
+  /// No description provided for @apiResponseTimedOut.
+  ///
+  /// In en, this message translates to:
+  /// **'The API server did not respond in time. Please try again.'**
+  String get apiResponseTimedOut;
+
+  /// No description provided for @apiSecureConnectionFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not establish a secure connection to the API server.'**
+  String get apiSecureConnectionFailed;
+
+  /// No description provided for @backendServerUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'The server is temporarily unavailable. Please try again.'**
+  String get backendServerUnavailable;
+
   /// No description provided for @noPermission.
   ///
   /// In en, this message translates to:

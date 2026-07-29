@@ -41,15 +41,9 @@ class QuantitySelector extends StatelessWidget {
                   color: Theme.of(context).colorScheme.outlineVariant,
                 ),
               ),
-              child: Text(
-                '$quantity',
-                style: textTheme.titleMedium,
-              ),
+              child: Text('$quantity', style: textTheme.titleMedium),
             ),
-            _StepButton(
-              icon: Icons.add,
-              onPressed: onIncrement,
-            ),
+            _StepButton(icon: Icons.add, onPressed: onIncrement),
           ],
         ),
       ],
@@ -61,10 +55,7 @@ class _StepButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback? onPressed;
 
-  const _StepButton({
-    required this.icon,
-    required this.onPressed,
-  });
+  const _StepButton({required this.icon, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {

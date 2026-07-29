@@ -6,7 +6,7 @@ class LocaleStorage {
   final FlutterSecureStorage _storage;
 
   LocaleStorage({FlutterSecureStorage? storage})
-      : _storage = storage ?? const FlutterSecureStorage();
+    : _storage = storage ?? const FlutterSecureStorage();
 
   Future<void> saveLocaleCode(String code) {
     return _storage.write(key: _localeKey, value: code);

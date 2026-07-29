@@ -1,4 +1,4 @@
-﻿import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:maktabty/core/network/api_exceptions.dart';
 import 'package:maktabty/features/sales/domain/entities/receipt_entity.dart';
 import 'package:maktabty/features/sales/domain/entities/sale_entity.dart';
@@ -19,10 +19,10 @@ class TodaySalesCubit extends Cubit<TodaySalesState> {
     required GetTodaySalesUseCase getTodaySalesUseCase,
     required GetReceiptForSaleUseCase getReceiptForSaleUseCase,
     required DeleteSaleUseCase deleteSaleUseCase,
-  })  : _getTodaySalesUseCase = getTodaySalesUseCase,
-        _getReceiptForSaleUseCase = getReceiptForSaleUseCase,
-        _deleteSaleUseCase = deleteSaleUseCase,
-        super(TodaySalesState.initial());
+  }) : _getTodaySalesUseCase = getTodaySalesUseCase,
+       _getReceiptForSaleUseCase = getReceiptForSaleUseCase,
+       _deleteSaleUseCase = deleteSaleUseCase,
+       super(TodaySalesState.initial());
 
   Future<void> load({String? date}) async {
     if (state.status == TodaySalesStatus.loading) return;
@@ -32,22 +32,25 @@ class TodaySalesCubit extends Cubit<TodaySalesState> {
     try {
       final response = await _getTodaySalesUseCase(date: date);
       if (isClosed) return;
-      emit(state.copyWith(
-        status: TodaySalesStatus.success,
-        response: response,
-      ));
+      emit(
+        state.copyWith(status: TodaySalesStatus.success, response: response),
+      );
     } on ApiException catch (error) {
       if (isClosed) return;
-      emit(state.copyWith(
-        status: TodaySalesStatus.failure,
-        message: mapSalesError(error),
-      ));
+      emit(
+        state.copyWith(
+          status: TodaySalesStatus.failure,
+          message: mapSalesError(error),
+        ),
+      );
     } catch (_) {
       if (isClosed) return;
-      emit(state.copyWith(
-        status: TodaySalesStatus.failure,
-        message: 'Something went wrong. Please try again.',
-      ));
+      emit(
+        state.copyWith(
+          status: TodaySalesStatus.failure,
+          message: 'Something went wrong. Please try again.',
+        ),
+      );
     }
   }
 
@@ -88,8 +91,9 @@ class TodaySalesCubit extends Cubit<TodaySalesState> {
     }
     if (removedSale == null) return;
 
-    final updatedSales =
-        response.data.where((sale) => sale.id != saleId).toList();
+    final updatedSales = response.data
+        .where((sale) => sale.id != saleId)
+        .toList();
     final totalAmountRaw =
         response.summary.totalAmount - removedSale.totalAmount;
     final totalAmount = totalAmountRaw < 0 ? 0.0 : totalAmountRaw;
@@ -103,15 +107,16 @@ class TodaySalesCubit extends Cubit<TodaySalesState> {
       if (itemsCount < 0) itemsCount = 0;
     }
 
-    emit(state.copyWith(
-      response: TodaySalesResponseEntity(
-        data: updatedSales,
-        summary: TodaySalesSummaryEntity(
-          totalAmount: totalAmount,
-          itemsCount: itemsCount,
+    emit(
+      state.copyWith(
+        response: TodaySalesResponseEntity(
+          data: updatedSales,
+          summary: TodaySalesSummaryEntity(
+            totalAmount: totalAmount,
+            itemsCount: itemsCount,
+          ),
         ),
       ),
-    ));
+    );
   }
 }
-

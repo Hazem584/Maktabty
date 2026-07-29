@@ -27,9 +27,7 @@ class EmptySalesState extends StatelessWidget {
           const SizedBox(height: AppSpacing.s),
           Text(
             context.l10n.noSalesForDay,
-            style: textTheme.bodyMedium?.copyWith(
-              color: colorScheme.outline,
-            ),
+            style: textTheme.bodyMedium?.copyWith(color: colorScheme.outline),
           ),
         ],
       ),

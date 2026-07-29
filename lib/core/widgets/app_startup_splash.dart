@@ -1,4 +1,4 @@
-﻿import 'dart:math' as math;
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:maktabty/core/localization/l10n_ext.dart';
@@ -156,10 +156,7 @@ class _PosBadge extends StatelessWidget {
   final IconData icon;
   final String label;
 
-  const _PosBadge({
-    required this.icon,
-    required this.label,
-  });
+  const _PosBadge({required this.icon, required this.label});
 
   @override
   Widget build(BuildContext context) {
@@ -169,9 +166,7 @@ class _PosBadge extends StatelessWidget {
       decoration: BoxDecoration(
         color: colorScheme.surface.withOpacity(0.9),
         borderRadius: BorderRadius.circular(999),
-        border: Border.all(
-          color: colorScheme.outlineVariant.withOpacity(0.6),
-        ),
+        border: Border.all(color: colorScheme.outlineVariant.withOpacity(0.6)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -181,13 +176,12 @@ class _PosBadge extends StatelessWidget {
           Text(
             label,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: colorScheme.onSurface,
-                  fontWeight: FontWeight.w600,
-                ),
+              color: colorScheme.onSurface,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ],
       ),
     );
   }
 }
-

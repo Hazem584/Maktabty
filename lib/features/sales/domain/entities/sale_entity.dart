@@ -1,4 +1,4 @@
-﻿import 'package:maktabty/features/sales/domain/entities/sale_item_entity.dart';
+import 'package:maktabty/features/sales/domain/entities/sale_item_entity.dart';
 import 'package:maktabty/features/sales/domain/entities/user_mini_entity.dart';
 
 class SaleEntity {
@@ -16,4 +16,3 @@ class SaleEntity {
     this.user,
   });
 }
-

@@ -41,21 +41,49 @@ class ApiExceptions {
     final statusCode = error.response?.statusCode;
     final messageFromServer = _messageFromResponse(error.response?.data);
 
-    if (error.type == DioExceptionType.connectionError ||
-        error.type == DioExceptionType.unknown &&
-            error.error is SocketException) {
+    if (error.type == DioExceptionType.connectionTimeout) {
       return const ApiException(
-        'No internet connection. Please try again.',
+        'Connection to the API server timed out. Please try again.',
+        kind: ApiErrorKind.timeout,
+      );
+    }
+
+    if (error.type == DioExceptionType.sendTimeout) {
+      return const ApiException(
+        'The request could not be sent in time. Please try again.',
+        kind: ApiErrorKind.timeout,
+      );
+    }
+
+    if (error.type == DioExceptionType.receiveTimeout) {
+      return const ApiException(
+        'The API server did not respond in time. Please try again.',
+        kind: ApiErrorKind.timeout,
+      );
+    }
+
+    if (error.type == DioExceptionType.badCertificate) {
+      return const ApiException(
+        'Could not establish a secure connection to the API server.',
         kind: ApiErrorKind.network,
       );
     }
 
-    if (error.type == DioExceptionType.connectionTimeout ||
-        error.type == DioExceptionType.receiveTimeout ||
-        error.type == DioExceptionType.sendTimeout) {
+    if (error.type == DioExceptionType.connectionError ||
+        error.type == DioExceptionType.unknown &&
+            error.error is SocketException) {
+      final detail = '${error.error} ${error.message}'.toLowerCase();
+      if (detail.contains('failed host lookup') ||
+          detail.contains('network is unreachable') ||
+          detail.contains('no route to host')) {
+        return const ApiException(
+          'No internet connection. Please try again.',
+          kind: ApiErrorKind.network,
+        );
+      }
       return const ApiException(
-        'Request timed out. Please try again.',
-        kind: ApiErrorKind.timeout,
+        'The API server is unreachable. Please try again later.',
+        kind: ApiErrorKind.network,
       );
     }
 

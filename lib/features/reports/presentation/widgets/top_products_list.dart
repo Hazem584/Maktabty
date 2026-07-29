@@ -6,20 +6,16 @@ import 'package:maktabty/features/reports/domain/entities/daily_report.dart';
 class TopProductsList extends StatelessWidget {
   final List<TopProductEntity> items;
 
-  const TopProductsList({
-    super.key,
-    required this.items,
-  });
+  const TopProductsList({super.key, required this.items});
 
   @override
   Widget build(BuildContext context) {
     if (items.isEmpty) {
       return Text(
         context.l10n.noTopProductsYet,
-        style: Theme.of(context)
-            .textTheme
-            .bodySmall
-            ?.copyWith(color: Theme.of(context).colorScheme.outline),
+        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+          color: Theme.of(context).colorScheme.outline,
+        ),
       );
     }
 
@@ -57,22 +53,18 @@ class TopProductsList extends StatelessWidget {
                     const SizedBox(height: AppSpacing.xs),
                     Text(
                       '${context.l10n.quantityLabel}: ${item.quantitySold}',
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodySmall
-                          ?.copyWith(
-                            color: Theme.of(context).colorScheme.outline,
-                          ),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).colorScheme.outline,
+                      ),
                     ),
                   ],
                 ),
               ),
               Text(
                 '\$${item.amount.toStringAsFixed(2)}',
-                style: Theme.of(context)
-                    .textTheme
-                    .titleMedium
-                    ?.copyWith(color: Theme.of(context).colorScheme.primary),
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.primary,
+                ),
               ),
             ],
           ),

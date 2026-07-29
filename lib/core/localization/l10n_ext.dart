@@ -14,10 +14,22 @@ extension L10nX on BuildContext {
   }
 
   String localizeAppError(String message) {
-    if (message ==
-        'The server returned an unexpected response. Please try again.') {
-      return l10n.unexpectedServerResponse;
-    }
-    return message;
+    return switch (message) {
+      'The server returned an unexpected response. Please try again.' =>
+        l10n.unexpectedServerResponse,
+      'The API server is unreachable. Please try again later.' =>
+        l10n.apiServerUnreachable,
+      'Connection to the API server timed out. Please try again.' =>
+        l10n.apiConnectionTimedOut,
+      'The request could not be sent in time. Please try again.' =>
+        l10n.requestSendTimedOut,
+      'The API server did not respond in time. Please try again.' =>
+        l10n.apiResponseTimedOut,
+      'Could not establish a secure connection to the API server.' =>
+        l10n.apiSecureConnectionFailed,
+      'The server is temporarily unavailable. Please try again.' =>
+        l10n.backendServerUnavailable,
+      _ => message,
+    };
   }
 }

@@ -48,9 +48,7 @@ class HomeStatCard extends StatelessWidget {
           const SizedBox(height: AppSpacing.xs),
           Text(
             subtitle,
-            style: textTheme.bodySmall?.copyWith(
-              color: colorScheme.outline,
-            ),
+            style: textTheme.bodySmall?.copyWith(color: colorScheme.outline),
           ),
         ],
       ),

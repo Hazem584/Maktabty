@@ -1,4 +1,4 @@
-﻿import 'package:maktabty/features/work_hours/domain/entities/monthly_work_hours_report.dart';
+import 'package:maktabty/features/work_hours/domain/entities/monthly_work_hours_report.dart';
 import 'package:maktabty/features/work_hours/domain/entities/work_day.dart';
 
 abstract class WorkHoursRepository {
@@ -10,10 +10,7 @@ abstract class WorkHoursRepository {
     String? shift2End,
   });
 
-  Future<List<WorkDayEntity>> getByDate({
-    required String date,
-    String? userId,
-  });
+  Future<List<WorkDayEntity>> getByDate({required String date, String? userId});
 
   Future<MonthlyWorkHoursReportEntity> getMonthly({required String month});
 }

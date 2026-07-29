@@ -1,4 +1,4 @@
-﻿class TodaySalesSummaryEntity {
+class TodaySalesSummaryEntity {
   final double totalAmount;
   final int itemsCount;
 
@@ -7,4 +7,3 @@
     required this.itemsCount,
   });
 }
-

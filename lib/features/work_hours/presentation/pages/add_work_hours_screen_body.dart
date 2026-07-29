@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:maktabty/core/theme/app_theme.dart';
 import 'package:maktabty/core/widgets/app_loading.dart';
@@ -77,10 +77,7 @@ class _AddWorkHoursScreenBodyState extends State<AddWorkHoursScreenBody> {
     required TimeOfDay initial,
     required ValueChanged<TimeOfDay> onPicked,
   }) async {
-    final picked = await showTimePicker(
-      context: context,
-      initialTime: initial,
-    );
+    final picked = await showTimePicker(context: context, initialTime: initial);
     if (picked != null) {
       onPicked(picked);
     }
@@ -93,18 +90,18 @@ class _AddWorkHoursScreenBodyState extends State<AddWorkHoursScreenBody> {
     }
 
     context.read<WorkHoursCubit>().saveWorkDay(
-          date: _selectedDate,
-          shift1Start: _shift1Worked ? _shift1Start : null,
-          shift1End: _shift1Worked ? _shift1End : null,
-          shift2Start: _shift2Worked ? _shift2Start : null,
-          shift2End: _shift2Worked ? _shift2End : null,
-        );
+      date: _selectedDate,
+      shift1Start: _shift1Worked ? _shift1Start : null,
+      shift1End: _shift1Worked ? _shift1End : null,
+      shift2Start: _shift2Worked ? _shift2Start : null,
+      shift2End: _shift2Worked ? _shift2End : null,
+    );
   }
 
   void _openMonthly() {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const MonthlyWorkHoursScreen()),
-    );
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => const MonthlyWorkHoursScreen()));
   }
 
   @override
@@ -256,12 +253,9 @@ class _AddWorkHoursScreenBodyState extends State<AddWorkHoursScreenBody> {
                     isOwner
                         ? context.l10n.noWorkHoursForDay
                         : context.l10n.noSavedDays,
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodySmall
-                        ?.copyWith(
-                          color: Theme.of(context).colorScheme.outline,
-                        ),
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Theme.of(context).colorScheme.outline,
+                    ),
                   );
                 }
 

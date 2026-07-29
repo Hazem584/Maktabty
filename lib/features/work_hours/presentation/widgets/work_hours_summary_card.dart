@@ -5,10 +5,7 @@ import 'package:maktabty/core/localization/l10n_ext.dart';
 class WorkHoursSummaryCard extends StatelessWidget {
   final double? totalHours;
 
-  const WorkHoursSummaryCard({
-    super.key,
-    required this.totalHours,
-  });
+  const WorkHoursSummaryCard({super.key, required this.totalHours});
 
   @override
   Widget build(BuildContext context) {

@@ -1,4 +1,4 @@
-﻿import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:maktabty/core/network/api_exceptions.dart';
 import 'package:maktabty/features/reports/domain/usecases/get_daily_report.dart';
 import 'package:maktabty/features/reports/domain/usecases/get_monthly_report.dart';
@@ -11,63 +11,73 @@ class ReportsCubit extends Cubit<ReportsState> {
   ReportsCubit({
     required GetDailyReportUseCase getDailyReportUseCase,
     required GetMonthlyReportUseCase getMonthlyReportUseCase,
-  })  : _getDailyReportUseCase = getDailyReportUseCase,
-        _getMonthlyReportUseCase = getMonthlyReportUseCase,
-        super(ReportsState.initial());
+  }) : _getDailyReportUseCase = getDailyReportUseCase,
+       _getMonthlyReportUseCase = getMonthlyReportUseCase,
+       super(ReportsState.initial());
 
   Future<void> loadDaily({DateTime? date}) async {
     if (state.dailyStatus == ReportsStatus.loading) return;
-    emit(state.copyWith(
-      dailyStatus: ReportsStatus.loading,
-      dailyMessage: null,
-    ));
+    emit(
+      state.copyWith(dailyStatus: ReportsStatus.loading, dailyMessage: null),
+    );
 
     try {
       final report = await _getDailyReportUseCase(
         date: date != null ? _formatDate(date) : null,
       );
-      emit(state.copyWith(
-        dailyStatus: ReportsStatus.success,
-        dailyReport: report,
-      ));
+      emit(
+        state.copyWith(dailyStatus: ReportsStatus.success, dailyReport: report),
+      );
     } on ApiException catch (error) {
-      emit(state.copyWith(
-        dailyStatus: ReportsStatus.failure,
-        dailyMessage: _mapError(error),
-      ));
+      emit(
+        state.copyWith(
+          dailyStatus: ReportsStatus.failure,
+          dailyMessage: _mapError(error),
+        ),
+      );
     } catch (_) {
-      emit(state.copyWith(
-        dailyStatus: ReportsStatus.failure,
-        dailyMessage: 'Something went wrong. Please try again.',
-      ));
+      emit(
+        state.copyWith(
+          dailyStatus: ReportsStatus.failure,
+          dailyMessage: 'Something went wrong. Please try again.',
+        ),
+      );
     }
   }
 
   Future<void> loadMonthly({DateTime? month}) async {
     if (state.monthlyStatus == ReportsStatus.loading) return;
-    emit(state.copyWith(
-      monthlyStatus: ReportsStatus.loading,
-      monthlyMessage: null,
-    ));
+    emit(
+      state.copyWith(
+        monthlyStatus: ReportsStatus.loading,
+        monthlyMessage: null,
+      ),
+    );
 
     try {
       final report = await _getMonthlyReportUseCase(
         month: month != null ? _formatMonth(month) : null,
       );
-      emit(state.copyWith(
-        monthlyStatus: ReportsStatus.success,
-        monthlyReport: report,
-      ));
+      emit(
+        state.copyWith(
+          monthlyStatus: ReportsStatus.success,
+          monthlyReport: report,
+        ),
+      );
     } on ApiException catch (error) {
-      emit(state.copyWith(
-        monthlyStatus: ReportsStatus.failure,
-        monthlyMessage: _mapError(error),
-      ));
+      emit(
+        state.copyWith(
+          monthlyStatus: ReportsStatus.failure,
+          monthlyMessage: _mapError(error),
+        ),
+      );
     } catch (_) {
-      emit(state.copyWith(
-        monthlyStatus: ReportsStatus.failure,
-        monthlyMessage: 'Something went wrong. Please try again.',
-      ));
+      emit(
+        state.copyWith(
+          monthlyStatus: ReportsStatus.failure,
+          monthlyMessage: 'Something went wrong. Please try again.',
+        ),
+      );
     }
   }
 
