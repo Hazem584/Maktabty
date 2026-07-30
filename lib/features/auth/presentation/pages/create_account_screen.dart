@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:maktabty/core/routes/app_routes.dart';
 import 'package:maktabty/core/localization/l10n_ext.dart';
+import 'package:maktabty/features/auth/domain/validation/auth_validator.dart';
 import 'package:maktabty/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:maktabty/features/auth/presentation/cubit/auth_state.dart';
 import 'package:maktabty/features/auth/presentation/pages/create_account_screen_body.dart';
@@ -43,25 +44,21 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
   }
 
   void _submit() {
-    final fullName = _fullNameController.text.trim();
-    final email = _emailController.text.trim();
-    final password = _passwordController.text;
-    final confirmPassword = _confirmPasswordController.text;
-
-    if (fullName.isEmpty || email.isEmpty || password.isEmpty) {
-      _showToast(context.l10n.missingFields);
+    final result = AuthValidator.registration(
+      fullName: _fullNameController.text,
+      email: _emailController.text,
+      password: _passwordController.text,
+      confirmPassword: _confirmPasswordController.text,
+    );
+    if (!result.isValid) {
+      _showToast(context.localizeValidation(result.error!));
       return;
     }
-
-    if (password != confirmPassword) {
-      _showToast(context.l10n.passwordsDoNotMatch);
-      return;
-    }
-
+    final input = result.value!;
     context.read<AuthCubit>().register(
-      fullName: fullName,
-      email: email,
-      password: password,
+      fullName: input.fullName,
+      email: input.email,
+      password: input.password,
     );
   }
 
@@ -79,11 +76,15 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
     return BlocConsumer<AuthCubit, AuthState>(
       listenWhen: (previous, current) =>
           previous.status != current.status ||
-          previous.message != current.message,
+          previous.failure != current.failure,
       listener: (context, state) {
         if (state.status == AuthStatus.failure) {
-          final message = state.message ?? context.l10n.registrationFailed;
-          _showToast(message);
+          _showToast(
+            context.localizeFailure(
+              state.failure,
+              fallback: context.l10n.registrationFailed,
+            ),
+          );
         }
 
         if (state.status == AuthStatus.authenticated) {

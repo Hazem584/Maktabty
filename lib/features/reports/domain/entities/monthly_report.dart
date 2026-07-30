@@ -1,6 +1,7 @@
-﻿import 'package:maktabty/features/sales/domain/entities/sale_entity.dart';
+import 'package:equatable/equatable.dart';
+import 'package:maktabty/features/sales/domain/entities/sale_entity.dart';
 
-class DailyBreakdownEntity {
+class DailyBreakdownEntity extends Equatable {
   final String date;
   final double amount;
   final int orders;
@@ -12,9 +13,12 @@ class DailyBreakdownEntity {
     required this.orders,
     required this.sales,
   });
+
+  @override
+  List<Object?> get props => [date, amount, orders, sales];
 }
 
-class MonthlyReportEntity {
+class MonthlyReportEntity extends Equatable {
   final String month;
   final double totalSalesAmount;
   final int totalOrders;
@@ -28,4 +32,13 @@ class MonthlyReportEntity {
     required this.totalItemsSold,
     required this.dailyBreakdown,
   });
+
+  @override
+  List<Object?> get props => [
+    month,
+    totalSalesAmount,
+    totalOrders,
+    totalItemsSold,
+    dailyBreakdown,
+  ];
 }

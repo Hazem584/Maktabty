@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:arabic_reshaper/arabic_reshaper.dart';
 import 'package:bidi/bidi.dart' as bidi;
@@ -41,10 +40,9 @@ class ReceiptPrinterService {
   final ArabicReshaper _arabicReshaper = ArabicReshaper();
 
   ReceiptPrinterService({
-    required PrinterSettingsStorage settingsStorage,
+    required this._settingsStorage,
     BluetoothPrinterAdapter? bluetoothPrinter,
-  }) : _settingsStorage = settingsStorage,
-       _bluetoothPrinter = bluetoothPrinter ?? getBluetoothPrinterAdapter();
+  }) : _bluetoothPrinter = bluetoothPrinter ?? getBluetoothPrinterAdapter();
 
   Future<void> printPdf(ReceiptEntity receipt) async {
     final doc = await _buildPdf(receipt);

@@ -1,6 +1,7 @@
-﻿import 'package:maktabty/features/work_hours/domain/entities/work_day_user.dart';
+import 'package:equatable/equatable.dart';
+import 'package:maktabty/features/work_hours/domain/entities/work_day_user.dart';
 
-class WorkDayEntity {
+class WorkDayEntity extends Equatable {
   final String id;
   final String userId;
   final DateTime? date;
@@ -26,4 +27,19 @@ class WorkDayEntity {
     required this.updatedAt,
     required this.user,
   });
+
+  @override
+  List<Object?> get props => [
+    id,
+    userId,
+    date,
+    shift1Start,
+    shift1End,
+    shift2Start,
+    shift2End,
+    totalMinutes,
+    createdAt,
+    updatedAt,
+    user,
+  ];
 }

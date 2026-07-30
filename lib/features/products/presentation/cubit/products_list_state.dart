@@ -1,8 +1,11 @@
 import 'package:maktabty/features/products/domain/entities/product_entity.dart';
+import 'package:equatable/equatable.dart';
+import 'package:maktabty/core/errors/app_failure.dart';
+import 'package:maktabty/core/utils/copy_with_sentinel.dart';
 
 enum ProductsListStatus { initial, loading, success, failure }
 
-class ProductsListState {
+class ProductsListState extends Equatable {
   final ProductsListStatus status;
   final List<ProductEntity> products;
   final int page;
@@ -12,7 +15,7 @@ class ProductsListState {
   final bool lowStock;
   final bool isLoadingMore;
   final bool isRefreshing;
-  final String? errorMessage;
+  final AppFailure? failure;
 
   const ProductsListState({
     required this.status,
@@ -24,7 +27,7 @@ class ProductsListState {
     required this.lowStock,
     required this.isLoadingMore,
     required this.isRefreshing,
-    required this.errorMessage,
+    required this.failure,
   });
 
   factory ProductsListState.initial() {
@@ -38,7 +41,7 @@ class ProductsListState {
       lowStock: false,
       isLoadingMore: false,
       isRefreshing: false,
-      errorMessage: null,
+      failure: null,
     );
   }
 
@@ -54,7 +57,7 @@ class ProductsListState {
     bool? lowStock,
     bool? isLoadingMore,
     bool? isRefreshing,
-    String? errorMessage,
+    Object? failure = stateFieldUnchanged,
   }) {
     return ProductsListState(
       status: status ?? this.status,
@@ -66,7 +69,23 @@ class ProductsListState {
       lowStock: lowStock ?? this.lowStock,
       isLoadingMore: isLoadingMore ?? this.isLoadingMore,
       isRefreshing: isRefreshing ?? this.isRefreshing,
-      errorMessage: errorMessage,
+      failure: identical(failure, stateFieldUnchanged)
+          ? this.failure
+          : failure as AppFailure?,
     );
   }
+
+  @override
+  List<Object?> get props => [
+    status,
+    products,
+    page,
+    limit,
+    total,
+    search,
+    lowStock,
+    isLoadingMore,
+    isRefreshing,
+    failure,
+  ];
 }

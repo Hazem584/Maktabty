@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:maktabty/core/network/api_exceptions.dart';
+import 'package:maktabty/core/errors/app_failure.dart';
 import 'package:maktabty/features/sales/data/datasources/sales_remote_datasource.dart';
 import 'package:maktabty/features/sales/data/models/product_mini_model.dart';
 import 'package:maktabty/features/sales/data/models/receipt_model.dart';
@@ -98,7 +98,7 @@ void main() {
     expect(result.receipt.receiptNo, receiptModel.receiptNo);
   });
 
-  test('createSale throws ApiException on DioException', () async {
+  test('createSale maps DioException to AppFailure', () async {
     final items = [const SaleItemInput(productId: 'p1', quantity: 1)];
 
     when(
@@ -125,7 +125,7 @@ void main() {
         items: items,
         paymentMethod: PaymentMethod.cash,
       ),
-      throwsA(isA<ApiException>()),
+      throwsA(isA<ServerFailure>()),
     );
   });
 

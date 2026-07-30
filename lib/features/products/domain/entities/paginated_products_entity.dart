@@ -1,6 +1,7 @@
+import 'package:equatable/equatable.dart';
 import 'package:maktabty/features/products/domain/entities/product_entity.dart';
 
-class PaginatedProductsEntity {
+class PaginatedProductsEntity extends Equatable {
   final List<ProductEntity> items;
   final int page;
   final int limit;
@@ -14,4 +15,7 @@ class PaginatedProductsEntity {
   });
 
   bool get hasMore => total > 0 && items.length < total;
+
+  @override
+  List<Object?> get props => [items, page, limit, total];
 }

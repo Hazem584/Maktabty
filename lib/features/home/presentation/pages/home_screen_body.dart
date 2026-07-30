@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:maktabty/core/errors/app_failure.dart';
 import 'package:maktabty/core/localization/l10n_ext.dart';
 import 'package:maktabty/core/routes/app_routes.dart';
 import 'package:maktabty/core/theme/app_theme.dart';
@@ -60,8 +61,13 @@ class HomeScreenBody extends StatelessWidget {
           context,
           () => context.read<TodaySalesCubit>().getReceiptForSale(sale.id),
         ).onError((error, stackTrace) {
-          final message = error is String ? error : l10n.unableToLoadReceipt;
-          AppToast.show(context.localizeAppError(message));
+          final message = error is AppFailure && context.mounted
+              ? context.localizeFailure(
+                  error,
+                  fallback: l10n.unableToLoadReceipt,
+                )
+              : l10n.unableToLoadReceipt;
+          AppToast.show(message);
           return null;
         });
 
@@ -226,9 +232,10 @@ class HomeScreenBody extends StatelessWidget {
               if (state.status == TodaySalesStatus.failure &&
                   state.response == null) {
                 return Text(
-                  state.message == null
-                      ? context.l10n.unableToLoadSales
-                      : context.localizeAppError(state.message!),
+                  context.localizeFailure(
+                    state.failure,
+                    fallback: context.l10n.unableToLoadSales,
+                  ),
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: Theme.of(context).colorScheme.error,
                   ),

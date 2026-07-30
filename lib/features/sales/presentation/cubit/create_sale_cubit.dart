@@ -1,10 +1,10 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:maktabty/core/network/api_exceptions.dart';
+import 'package:maktabty/core/errors/app_failure.dart';
 import 'package:maktabty/features/sales/domain/entities/payment_method.dart';
 import 'package:maktabty/features/sales/domain/entities/sale_item_input.dart';
 import 'package:maktabty/features/sales/domain/usecases/create_sale_usecase.dart';
+import 'package:maktabty/features/sales/domain/validation/sale_validator.dart';
 import 'package:maktabty/features/sales/presentation/cubit/create_sale_state.dart';
-import 'package:maktabty/features/sales/presentation/cubit/sales_error_mapper.dart';
 
 class CreateSaleCubit extends Cubit<CreateSaleState> {
   final CreateSaleUseCase _createSaleUseCase;
@@ -14,24 +14,70 @@ class CreateSaleCubit extends Cubit<CreateSaleState> {
       super(CreateSaleState.initial());
 
   void setPaymentMethod(PaymentMethod method) {
-    emit(state.copyWith(paymentMethod: method, clearAmounts: true));
+    if (isClosed) return;
+    emit(
+      state.copyWith(
+        paymentMethod: method,
+        paidAmount: null,
+        cashAmount: null,
+        cardAmount: null,
+        failure: null,
+      ),
+    );
   }
 
   void setPaidAmount(double? value) {
-    emit(state.copyWith(paidAmount: value));
+    if (!isClosed) emit(state.copyWith(paidAmount: value));
   }
 
   void setCashAmount(double? value) {
-    emit(state.copyWith(cashAmount: value));
+    if (!isClosed) emit(state.copyWith(cashAmount: value));
   }
 
   void setCardAmount(double? value) {
-    emit(state.copyWith(cardAmount: value));
+    if (!isClosed) emit(state.copyWith(cardAmount: value));
   }
 
   Future<void> submit({required List<SaleItemInput> items}) async {
-    if (state.status == CreateSaleStatus.loading) return;
-    emit(state.copyWith(status: CreateSaleStatus.loading, message: null));
+    if (isClosed || state.status == CreateSaleStatus.loading) return;
+    final validationError = SaleValidator.validateItems(items);
+    if (validationError != null) {
+      emit(
+        state.copyWith(
+          status: CreateSaleStatus.failure,
+          response: null,
+          lastReceipt: null,
+          failure: ValidationFailure(validationKey: validationError),
+        ),
+      );
+      return;
+    }
+    final paymentError = SaleValidator.validatePayment(
+      method: state.paymentMethod,
+      total: null,
+      paidAmount: state.paidAmount,
+      cashAmount: state.cashAmount,
+      cardAmount: state.cardAmount,
+    );
+    if (paymentError != null) {
+      emit(
+        state.copyWith(
+          status: CreateSaleStatus.failure,
+          response: null,
+          lastReceipt: null,
+          failure: ValidationFailure(validationKey: paymentError),
+        ),
+      );
+      return;
+    }
+    emit(
+      state.copyWith(
+        status: CreateSaleStatus.loading,
+        response: null,
+        lastReceipt: null,
+        failure: null,
+      ),
+    );
 
     try {
       final response = await _createSaleUseCase(
@@ -41,31 +87,42 @@ class CreateSaleCubit extends Cubit<CreateSaleState> {
         cashAmount: state.cashAmount,
         cardAmount: state.cardAmount,
       );
-      emit(
-        state.copyWith(
-          status: CreateSaleStatus.success,
-          response: response,
-          lastReceipt: response.receipt,
-        ),
-      );
-    } on ApiException catch (error) {
-      emit(
-        state.copyWith(
-          status: CreateSaleStatus.failure,
-          message: mapSalesError(error),
-        ),
-      );
+      if (!isClosed) {
+        emit(
+          state.copyWith(
+            status: CreateSaleStatus.success,
+            response: response,
+            lastReceipt: response.receipt,
+            failure: null,
+          ),
+        );
+      }
+    } on AppFailure catch (failure) {
+      if (!isClosed) {
+        emit(
+          state.copyWith(
+            status: CreateSaleStatus.failure,
+            response: null,
+            lastReceipt: null,
+            failure: failure,
+          ),
+        );
+      }
     } catch (_) {
-      emit(
-        state.copyWith(
-          status: CreateSaleStatus.failure,
-          message: 'Something went wrong. Please try again.',
-        ),
-      );
+      if (!isClosed) {
+        emit(
+          state.copyWith(
+            status: CreateSaleStatus.failure,
+            response: null,
+            lastReceipt: null,
+            failure: const UnknownFailure(),
+          ),
+        );
+      }
     }
   }
 
   void reset() {
-    emit(CreateSaleState.initial());
+    if (!isClosed) emit(CreateSaleState.initial());
   }
 }

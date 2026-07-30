@@ -75,6 +75,7 @@ class _DailyReportTabState extends State<_DailyReportTab> {
       firstDate: DateTime(now.year - 2),
       lastDate: DateTime(now.year + 1),
     );
+    if (!mounted) return;
     if (picked != null) {
       setState(() {
         _selectedDate = picked;
@@ -116,9 +117,10 @@ class _DailyReportTabState extends State<_DailyReportTab> {
               const Center(child: AppLoading())
             else if (isFailure)
               _ErrorCard(
-                message: state.dailyMessage == null
-                    ? context.l10n.unableToLoadReport
-                    : context.localizeAppError(state.dailyMessage!),
+                message: context.localizeFailure(
+                  state.dailyFailure,
+                  fallback: context.l10n.unableToLoadReport,
+                ),
                 onRetry: () =>
                     context.read<ReportsCubit>().loadDaily(date: _selectedDate),
               )
@@ -162,8 +164,9 @@ class _MonthlyReportTabState extends State<_MonthlyReportTab> {
       initialDate: _selectedMonth ?? DateTime(now.year, now.month, 1),
       firstDate: DateTime(now.year - 2, 1, 1),
       lastDate: DateTime(now.year + 1, 12, 31),
-      helpText: 'Select month (pick any day)',
+      helpText: context.l10n.selectMonth,
     );
+    if (!mounted) return;
     if (picked != null) {
       setState(() {
         _selectedMonth = DateTime(picked.year, picked.month, 1);
@@ -205,9 +208,10 @@ class _MonthlyReportTabState extends State<_MonthlyReportTab> {
               const Center(child: AppLoading())
             else if (isFailure)
               _ErrorCard(
-                message: state.monthlyMessage == null
-                    ? context.l10n.unableToLoadReport
-                    : context.localizeAppError(state.monthlyMessage!),
+                message: context.localizeFailure(
+                  state.monthlyFailure,
+                  fallback: context.l10n.unableToLoadReport,
+                ),
                 onRetry: () => context.read<ReportsCubit>().loadMonthly(
                   month: _selectedMonth,
                 ),

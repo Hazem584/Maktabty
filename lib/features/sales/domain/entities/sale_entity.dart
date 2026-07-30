@@ -1,7 +1,8 @@
 import 'package:maktabty/features/sales/domain/entities/sale_item_entity.dart';
 import 'package:maktabty/features/sales/domain/entities/user_mini_entity.dart';
+import 'package:equatable/equatable.dart';
 
-class SaleEntity {
+class SaleEntity extends Equatable {
   final String id;
   final List<SaleItemEntity> items;
   final double totalAmount;
@@ -15,4 +16,7 @@ class SaleEntity {
     this.createdAt,
     this.user,
   });
+
+  @override
+  List<Object?> get props => [id, items, totalAmount, createdAt, user];
 }

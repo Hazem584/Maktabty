@@ -1,35 +1,45 @@
 import 'package:maktabty/features/products/domain/entities/product_entity.dart';
+import 'package:equatable/equatable.dart';
+import 'package:maktabty/core/errors/app_failure.dart';
+import 'package:maktabty/core/utils/copy_with_sentinel.dart';
 
 enum ProductFormStatus { idle, loading, success, failure }
 
-class ProductFormState {
+class ProductFormState extends Equatable {
   final ProductFormStatus status;
   final ProductEntity? product;
-  final String? message;
+  final AppFailure? failure;
 
   const ProductFormState({
     required this.status,
     required this.product,
-    required this.message,
+    required this.failure,
   });
 
   factory ProductFormState.initial() {
     return const ProductFormState(
       status: ProductFormStatus.idle,
       product: null,
-      message: null,
+      failure: null,
     );
   }
 
   ProductFormState copyWith({
     ProductFormStatus? status,
-    ProductEntity? product,
-    String? message,
+    Object? product = stateFieldUnchanged,
+    Object? failure = stateFieldUnchanged,
   }) {
     return ProductFormState(
       status: status ?? this.status,
-      product: product ?? this.product,
-      message: message,
+      product: identical(product, stateFieldUnchanged)
+          ? this.product
+          : product as ProductEntity?,
+      failure: identical(failure, stateFieldUnchanged)
+          ? this.failure
+          : failure as AppFailure?,
     );
   }
+
+  @override
+  List<Object?> get props => [status, product, failure];
 }

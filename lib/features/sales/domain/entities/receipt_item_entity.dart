@@ -1,4 +1,6 @@
-class ReceiptItemEntity {
+import 'package:equatable/equatable.dart';
+
+class ReceiptItemEntity extends Equatable {
   final String productId;
   final String name;
   final String? code;
@@ -14,4 +16,7 @@ class ReceiptItemEntity {
     required this.lineTotal,
     this.code,
   });
+
+  @override
+  List<Object?> get props => [productId, name, code, qty, unitPrice, lineTotal];
 }

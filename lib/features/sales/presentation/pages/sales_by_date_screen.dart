@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:maktabty/core/di/service_locator.dart';
 import 'package:maktabty/core/theme/app_theme.dart';
+import 'package:maktabty/core/errors/app_failure.dart';
 import 'package:maktabty/core/widgets/app_loading.dart';
 import 'package:maktabty/core/widgets/app_toast.dart';
 import 'package:maktabty/core/localization/l10n_ext.dart';
@@ -150,9 +151,10 @@ class _SalesByDateRemoteView extends StatelessWidget {
 
                 if (state.status == TodaySalesStatus.failure) {
                   return _ErrorCard(
-                    message: state.message == null
-                        ? context.l10n.unableToLoadSales
-                        : context.localizeAppError(state.message!),
+                    message: context.localizeFailure(
+                      state.failure,
+                      fallback: context.l10n.unableToLoadSales,
+                    ),
                     onRetry: () =>
                         context.read<TodaySalesCubit>().load(date: requestDate),
                   );
@@ -363,13 +365,18 @@ Future<void> _showSaleActions(
       return;
     }
     final confirmed = await _confirmDeleteSale(context);
-    if (!confirmed) return;
+    if (!context.mounted || !confirmed) return;
     final deleted =
         await _runWithLoading<bool>(context, () async {
           await context.read<TodaySalesCubit>().deleteSale(sale.id);
           return true;
         }).onError((error, stackTrace) {
-          final message = error is String ? error : l10n.unableToLoadSales;
+          final message = error is AppFailure && context.mounted
+              ? context.localizeFailure(
+                  error,
+                  fallback: l10n.unableToLoadSales,
+                )
+              : l10n.unableToLoadSales;
           AppToast.show(message);
           return false;
         });
@@ -431,8 +438,13 @@ Future<void> _openReceipt(BuildContext context, SaleEntity sale) async {
         context,
         () => context.read<TodaySalesCubit>().getReceiptForSale(sale.id),
       ).onError((error, stackTrace) {
-        final message = error is String ? error : l10n.unableToLoadReceipt;
-        AppToast.show(context.localizeAppError(message));
+        final message = error is AppFailure && context.mounted
+            ? context.localizeFailure(
+                error,
+                fallback: l10n.unableToLoadReceipt,
+              )
+            : l10n.unableToLoadReceipt;
+        AppToast.show(message);
         return null;
       });
 

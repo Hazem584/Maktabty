@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:maktabty/core/network/api_exceptions.dart';
+import 'package:maktabty/core/errors/app_failure.dart';
 import 'package:maktabty/core/network/auth_session_manager.dart';
 import 'package:maktabty/core/storage/token_storage.dart';
 import 'package:maktabty/features/auth/domain/usecases/get_me_usecase.dart';
@@ -44,10 +44,10 @@ class AuthCubit extends Cubit<AuthState> {
        _sessionManager = sessionManager,
        super(AuthState.initial()) {
     _sessionSubscription = _sessionManager.stream.listen((event) {
-      if (event == AuthSessionEvent.expired) {
+      if (!isClosed && event == AuthSessionEvent.expired) {
         emit(
           AuthState.unauthenticated(
-            message: 'Session expired. Please sign in again.',
+            failure: const UnauthorizedFailure(),
           ),
         );
       }
@@ -56,6 +56,7 @@ class AuthCubit extends Cubit<AuthState> {
 
   Future<void> initialize() async {
     if (_initialized || _initializing) return;
+    if (isClosed) return;
     _initializing = true;
 
     emit(AuthState.loading());
@@ -63,33 +64,35 @@ class AuthCubit extends Cubit<AuthState> {
       final refreshToken = await _tokenStorage.getRefreshToken();
       if (refreshToken == null || refreshToken.isEmpty) {
         _initialized = true;
-        emit(AuthState.unauthenticated());
+        if (!isClosed) emit(AuthState.unauthenticated());
         return;
       }
 
       final user = await _refreshUseCase().timeout(_startupTimeout);
       _initialized = true;
-      emit(AuthState.authenticated(user));
-    } on ApiException catch (error) {
-      if (error.isUnauthorized) {
+      if (!isClosed) emit(AuthState.authenticated(user));
+    } on AppFailure catch (failure) {
+      if (failure.isUnauthorized) {
         await _tokenStorage.clearAll();
         _initialized = true;
-        emit(
-          AuthState.unauthenticated(
-            message: 'Session expired. Please sign in again.',
-          ),
-        );
+        if (!isClosed) {
+          emit(AuthState.unauthenticated(failure: failure));
+        }
       } else {
-        emit(AuthState.startupFailure(error.message));
+        if (!isClosed) emit(AuthState.startupFailure(failure));
       }
     } on TimeoutException {
-      emit(AuthState.startupFailure('Request timed out. Please try again.'));
+      if (!isClosed) {
+        emit(
+          AuthState.startupFailure(
+            const TimeoutFailure(FailureCode.receiveTimeout),
+          ),
+        );
+      }
     } catch (_) {
-      emit(
-        AuthState.startupFailure(
-          'Unable to verify your session. Please try again.',
-        ),
-      );
+      if (!isClosed) {
+        emit(AuthState.startupFailure(const UnknownFailure()));
+      }
     } finally {
       _initializing = false;
     }
@@ -98,16 +101,23 @@ class AuthCubit extends Cubit<AuthState> {
   Future<void> retryInitialization() => initialize();
 
   Future<void> login({required String email, required String password}) async {
+    if (isClosed || state.status == AuthStatus.loading) return;
     emit(AuthState.loading());
     try {
       final user = await _loginUseCase(email: email, password: password);
-      emit(AuthState.authenticated(user));
-    } on ApiException catch (error) {
-      emit(AuthState.failure(error.message));
+      if (!isClosed) emit(AuthState.authenticated(user));
+    } on AppFailure catch (failure) {
+      if (!isClosed) emit(AuthState.failure(failure));
     } on TimeoutException {
-      emit(AuthState.failure('Request timed out. Please try again.'));
+      if (!isClosed) {
+        emit(
+          AuthState.failure(
+            const TimeoutFailure(FailureCode.receiveTimeout),
+          ),
+        );
+      }
     } catch (_) {
-      emit(AuthState.failure('Something went wrong. Please try again.'));
+      if (!isClosed) emit(AuthState.failure(const UnknownFailure()));
     }
   }
 
@@ -117,6 +127,7 @@ class AuthCubit extends Cubit<AuthState> {
     required String password,
     String? role,
   }) async {
+    if (isClosed || state.status == AuthStatus.loading) return;
     emit(AuthState.loading());
     try {
       final user = await _registerUseCase(
@@ -125,26 +136,27 @@ class AuthCubit extends Cubit<AuthState> {
         password: password,
         role: role,
       );
-      emit(AuthState.authenticated(user));
-    } on ApiException catch (error) {
-      emit(AuthState.failure(error.message));
+      if (!isClosed) emit(AuthState.authenticated(user));
+    } on AppFailure catch (failure) {
+      if (!isClosed) emit(AuthState.failure(failure));
     } catch (_) {
-      emit(AuthState.failure('Something went wrong. Please try again.'));
+      if (!isClosed) emit(AuthState.failure(const UnknownFailure()));
     }
   }
 
   Future<void> getMe() async {
     try {
       final user = await _getMeUseCase();
-      emit(AuthState.authenticated(user));
-    } on ApiException catch (error) {
-      emit(AuthState.failure(error.message));
+      if (!isClosed) emit(AuthState.authenticated(user));
+    } on AppFailure catch (failure) {
+      if (!isClosed) emit(AuthState.failure(failure));
     } catch (_) {
-      emit(AuthState.failure('Something went wrong. Please try again.'));
+      if (!isClosed) emit(AuthState.failure(const UnknownFailure()));
     }
   }
 
   Future<void> logout() async {
+    if (isClosed) return;
     emit(AuthState.loading());
     try {
       await _logoutUseCase().timeout(_loginTimeout);
@@ -152,13 +164,13 @@ class AuthCubit extends Cubit<AuthState> {
       await _tokenStorage.clearAll();
     } finally {
       _initialized = true;
-      emit(AuthState.unauthenticated());
+      if (!isClosed) emit(AuthState.unauthenticated());
     }
   }
 
   @override
-  Future<void> close() {
-    _sessionSubscription?.cancel();
-    return super.close();
+  Future<void> close() async {
+    await _sessionSubscription?.cancel();
+    await super.close();
   }
 }

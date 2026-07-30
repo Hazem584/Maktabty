@@ -1,10 +1,13 @@
 import 'package:maktabty/features/sales/domain/entities/payment_method.dart';
 import 'package:maktabty/features/sales/domain/entities/receipt_entity.dart';
 import 'package:maktabty/features/sales/domain/entities/sale_response_entity.dart';
+import 'package:equatable/equatable.dart';
+import 'package:maktabty/core/errors/app_failure.dart';
+import 'package:maktabty/core/utils/copy_with_sentinel.dart';
 
 enum CreateSaleByCodeStatus { idle, loading, success, failure }
 
-class CreateSaleByCodeState {
+class CreateSaleByCodeState extends Equatable {
   final CreateSaleByCodeStatus status;
   final SaleResponseEntity? response;
   final ReceiptEntity? lastReceipt;
@@ -12,7 +15,7 @@ class CreateSaleByCodeState {
   final double? paidAmount;
   final double? cashAmount;
   final double? cardAmount;
-  final String? message;
+  final AppFailure? failure;
 
   const CreateSaleByCodeState({
     required this.status,
@@ -22,7 +25,7 @@ class CreateSaleByCodeState {
     required this.paidAmount,
     required this.cashAmount,
     required this.cardAmount,
-    required this.message,
+    required this.failure,
   });
 
   factory CreateSaleByCodeState.initial() {
@@ -34,30 +37,53 @@ class CreateSaleByCodeState {
       paidAmount: null,
       cashAmount: null,
       cardAmount: null,
-      message: null,
+      failure: null,
     );
   }
 
   CreateSaleByCodeState copyWith({
     CreateSaleByCodeStatus? status,
-    SaleResponseEntity? response,
-    ReceiptEntity? lastReceipt,
+    Object? response = stateFieldUnchanged,
+    Object? lastReceipt = stateFieldUnchanged,
     PaymentMethod? paymentMethod,
-    double? paidAmount,
-    double? cashAmount,
-    double? cardAmount,
-    String? message,
-    bool clearAmounts = false,
+    Object? paidAmount = stateFieldUnchanged,
+    Object? cashAmount = stateFieldUnchanged,
+    Object? cardAmount = stateFieldUnchanged,
+    Object? failure = stateFieldUnchanged,
   }) {
     return CreateSaleByCodeState(
       status: status ?? this.status,
-      response: response ?? this.response,
-      lastReceipt: lastReceipt ?? this.lastReceipt,
+      response: identical(response, stateFieldUnchanged)
+          ? this.response
+          : response as SaleResponseEntity?,
+      lastReceipt: identical(lastReceipt, stateFieldUnchanged)
+          ? this.lastReceipt
+          : lastReceipt as ReceiptEntity?,
       paymentMethod: paymentMethod ?? this.paymentMethod,
-      paidAmount: clearAmounts ? null : (paidAmount ?? this.paidAmount),
-      cashAmount: clearAmounts ? null : (cashAmount ?? this.cashAmount),
-      cardAmount: clearAmounts ? null : (cardAmount ?? this.cardAmount),
-      message: message,
+      paidAmount: identical(paidAmount, stateFieldUnchanged)
+          ? this.paidAmount
+          : paidAmount as double?,
+      cashAmount: identical(cashAmount, stateFieldUnchanged)
+          ? this.cashAmount
+          : cashAmount as double?,
+      cardAmount: identical(cardAmount, stateFieldUnchanged)
+          ? this.cardAmount
+          : cardAmount as double?,
+      failure: identical(failure, stateFieldUnchanged)
+          ? this.failure
+          : failure as AppFailure?,
     );
   }
+
+  @override
+  List<Object?> get props => [
+    status,
+    response,
+    lastReceipt,
+    paymentMethod,
+    paidAmount,
+    cashAmount,
+    cardAmount,
+    failure,
+  ];
 }

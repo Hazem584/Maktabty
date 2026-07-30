@@ -1,6 +1,7 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:maktabty/core/theme/app_theme.dart';
+import 'package:maktabty/core/errors/app_failure.dart';
 import 'package:maktabty/core/widgets/app_loading.dart';
 import 'package:maktabty/core/widgets/app_toast.dart';
 import 'package:maktabty/core/di/service_locator.dart';
@@ -9,9 +10,9 @@ import 'package:maktabty/core/localization/l10n_ext.dart';
 import 'package:maktabty/features/products/domain/entities/product_entity.dart';
 import 'package:maktabty/features/products/presentation/cubit/products_list_cubit.dart';
 import 'package:maktabty/features/products/presentation/cubit/products_list_state.dart';
-import 'package:maktabty/features/sales/domain/entities/payment_method.dart';
 import 'package:maktabty/features/sales/domain/entities/sale_entity.dart';
 import 'package:maktabty/features/sales/domain/entities/sale_item_input.dart';
+import 'package:maktabty/features/sales/domain/validation/sale_validator.dart';
 import 'package:maktabty/features/sales/presentation/cubit/create_sale_by_code_cubit.dart';
 import 'package:maktabty/features/sales/presentation/cubit/create_sale_by_code_state.dart';
 import 'package:maktabty/features/sales/presentation/cubit/create_sale_cubit.dart';
@@ -169,9 +170,15 @@ class _NewSaleTabState extends State<_NewSaleTab> {
               onCashChanged: cubit.setCashAmount,
               onCardChanged: cubit.setCardAmount,
               onConfirm: () {
-                final error = _validatePayment(total, state);
+                final error = SaleValidator.validatePayment(
+                  method: state.paymentMethod,
+                  total: total,
+                  paidAmount: state.paidAmount,
+                  cashAmount: state.cashAmount,
+                  cardAmount: state.cardAmount,
+                );
                 if (error != null) {
-                  AppToast.show(error);
+                  AppToast.show(context.localizeValidation(error));
                   return;
                 }
                 Navigator.of(sheetContext).pop(true);
@@ -183,34 +190,6 @@ class _NewSaleTabState extends State<_NewSaleTab> {
     );
 
     return result == true;
-  }
-
-  String? _validatePayment(double? total, CreateSaleState state) {
-    final l10n = context.l10n;
-    switch (state.paymentMethod) {
-      case PaymentMethod.cash:
-        if (state.paidAmount == null || state.paidAmount! <= 0) {
-          return l10n.enterPaidAmount;
-        }
-        break;
-      case PaymentMethod.card:
-        break;
-      case PaymentMethod.mixed:
-        if (state.cashAmount == null || state.cashAmount! <= 0) {
-          return l10n.enterCashAmount;
-        }
-        if (state.cardAmount == null || state.cardAmount! <= 0) {
-          return l10n.enterCardAmount;
-        }
-        if (total != null) {
-          final sum = state.cashAmount! + state.cardAmount!;
-          if (sum - total > 0.01) {
-            return l10n.paymentTotalTooHigh;
-          }
-        }
-        break;
-    }
-    return null;
   }
 
   double? _parsePrice(String value) {
@@ -226,9 +205,10 @@ class _NewSaleTabState extends State<_NewSaleTab> {
       listener: (context, state) {
         if (state.status == CreateSaleStatus.failure) {
           AppToast.show(
-            state.message == null
-                ? context.l10n.unableToCreateSale
-                : context.localizeAppError(state.message!),
+            context.localizeFailure(
+              state.failure,
+              fallback: context.l10n.unableToCreateSale,
+            ),
           );
         }
         if (state.status == CreateSaleStatus.success) {
@@ -275,9 +255,10 @@ class _NewSaleTabState extends State<_NewSaleTab> {
 
               if (state.status == ProductsListStatus.failure) {
                 return Text(
-                  state.errorMessage == null
-                      ? context.l10n.inventoryLoadFailed
-                      : context.localizeAppError(state.errorMessage!),
+                  context.localizeFailure(
+                    state.failure,
+                    fallback: context.l10n.inventoryLoadFailed,
+                  ),
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: Theme.of(context).colorScheme.error,
                   ),
@@ -445,9 +426,15 @@ class _NewSaleByCodeTabState extends State<_NewSaleByCodeTab> {
               onCashChanged: cubit.setCashAmount,
               onCardChanged: cubit.setCardAmount,
               onConfirm: () {
-                final error = _validatePayment(state);
+                final error = SaleValidator.validatePayment(
+                  method: state.paymentMethod,
+                  total: null,
+                  paidAmount: state.paidAmount,
+                  cashAmount: state.cashAmount,
+                  cardAmount: state.cardAmount,
+                );
                 if (error != null) {
-                  AppToast.show(error);
+                  AppToast.show(context.localizeValidation(error));
                   return;
                 }
                 Navigator.of(sheetContext).pop(true);
@@ -459,28 +446,6 @@ class _NewSaleByCodeTabState extends State<_NewSaleByCodeTab> {
     );
 
     return result == true;
-  }
-
-  String? _validatePayment(CreateSaleByCodeState state) {
-    final l10n = context.l10n;
-    switch (state.paymentMethod) {
-      case PaymentMethod.cash:
-        if (state.paidAmount == null || state.paidAmount! <= 0) {
-          return l10n.enterPaidAmount;
-        }
-        break;
-      case PaymentMethod.card:
-        break;
-      case PaymentMethod.mixed:
-        if (state.cashAmount == null || state.cashAmount! <= 0) {
-          return l10n.enterCashAmount;
-        }
-        if (state.cardAmount == null || state.cardAmount! <= 0) {
-          return l10n.enterCardAmount;
-        }
-        break;
-    }
-    return null;
   }
 
   double? _parsePrice(String value) {
@@ -496,9 +461,10 @@ class _NewSaleByCodeTabState extends State<_NewSaleByCodeTab> {
       listener: (context, state) {
         if (state.status == CreateSaleByCodeStatus.failure) {
           AppToast.show(
-            state.message == null
-                ? context.l10n.unableToCreateSale
-                : context.localizeAppError(state.message!),
+            context.localizeFailure(
+              state.failure,
+              fallback: context.l10n.unableToCreateSale,
+            ),
           );
         }
         if (state.status == CreateSaleByCodeStatus.success) {
@@ -719,13 +685,18 @@ class _TodaySalesSection extends StatelessWidget {
         return;
       }
       final confirmed = await _confirmDeleteSale(context);
-      if (!confirmed) return;
+      if (!context.mounted || !confirmed) return;
       final deleted =
           await _runWithLoading<bool>(context, () async {
             await context.read<TodaySalesCubit>().deleteSale(sale.id);
             return true;
           }).onError((error, stackTrace) {
-            final message = error is String ? error : l10n.unableToLoadSales;
+            final message = error is AppFailure && context.mounted
+                ? context.localizeFailure(
+                    error,
+                    fallback: l10n.unableToLoadSales,
+                  )
+                : l10n.unableToLoadSales;
             AppToast.show(message);
             return false;
           });
@@ -777,7 +748,12 @@ class _TodaySalesSection extends StatelessWidget {
           context,
           () => context.read<TodaySalesCubit>().getReceiptForSale(sale.id),
         ).onError((error, stackTrace) {
-          final message = error is String ? error : l10n.unableToLoadReceipt;
+          final message = error is AppFailure && context.mounted
+              ? context.localizeFailure(
+                  error,
+                  fallback: l10n.unableToLoadReceipt,
+                )
+              : l10n.unableToLoadReceipt;
           AppToast.show(message);
           return null;
         });
@@ -854,9 +830,10 @@ class _TodaySalesSection extends StatelessWidget {
                     const SizedBox(width: AppSpacing.s),
                     Expanded(
                       child: Text(
-                        state.message == null
-                            ? context.l10n.unableToLoadSales
-                            : context.localizeAppError(state.message!),
+                        context.localizeFailure(
+                          state.failure,
+                          fallback: context.l10n.unableToLoadSales,
+                        ),
                         style: textTheme.bodySmall?.copyWith(
                           color: Theme.of(context).colorScheme.error,
                         ),

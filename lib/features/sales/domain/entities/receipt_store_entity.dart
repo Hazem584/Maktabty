@@ -1,4 +1,6 @@
-class ReceiptStoreEntity {
+import 'package:equatable/equatable.dart';
+
+class ReceiptStoreEntity extends Equatable {
   final String name;
   final String? address;
   final String? phone;
@@ -10,4 +12,7 @@ class ReceiptStoreEntity {
     this.phone,
     this.taxNumber,
   });
+
+  @override
+  List<Object?> get props => [name, address, phone, taxNumber];
 }

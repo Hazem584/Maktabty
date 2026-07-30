@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:maktabty/core/routes/auth_guard.dart';
+import 'package:maktabty/core/routes/route_not_found_screen.dart';
 import 'package:maktabty/features/auth/presentation/pages/create_account_screen.dart';
 import 'package:maktabty/features/auth/presentation/pages/auth_gate_screen.dart';
 import 'package:maktabty/features/auth/presentation/pages/login_screen.dart';
@@ -51,7 +52,8 @@ class AppRoutes {
         );
       default:
         return MaterialPageRoute(
-          builder: (_) => const AuthGuard(child: HomeScreen()),
+          settings: settings,
+          builder: (_) => RouteNotFoundScreen(routeName: settings.name),
         );
     }
   }

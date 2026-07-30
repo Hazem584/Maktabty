@@ -52,8 +52,9 @@ class _MonthlyWorkHoursBodyState extends State<_MonthlyWorkHoursBody> {
       initialDate: _selectedMonth,
       firstDate: DateTime(now.year - 2, 1, 1),
       lastDate: DateTime(now.year + 1, 12, 31),
-      helpText: 'Select month (pick any day)',
+      helpText: context.l10n.selectMonth,
     );
+    if (!mounted) return;
     if (picked != null) {
       setState(() {
         _selectedMonth = DateTime(picked.year, picked.month);
@@ -71,9 +72,10 @@ class _MonthlyWorkHoursBodyState extends State<_MonthlyWorkHoursBody> {
         listener: (context, state) {
           if (state.status == MonthlyWorkHoursStatus.failure) {
             AppToast.show(
-              state.message == null
-                  ? context.l10n.unableToLoadReport
-                  : context.localizeAppError(state.message!),
+              context.localizeFailure(
+                state.failure,
+                fallback: context.l10n.unableToLoadReport,
+              ),
             );
           }
         },
@@ -87,9 +89,9 @@ class _MonthlyWorkHoursBodyState extends State<_MonthlyWorkHoursBody> {
           if (report == null) {
             return Center(
               child: Text(
-                state.message == null
+                state.failure == null
                     ? context.l10n.noReportData
-                    : context.localizeAppError(state.message!),
+                    : context.localizeFailure(state.failure),
                 style: Theme.of(context).textTheme.bodySmall,
               ),
             );

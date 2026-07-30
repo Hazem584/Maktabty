@@ -1082,12 +1082,6 @@ abstract class AppLocalizations {
   /// **'Align the barcode or QR code inside the frame'**
   String get scanOverlayHint;
 
-  /// No description provided for @salesNotImplemented.
-  ///
-  /// In en, this message translates to:
-  /// **'Sales are not implemented yet.'**
-  String get salesNotImplemented;
-
   /// No description provided for @selectDate.
   ///
   /// In en, this message translates to:
@@ -1519,6 +1513,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The printer disconnected while printing.'**
   String get printerDisconnected;
+
+  /// No description provided for @invalidProductCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid product code.'**
+  String get invalidProductCode;
+
+  /// No description provided for @invalidSaleQuantity.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid sale quantity.'**
+  String get invalidSaleQuantity;
+
+  /// No description provided for @duplicateSaleItem.
+  ///
+  /// In en, this message translates to:
+  /// **'A product cannot appear more than once in a sale.'**
+  String get duplicateSaleItem;
+
+  /// No description provided for @overlappingShifts.
+  ///
+  /// In en, this message translates to:
+  /// **'Work shifts cannot overlap.'**
+  String get overlappingShifts;
+
+  /// No description provided for @routeNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'This page could not be found.'**
+  String get routeNotFound;
+
+  /// No description provided for @backToHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to home'**
+  String get backToHome;
 }
 
 class _AppLocalizationsDelegate

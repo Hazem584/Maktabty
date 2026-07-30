@@ -33,6 +33,7 @@ class _PrinterSettingsScreenState extends State<PrinterSettingsScreen> {
 
   Future<void> _load() async {
     final settings = await _storage.load();
+    if (!mounted) return;
     setState(() {
       _settings = settings;
       _loading = false;

@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:maktabty/core/network/api_exceptions.dart';
+import 'package:maktabty/core/errors/app_failure.dart';
 import 'package:maktabty/features/sales/domain/entities/receipt_entity.dart';
 import 'package:maktabty/features/sales/domain/entities/sale_entity.dart';
 import 'package:maktabty/features/sales/domain/entities/today_sales_response_entity.dart';
@@ -7,7 +7,6 @@ import 'package:maktabty/features/sales/domain/entities/today_sales_summary_enti
 import 'package:maktabty/features/sales/domain/usecases/delete_sale_usecase.dart';
 import 'package:maktabty/features/sales/domain/usecases/get_receipt_for_sale_usecase.dart';
 import 'package:maktabty/features/sales/domain/usecases/get_today_sales_usecase.dart';
-import 'package:maktabty/features/sales/presentation/cubit/sales_error_mapper.dart';
 import 'package:maktabty/features/sales/presentation/cubit/today_sales_state.dart';
 
 class TodaySalesCubit extends Cubit<TodaySalesState> {
@@ -27,20 +26,31 @@ class TodaySalesCubit extends Cubit<TodaySalesState> {
   Future<void> load({String? date}) async {
     if (state.status == TodaySalesStatus.loading) return;
     if (isClosed) return;
-    emit(state.copyWith(status: TodaySalesStatus.loading, message: null));
+    emit(
+      state.copyWith(
+        status: TodaySalesStatus.loading,
+        response: null,
+        failure: null,
+      ),
+    );
 
     try {
       final response = await _getTodaySalesUseCase(date: date);
       if (isClosed) return;
       emit(
-        state.copyWith(status: TodaySalesStatus.success, response: response),
+        state.copyWith(
+          status: TodaySalesStatus.success,
+          response: response,
+          failure: null,
+        ),
       );
-    } on ApiException catch (error) {
+    } on AppFailure catch (failure) {
       if (isClosed) return;
       emit(
         state.copyWith(
           status: TodaySalesStatus.failure,
-          message: mapSalesError(error),
+          response: null,
+          failure: failure,
         ),
       );
     } catch (_) {
@@ -48,7 +58,8 @@ class TodaySalesCubit extends Cubit<TodaySalesState> {
       emit(
         state.copyWith(
           status: TodaySalesStatus.failure,
-          message: 'Something went wrong. Please try again.',
+          response: null,
+          failure: const UnknownFailure(),
         ),
       );
     }
@@ -57,10 +68,10 @@ class TodaySalesCubit extends Cubit<TodaySalesState> {
   Future<ReceiptEntity> getReceiptForSale(String saleId) async {
     try {
       return await _getReceiptForSaleUseCase(saleId);
-    } on ApiException catch (error) {
-      throw mapSalesError(error);
+    } on AppFailure {
+      rethrow;
     } catch (_) {
-      throw 'Something went wrong. Please try again.';
+      throw const UnknownFailure();
     }
   }
 
@@ -68,18 +79,20 @@ class TodaySalesCubit extends Cubit<TodaySalesState> {
     try {
       await _deleteSaleUseCase(id: saleId);
       _removeSaleFromState(saleId);
-    } on ApiException catch (error) {
-      if (error.statusCode == 404) {
+    } on NotFoundFailure {
+      if (!isClosed) {
         _removeSaleFromState(saleId);
-        return;
       }
-      throw mapSalesError(error);
+      return;
+    } on AppFailure {
+      rethrow;
     } catch (_) {
-      throw 'Something went wrong. Please try again.';
+      throw const UnknownFailure();
     }
   }
 
   void _removeSaleFromState(String saleId) {
+    if (isClosed) return;
     final response = state.response;
     if (response == null) return;
     SaleEntity? removedSale;

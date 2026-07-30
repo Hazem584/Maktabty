@@ -10,6 +10,7 @@ class ProductModel {
   final String? code;
   final DateTime? createdAt;
   final DateTime? updatedAt;
+  final String? category;
 
   const ProductModel({
     required this.id,
@@ -19,6 +20,7 @@ class ProductModel {
     this.code,
     this.createdAt,
     this.updatedAt,
+    this.category,
   });
 
   factory ProductModel.fromJson(Map<String, dynamic> json) {
@@ -33,6 +35,9 @@ class ProductModel {
       code: json['code']?.toString(),
       createdAt: optionalDateTime(json, 'createdAt', operation: operation),
       updatedAt: optionalDateTime(json, 'updatedAt', operation: operation),
+      category: json['category'] is String
+          ? TextSanitizer.fixMojibake(json['category'] as String)
+          : null,
     );
   }
 
@@ -45,6 +50,7 @@ class ProductModel {
       code: code,
       createdAt: createdAt,
       updatedAt: updatedAt,
+      category: category,
     );
   }
 }

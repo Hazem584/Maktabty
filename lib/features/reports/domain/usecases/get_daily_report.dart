@@ -1,5 +1,5 @@
 ﻿import 'package:maktabty/features/reports/domain/entities/daily_report.dart';
-import 'package:maktabty/features/reports/domain/repositories/reports_repo.dart';
+import 'package:maktabty/features/reports/domain/repositories/reports_repository.dart';
 
 class GetDailyReportUseCase {
   final ReportsRepository _repository;

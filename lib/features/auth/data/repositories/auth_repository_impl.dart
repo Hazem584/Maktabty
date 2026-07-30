@@ -1,6 +1,5 @@
-import 'package:dio/dio.dart';
-import 'package:maktabty/core/network/api_exceptions.dart';
-import 'package:maktabty/core/network/data_parsing_exception.dart';
+import 'package:maktabty/core/errors/app_failure.dart';
+import 'package:maktabty/core/network/app_failure_mapper.dart';
 import 'package:maktabty/core/storage/token_storage.dart';
 import 'package:maktabty/features/auth/data/datasources/auth_remote_datasource.dart';
 import 'package:maktabty/features/auth/domain/entities/user_entity.dart';
@@ -33,14 +32,12 @@ class AuthRepositoryImpl implements AuthRepository {
         await _tokenStorage.saveRefreshToken(response.refreshToken);
       }
       return response.user.toEntity();
-    } on DioException catch (error) {
-      final apiException = ApiExceptions.fromDio(error);
-      if (apiException.statusCode == 401) {
-        throw const ApiException('Invalid email or password');
+    } catch (error) {
+      final failure = AppFailureMapper.fromException(error);
+      if (failure is UnauthorizedFailure) {
+        throw const ValidationFailure(code: FailureCode.invalidCredentials);
       }
-      throw apiException;
-    } on DataParsingException catch (error) {
-      throw ApiExceptions.fromParsing(error);
+      throw failure;
     }
   }
 
@@ -65,10 +62,8 @@ class AuthRepositoryImpl implements AuthRepository {
         await _tokenStorage.saveRefreshToken(response.refreshToken);
       }
       return response.user.toEntity();
-    } on DioException catch (error) {
-      throw ApiExceptions.fromDio(error);
-    } on DataParsingException catch (error) {
-      throw ApiExceptions.fromParsing(error);
+    } catch (error) {
+      throw AppFailureMapper.fromException(error);
     }
   }
 
@@ -76,10 +71,7 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<UserEntity> refresh() async {
     final refreshToken = await _tokenStorage.getRefreshToken();
     if (refreshToken == null || refreshToken.isEmpty) {
-      throw const ApiException(
-        'Missing refresh token',
-        kind: ApiErrorKind.unauthorized,
-      );
+      throw const UnauthorizedFailure();
     }
 
     try {
@@ -93,10 +85,8 @@ class AuthRepositoryImpl implements AuthRepository {
         await _tokenStorage.saveRefreshToken(response.refreshToken);
       }
       return response.user.toEntity();
-    } on DioException catch (error) {
-      throw ApiExceptions.fromDio(error);
-    } on DataParsingException catch (error) {
-      throw ApiExceptions.fromParsing(error);
+    } catch (error) {
+      throw AppFailureMapper.fromException(error);
     }
   }
 
@@ -105,10 +95,8 @@ class AuthRepositoryImpl implements AuthRepository {
     try {
       final user = await _remoteDataSource.getMe();
       return user.toEntity();
-    } on DioException catch (error) {
-      throw ApiExceptions.fromDio(error);
-    } on DataParsingException catch (error) {
-      throw ApiExceptions.fromParsing(error);
+    } catch (error) {
+      throw AppFailureMapper.fromException(error);
     }
   }
 

@@ -37,19 +37,19 @@ class NetworkDiagnosticsInterceptor extends Interceptor {
   }
 
   @override
-  void onError(DioException error, ErrorInterceptorHandler handler) {
+  void onError(DioException err, ErrorInterceptorHandler handler) {
     if (kDebugMode) {
-      final safeMessage = _safeResponseMessage(error.response?.data);
+      final safeMessage = _safeResponseMessage(err.response?.data);
       debugPrint(
-        '[HTTP] error method=${error.requestOptions.method} '
-        'url=${_redactedUrl(error.requestOptions.uri)} '
-        'type=${error.type.name} '
-        'status=${error.response?.statusCode ?? 'none'} '
-        'durationMs=${_durationMs(error.requestOptions)}'
+        '[HTTP] error method=${err.requestOptions.method} '
+        'url=${_redactedUrl(err.requestOptions.uri)} '
+        'type=${err.type.name} '
+        'status=${err.response?.statusCode ?? 'none'} '
+        'durationMs=${_durationMs(err.requestOptions)}'
         '${safeMessage == null ? '' : ' message=$safeMessage'}',
       );
     }
-    handler.next(error);
+    handler.next(err);
   }
 
   String _redactedUrl(Uri uri) {

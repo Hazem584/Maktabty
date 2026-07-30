@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:maktabty/core/network/api_exceptions.dart';
+import 'package:maktabty/core/errors/app_failure.dart';
 import 'package:maktabty/features/work_hours/domain/usecases/get_monthly_work_hours.dart';
 import 'package:maktabty/features/work_hours/presentation/cubit/monthly_work_hours_state.dart';
 
@@ -12,29 +12,48 @@ class MonthlyWorkHoursCubit extends Cubit<MonthlyWorkHoursState> {
        super(MonthlyWorkHoursState.initial());
 
   Future<void> load({required DateTime month}) async {
-    emit(state.copyWith(status: MonthlyWorkHoursStatus.loading, message: null));
+    if (isClosed || state.status == MonthlyWorkHoursStatus.loading) return;
+    emit(
+      state.copyWith(
+        status: MonthlyWorkHoursStatus.loading,
+        report: null,
+        failure: null,
+      ),
+    );
 
     try {
       final report = await _getMonthlyWorkHoursUseCase(
         month: _formatMonth(month),
       );
-      emit(
-        state.copyWith(status: MonthlyWorkHoursStatus.success, report: report),
-      );
-    } on ApiException catch (error) {
-      emit(
-        state.copyWith(
-          status: MonthlyWorkHoursStatus.failure,
-          message: _mapError(error),
-        ),
-      );
+      if (!isClosed) {
+        emit(
+          state.copyWith(
+            status: MonthlyWorkHoursStatus.success,
+            report: report,
+            failure: null,
+          ),
+        );
+      }
+    } on AppFailure catch (failure) {
+      if (!isClosed) {
+        emit(
+          state.copyWith(
+            status: MonthlyWorkHoursStatus.failure,
+            report: null,
+            failure: failure,
+          ),
+        );
+      }
     } catch (_) {
-      emit(
-        state.copyWith(
-          status: MonthlyWorkHoursStatus.failure,
-          message: 'Something went wrong. Please try again.',
-        ),
-      );
+      if (!isClosed) {
+        emit(
+          state.copyWith(
+            status: MonthlyWorkHoursStatus.failure,
+            report: null,
+            failure: const UnknownFailure(),
+          ),
+        );
+      }
     }
   }
 
@@ -44,14 +63,4 @@ class MonthlyWorkHoursCubit extends Cubit<MonthlyWorkHoursState> {
     return '$year-$month';
   }
 
-  String _mapError(ApiException error) {
-    final status = error.statusCode;
-    if (status == 401) {
-      return 'Session expired. Please sign in again.';
-    }
-    if (status == 403) {
-      return 'Access denied. Owner role required.';
-    }
-    return error.message;
-  }
 }

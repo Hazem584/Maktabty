@@ -10,6 +10,7 @@ import 'package:maktabty/features/inventory/presentation/widgets/product_form_fi
 import 'package:maktabty/features/inventory/presentation/widgets/scan_code_card.dart';
 import 'package:maktabty/features/products/presentation/cubit/product_form_cubit.dart';
 import 'package:maktabty/features/products/presentation/cubit/product_form_state.dart';
+import 'package:maktabty/features/products/domain/validation/product_validator.dart';
 
 class AddProductScreenBody extends StatefulWidget {
   const AddProductScreenBody({super.key});
@@ -45,28 +46,22 @@ class _AddProductScreenBodyState extends State<AddProductScreenBody> {
   }
 
   void _saveProduct() {
-    final name = _nameController.text.trim();
-    final priceValue = double.tryParse(_priceController.text.trim());
-    final stockValue = int.tryParse(_quantityController.text.trim());
-
-    if (name.length < 2) {
-      AppToast.show(context.l10n.nameTooShort);
-      return;
-    }
-    if (priceValue == null || priceValue <= 0) {
-      AppToast.show(context.l10n.enterValidPrice);
-      return;
-    }
-    if (stockValue == null || stockValue < 0) {
-      AppToast.show(context.l10n.enterValidStock);
-      return;
-    }
-
-    context.read<ProductFormCubit>().createProduct(
-      name: name,
-      price: priceValue,
-      stock: stockValue,
+    final result = ProductValidator.validate(
+      name: _nameController.text,
+      price: _priceController.text,
+      stock: _quantityController.text,
       code: _code,
+    );
+    if (!result.isValid) {
+      AppToast.show(context.localizeValidation(result.error!));
+      return;
+    }
+    final input = result.value!;
+    context.read<ProductFormCubit>().createProduct(
+      name: input.name,
+      price: input.price,
+      stock: input.stock,
+      code: input.code,
     );
   }
 
@@ -76,8 +71,7 @@ class _AddProductScreenBodyState extends State<AddProductScreenBody> {
       listenWhen: (previous, current) => previous.status != current.status,
       listener: (context, state) {
         if (state.status == ProductFormStatus.failure) {
-          final message = state.message ?? context.l10n.somethingWentWrong;
-          AppToast.show(context.localizeAppError(message));
+          AppToast.show(context.localizeFailure(state.failure));
         }
         if (state.status == ProductFormStatus.success) {
           AppToast.show(context.l10n.productSaved);

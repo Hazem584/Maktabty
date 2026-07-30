@@ -164,7 +164,6 @@
   "toggleFlashlight": "Toggle flashlight",
   "flipCamera": "Flip camera",
   "scanOverlayHint": "Align the barcode or QR code inside the frame",
-  "salesNotImplemented": "Sales are not implemented yet.",
   "selectDate": "Select Date",
   "hoursLabel": "{value} hours",
   "@hoursLabel": {
@@ -246,5 +245,11 @@
   "bluetoothDisabled": "Turn on Bluetooth and try again.",
   "bluetoothPermissionRequired": "Bluetooth permission is required to find paired printers.",
   "printerConnectionFailed": "Could not connect to the selected printer.",
-  "printerDisconnected": "The printer disconnected while printing."
+  "printerDisconnected": "The printer disconnected while printing.",
+  "invalidProductCode": "Enter a valid product code.",
+  "invalidSaleQuantity": "Enter a valid sale quantity.",
+  "duplicateSaleItem": "A product cannot appear more than once in a sale.",
+  "overlappingShifts": "Work shifts cannot overlap.",
+  "routeNotFound": "This page could not be found.",
+  "backToHome": "Back to home"
 }

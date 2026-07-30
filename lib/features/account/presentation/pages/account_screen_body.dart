@@ -24,9 +24,6 @@ class _AccountScreenBodyState extends State<AccountScreenBody> {
   }
 
   void _saveChanges() {
-    debugPrint('Email: ${_emailController.text}');
-    debugPrint('Password: ${_passwordController.text}');
-
     AppToast.show(context.l10n.changesSavedDemo);
   }
 

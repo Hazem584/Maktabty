@@ -1,6 +1,4 @@
-import 'package:dio/dio.dart';
-import 'package:maktabty/core/network/api_exceptions.dart';
-import 'package:maktabty/core/network/data_parsing_exception.dart';
+import 'package:maktabty/core/network/app_failure_mapper.dart';
 import 'package:maktabty/features/sales/data/datasources/sales_remote_datasource.dart';
 import 'package:maktabty/features/sales/domain/entities/payment_method.dart';
 import 'package:maktabty/features/sales/domain/entities/receipt_entity.dart';
@@ -33,10 +31,8 @@ class SalesRepositoryImpl implements SalesRepository {
         cardAmount: cardAmount,
       );
       return response.toEntity();
-    } on DioException catch (error) {
-      throw ApiExceptions.fromDio(error);
-    } on DataParsingException catch (error) {
-      throw ApiExceptions.fromParsing(error);
+    } catch (error) {
+      throw AppFailureMapper.fromException(error);
     }
   }
 
@@ -61,10 +57,8 @@ class SalesRepositoryImpl implements SalesRepository {
         cardAmount: cardAmount,
       );
       return response.toEntity();
-    } on DioException catch (error) {
-      throw ApiExceptions.fromDio(error);
-    } on DataParsingException catch (error) {
-      throw ApiExceptions.fromParsing(error);
+    } catch (error) {
+      throw AppFailureMapper.fromException(error);
     }
   }
 
@@ -73,10 +67,8 @@ class SalesRepositoryImpl implements SalesRepository {
     try {
       final response = await _remoteDataSource.getTodaySales(date: date);
       return response.toEntity();
-    } on DioException catch (error) {
-      throw ApiExceptions.fromDio(error);
-    } on DataParsingException catch (error) {
-      throw ApiExceptions.fromParsing(error);
+    } catch (error) {
+      throw AppFailureMapper.fromException(error);
     }
   }
 
@@ -85,10 +77,8 @@ class SalesRepositoryImpl implements SalesRepository {
     try {
       final response = await _remoteDataSource.deleteSale(id);
       return response.toEntity();
-    } on DioException catch (error) {
-      throw ApiExceptions.fromDio(error);
-    } on DataParsingException catch (error) {
-      throw ApiExceptions.fromParsing(error);
+    } catch (error) {
+      throw AppFailureMapper.fromException(error);
     }
   }
 
@@ -97,10 +87,8 @@ class SalesRepositoryImpl implements SalesRepository {
     try {
       final response = await _remoteDataSource.getReceiptForSale(saleId);
       return response.toEntity();
-    } on DioException catch (error) {
-      throw ApiExceptions.fromDio(error);
-    } on DataParsingException catch (error) {
-      throw ApiExceptions.fromParsing(error);
+    } catch (error) {
+      throw AppFailureMapper.fromException(error);
     }
   }
 }

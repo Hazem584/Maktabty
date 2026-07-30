@@ -1,4 +1,6 @@
-﻿class TopProductEntity {
+import 'package:equatable/equatable.dart';
+
+class TopProductEntity extends Equatable {
   final String productId;
   final String name;
   final int quantitySold;
@@ -10,9 +12,12 @@
     required this.quantitySold,
     required this.amount,
   });
+
+  @override
+  List<Object?> get props => [productId, name, quantitySold, amount];
 }
 
-class DailyReportEntity {
+class DailyReportEntity extends Equatable {
   final String date;
   final double totalSalesAmount;
   final int totalOrders;
@@ -26,4 +31,13 @@ class DailyReportEntity {
     required this.totalItemsSold,
     required this.topProducts,
   });
+
+  @override
+  List<Object?> get props => [
+    date,
+    totalSalesAmount,
+    totalOrders,
+    totalItemsSold,
+    topProducts,
+  ];
 }

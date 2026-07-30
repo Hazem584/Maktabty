@@ -3,8 +3,9 @@ import 'package:maktabty/features/sales/domain/entities/receipt_item_entity.dart
 import 'package:maktabty/features/sales/domain/entities/receipt_payment_entity.dart';
 import 'package:maktabty/features/sales/domain/entities/receipt_store_entity.dart';
 import 'package:maktabty/features/sales/domain/entities/receipt_totals_entity.dart';
+import 'package:equatable/equatable.dart';
 
-class ReceiptEntity {
+class ReceiptEntity extends Equatable {
   final String receiptId;
   final String receiptNo;
   final DateTime? createdAt;
@@ -36,4 +37,22 @@ class ReceiptEntity {
     required this.payment,
     required this.footerLines,
   });
+
+  @override
+  List<Object?> get props => [
+    receiptId,
+    receiptNo,
+    createdAt,
+    displayDate,
+    displayTime,
+    currency,
+    store,
+    cashier,
+    items,
+    totalQty,
+    distinctItems,
+    totals,
+    payment,
+    footerLines,
+  ];
 }

@@ -1,7 +1,7 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:maktabty/core/network/api_exceptions.dart';
+import 'package:maktabty/core/errors/app_failure.dart';
 import 'package:maktabty/features/sales/domain/entities/payment_method.dart';
 import 'package:maktabty/features/sales/domain/entities/product_mini_entity.dart';
 import 'package:maktabty/features/sales/domain/entities/receipt_entity.dart';
@@ -92,7 +92,7 @@ void main() {
             cardAmount: any(named: 'cardAmount'),
           ),
         ).thenAnswer((_) async => response);
-        return CreateSaleCubit(createSaleUseCase: useCase);
+        return CreateSaleCubit(createSaleUseCase: useCase)..setPaidAmount(10);
       },
       act: (cubit) => cubit.submit(items: itemsForSuccess),
       expect: () => [
@@ -109,7 +109,7 @@ void main() {
     );
 
     blocTest<CreateSaleCubit, CreateSaleState>(
-      'emits failure on ApiException',
+      'emits failure on AppFailure',
       build: () {
         when(
           () => useCase(
@@ -119,8 +119,8 @@ void main() {
             cashAmount: any(named: 'cashAmount'),
             cardAmount: any(named: 'cardAmount'),
           ),
-        ).thenThrow(const ApiException('Server error', statusCode: 500));
-        return CreateSaleCubit(createSaleUseCase: useCase);
+        ).thenThrow(const ServerFailure(statusCode: 500));
+        return CreateSaleCubit(createSaleUseCase: useCase)..setPaidAmount(10);
       },
       act: (cubit) => cubit.submit(items: itemsForFailure),
       expect: () => [
@@ -182,11 +182,11 @@ void main() {
     );
 
     blocTest<TodaySalesCubit, TodaySalesState>(
-      'emits failure on ApiException',
+      'emits failure on AppFailure',
       build: () {
         when(
           () => useCase(date: null),
-        ).thenThrow(const ApiException('Unauthorized', statusCode: 401));
+        ).thenThrow(const UnauthorizedFailure());
         return TodaySalesCubit(
           getTodaySalesUseCase: useCase,
           getReceiptForSaleUseCase: receiptUseCase,

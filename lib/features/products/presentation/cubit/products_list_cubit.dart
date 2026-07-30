@@ -1,10 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:maktabty/core/network/api_exceptions.dart';
+import 'package:maktabty/core/errors/app_failure.dart';
 import 'package:maktabty/features/products/domain/usecases/delete_product_usecase.dart';
 import 'package:maktabty/features/products/domain/usecases/get_products_usecase.dart';
-import 'package:maktabty/features/products/presentation/cubit/products_error_mapper.dart';
 import 'package:maktabty/features/products/presentation/cubit/products_list_state.dart';
 
 class ProductsListCubit extends Cubit<ProductsListState> {
@@ -33,15 +32,18 @@ class ProductsListCubit extends Cubit<ProductsListState> {
   void updateSearch(String value) {
     final query = value.trim();
     if (query == state.search) return;
+    if (isClosed) return;
     emit(state.copyWith(search: query));
     _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 300), () {
+      if (isClosed) return;
       _fetch(page: 1, replace: true, showLoading: true);
     });
   }
 
   void setLowStock(bool value) {
     if (value == state.lowStock) return;
+    if (isClosed) return;
     emit(state.copyWith(lowStock: value));
     _fetch(page: 1, replace: true, showLoading: true);
   }
@@ -62,21 +64,25 @@ class ProductsListCubit extends Cubit<ProductsListState> {
       await _deleteProductUseCase(id: id);
       await _fetch(page: 1, replace: true, showLoading: false);
       return true;
-    } on ApiException catch (error) {
-      emit(
-        state.copyWith(
-          status: ProductsListStatus.failure,
-          errorMessage: mapProductError(error),
-        ),
-      );
+    } on AppFailure catch (failure) {
+      if (!isClosed) {
+        emit(
+          state.copyWith(
+            status: ProductsListStatus.failure,
+            failure: failure,
+          ),
+        );
+      }
       return false;
     } catch (_) {
-      emit(
-        state.copyWith(
-          status: ProductsListStatus.failure,
-          errorMessage: 'Something went wrong. Please try again.',
-        ),
-      );
+      if (!isClosed) {
+        emit(
+          state.copyWith(
+            status: ProductsListStatus.failure,
+            failure: const UnknownFailure(),
+          ),
+        );
+      }
       return false;
     }
   }
@@ -92,14 +98,20 @@ class ProductsListCubit extends Cubit<ProductsListState> {
     if (showLoading) {
       if (isClosed) return;
       emit(
-        state.copyWith(status: ProductsListStatus.loading, errorMessage: null),
+        state.copyWith(
+          status: ProductsListStatus.loading,
+          products: replace ? const [] : state.products,
+          page: replace ? 1 : state.page,
+          total: replace ? 0 : state.total,
+          failure: null,
+        ),
       );
     } else if (refreshing) {
       if (isClosed) return;
-      emit(state.copyWith(isRefreshing: true, errorMessage: null));
+      emit(state.copyWith(isRefreshing: true, failure: null));
     } else if (loadMore) {
       if (isClosed) return;
-      emit(state.copyWith(isLoadingMore: true, errorMessage: null));
+      emit(state.copyWith(isLoadingMore: true, failure: null));
     }
 
     try {
@@ -124,18 +136,17 @@ class ProductsListCubit extends Cubit<ProductsListState> {
           total: response.total,
           isLoadingMore: false,
           isRefreshing: false,
-          errorMessage: null,
+          failure: null,
         ),
       );
-    } on ApiException catch (error) {
-      final message = mapProductError(error);
+    } on AppFailure catch (failure) {
       if (isClosed) return;
       emit(
         state.copyWith(
           status: ProductsListStatus.failure,
           isLoadingMore: false,
           isRefreshing: false,
-          errorMessage: message,
+          failure: failure,
         ),
       );
     } catch (_) {
@@ -145,7 +156,7 @@ class ProductsListCubit extends Cubit<ProductsListState> {
           status: ProductsListStatus.failure,
           isLoadingMore: false,
           isRefreshing: false,
-          errorMessage: 'Something went wrong. Please try again.',
+          failure: const UnknownFailure(),
         ),
       );
     }

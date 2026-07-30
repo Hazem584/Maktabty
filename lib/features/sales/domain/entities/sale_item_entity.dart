@@ -1,6 +1,7 @@
+import 'package:equatable/equatable.dart';
 import 'package:maktabty/features/sales/domain/entities/product_mini_entity.dart';
 
-class SaleItemEntity {
+class SaleItemEntity extends Equatable {
   final ProductMiniEntity? product;
   final int quantity;
   final double unitPrice;
@@ -12,4 +13,7 @@ class SaleItemEntity {
     required this.unitPrice,
     required this.lineTotal,
   });
+
+  @override
+  List<Object?> get props => [product, quantity, unitPrice, lineTotal];
 }

@@ -1,10 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:maktabty/core/network/api_exceptions.dart';
+import 'package:maktabty/core/errors/app_failure.dart';
 import 'package:maktabty/features/products/domain/entities/product_entity.dart';
 import 'package:maktabty/features/products/domain/usecases/get_product_by_code_usecase.dart';
 import 'package:maktabty/features/products/domain/usecases/get_product_by_id_usecase.dart';
 import 'package:maktabty/features/products/presentation/cubit/product_details_state.dart';
-import 'package:maktabty/features/products/presentation/cubit/products_error_mapper.dart';
 
 class ProductDetailsCubit extends Cubit<ProductDetailsState> {
   final GetProductByIdUseCase _getProductByIdUseCase;
@@ -18,59 +17,98 @@ class ProductDetailsCubit extends Cubit<ProductDetailsState> {
        super(ProductDetailsState.initial());
 
   Future<void> loadById(String id) async {
-    emit(state.copyWith(status: ProductDetailsStatus.loading, message: null));
+    if (isClosed) return;
+    emit(
+      state.copyWith(
+        status: ProductDetailsStatus.loading,
+        product: null,
+        failure: null,
+      ),
+    );
     try {
       final product = await _getProductByIdUseCase(id);
-      emit(
-        state.copyWith(status: ProductDetailsStatus.success, product: product),
-      );
-    } on ApiException catch (error) {
-      emit(
-        state.copyWith(
-          status: ProductDetailsStatus.failure,
-          message: mapProductError(error),
-        ),
-      );
+      if (!isClosed) {
+        emit(
+          state.copyWith(
+            status: ProductDetailsStatus.success,
+            product: product,
+            failure: null,
+          ),
+        );
+      }
+    } on AppFailure catch (failure) {
+      if (!isClosed) {
+        emit(
+          state.copyWith(
+            status: ProductDetailsStatus.failure,
+            product: null,
+            failure: failure,
+          ),
+        );
+      }
     } catch (_) {
-      emit(
-        state.copyWith(
-          status: ProductDetailsStatus.failure,
-          message: 'Something went wrong. Please try again.',
-        ),
-      );
+      if (!isClosed) {
+        emit(
+          state.copyWith(
+            status: ProductDetailsStatus.failure,
+            product: null,
+            failure: const UnknownFailure(),
+          ),
+        );
+      }
     }
   }
 
   Future<void> loadByCode(String code) async {
-    emit(state.copyWith(status: ProductDetailsStatus.loading, message: null));
+    if (isClosed) return;
+    emit(
+      state.copyWith(
+        status: ProductDetailsStatus.loading,
+        product: null,
+        failure: null,
+      ),
+    );
     try {
       final product = await _getProductByCodeUseCase(code);
-      emit(
-        state.copyWith(status: ProductDetailsStatus.success, product: product),
-      );
-    } on ApiException catch (error) {
-      emit(
-        state.copyWith(
-          status: ProductDetailsStatus.failure,
-          message: mapProductError(error),
-        ),
-      );
+      if (!isClosed) {
+        emit(
+          state.copyWith(
+            status: ProductDetailsStatus.success,
+            product: product,
+            failure: null,
+          ),
+        );
+      }
+    } on AppFailure catch (failure) {
+      if (!isClosed) {
+        emit(
+          state.copyWith(
+            status: ProductDetailsStatus.failure,
+            product: null,
+            failure: failure,
+          ),
+        );
+      }
     } catch (_) {
-      emit(
-        state.copyWith(
-          status: ProductDetailsStatus.failure,
-          message: 'Something went wrong. Please try again.',
-        ),
-      );
+      if (!isClosed) {
+        emit(
+          state.copyWith(
+            status: ProductDetailsStatus.failure,
+            product: null,
+            failure: const UnknownFailure(),
+          ),
+        );
+      }
     }
   }
 
   void setSelected(ProductEntity? product) {
+    if (isClosed) return;
     emit(
       state.copyWith(
         status: ProductDetailsStatus.success,
         product: product,
-        message: null,
+        failure: null,
       ),
     );
   }

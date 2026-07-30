@@ -1,9 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:maktabty/core/network/api_exceptions.dart';
+import 'package:maktabty/core/errors/app_failure.dart';
 import 'package:maktabty/features/products/domain/usecases/create_product_usecase.dart';
 import 'package:maktabty/features/products/domain/usecases/update_product_usecase.dart';
 import 'package:maktabty/features/products/presentation/cubit/product_form_state.dart';
-import 'package:maktabty/features/products/presentation/cubit/products_error_mapper.dart';
 
 class ProductFormCubit extends Cubit<ProductFormState> {
   final CreateProductUseCase _createProductUseCase;
@@ -23,7 +22,14 @@ class ProductFormCubit extends Cubit<ProductFormState> {
     String? code,
   }) async {
     if (state.status == ProductFormStatus.loading) return;
-    emit(state.copyWith(status: ProductFormStatus.loading, message: null));
+    if (isClosed) return;
+    emit(
+      state.copyWith(
+        status: ProductFormStatus.loading,
+        product: null,
+        failure: null,
+      ),
+    );
 
     try {
       final product = await _createProductUseCase(
@@ -32,21 +38,35 @@ class ProductFormCubit extends Cubit<ProductFormState> {
         stock: stock,
         code: code,
       );
-      emit(state.copyWith(status: ProductFormStatus.success, product: product));
-    } on ApiException catch (error) {
-      emit(
-        state.copyWith(
-          status: ProductFormStatus.failure,
-          message: mapProductError(error),
-        ),
-      );
+      if (!isClosed) {
+        emit(
+          state.copyWith(
+            status: ProductFormStatus.success,
+            product: product,
+            failure: null,
+          ),
+        );
+      }
+    } on AppFailure catch (failure) {
+      if (!isClosed) {
+        emit(
+          state.copyWith(
+            status: ProductFormStatus.failure,
+            product: null,
+            failure: failure,
+          ),
+        );
+      }
     } catch (_) {
-      emit(
-        state.copyWith(
-          status: ProductFormStatus.failure,
-          message: 'Something went wrong. Please try again.',
-        ),
-      );
+      if (!isClosed) {
+        emit(
+          state.copyWith(
+            status: ProductFormStatus.failure,
+            product: null,
+            failure: const UnknownFailure(),
+          ),
+        );
+      }
     }
   }
 
@@ -58,7 +78,14 @@ class ProductFormCubit extends Cubit<ProductFormState> {
     String? code,
   }) async {
     if (state.status == ProductFormStatus.loading) return;
-    emit(state.copyWith(status: ProductFormStatus.loading, message: null));
+    if (isClosed) return;
+    emit(
+      state.copyWith(
+        status: ProductFormStatus.loading,
+        product: null,
+        failure: null,
+      ),
+    );
 
     try {
       final product = await _updateProductUseCase(
@@ -68,25 +95,39 @@ class ProductFormCubit extends Cubit<ProductFormState> {
         stock: stock,
         code: code,
       );
-      emit(state.copyWith(status: ProductFormStatus.success, product: product));
-    } on ApiException catch (error) {
-      emit(
-        state.copyWith(
-          status: ProductFormStatus.failure,
-          message: mapProductError(error),
-        ),
-      );
+      if (!isClosed) {
+        emit(
+          state.copyWith(
+            status: ProductFormStatus.success,
+            product: product,
+            failure: null,
+          ),
+        );
+      }
+    } on AppFailure catch (failure) {
+      if (!isClosed) {
+        emit(
+          state.copyWith(
+            status: ProductFormStatus.failure,
+            product: null,
+            failure: failure,
+          ),
+        );
+      }
     } catch (_) {
-      emit(
-        state.copyWith(
-          status: ProductFormStatus.failure,
-          message: 'Something went wrong. Please try again.',
-        ),
-      );
+      if (!isClosed) {
+        emit(
+          state.copyWith(
+            status: ProductFormStatus.failure,
+            product: null,
+            failure: const UnknownFailure(),
+          ),
+        );
+      }
     }
   }
 
   void reset() {
-    emit(ProductFormState.initial());
+    if (!isClosed) emit(ProductFormState.initial());
   }
 }

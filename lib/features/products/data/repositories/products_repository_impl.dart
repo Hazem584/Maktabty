@@ -1,6 +1,4 @@
-import 'package:dio/dio.dart';
-import 'package:maktabty/core/network/api_exceptions.dart';
-import 'package:maktabty/core/network/data_parsing_exception.dart';
+import 'package:maktabty/core/network/app_failure_mapper.dart';
 import 'package:maktabty/features/products/data/datasources/products_remote_datasource.dart';
 import 'package:maktabty/features/products/domain/entities/paginated_products_entity.dart';
 import 'package:maktabty/features/products/domain/entities/product_entity.dart';
@@ -27,10 +25,8 @@ class ProductsRepositoryImpl implements ProductsRepository {
         limit: limit,
       );
       return response.toEntity();
-    } on DioException catch (error) {
-      throw ApiExceptions.fromDio(error);
-    } on DataParsingException catch (error) {
-      throw ApiExceptions.fromParsing(error);
+    } catch (error) {
+      throw AppFailureMapper.fromException(error);
     }
   }
 
@@ -39,10 +35,8 @@ class ProductsRepositoryImpl implements ProductsRepository {
     try {
       final product = await _remoteDataSource.getProductById(id);
       return product.toEntity();
-    } on DioException catch (error) {
-      throw ApiExceptions.fromDio(error);
-    } on DataParsingException catch (error) {
-      throw ApiExceptions.fromParsing(error);
+    } catch (error) {
+      throw AppFailureMapper.fromException(error);
     }
   }
 
@@ -51,10 +45,8 @@ class ProductsRepositoryImpl implements ProductsRepository {
     try {
       final product = await _remoteDataSource.getProductByCode(code);
       return product.toEntity();
-    } on DioException catch (error) {
-      throw ApiExceptions.fromDio(error);
-    } on DataParsingException catch (error) {
-      throw ApiExceptions.fromParsing(error);
+    } catch (error) {
+      throw AppFailureMapper.fromException(error);
     }
   }
 
@@ -73,10 +65,8 @@ class ProductsRepositoryImpl implements ProductsRepository {
         code: code,
       );
       return product.toEntity();
-    } on DioException catch (error) {
-      throw ApiExceptions.fromDio(error);
-    } on DataParsingException catch (error) {
-      throw ApiExceptions.fromParsing(error);
+    } catch (error) {
+      throw AppFailureMapper.fromException(error);
     }
   }
 
@@ -97,10 +87,8 @@ class ProductsRepositoryImpl implements ProductsRepository {
         code: code,
       );
       return product.toEntity();
-    } on DioException catch (error) {
-      throw ApiExceptions.fromDio(error);
-    } on DataParsingException catch (error) {
-      throw ApiExceptions.fromParsing(error);
+    } catch (error) {
+      throw AppFailureMapper.fromException(error);
     }
   }
 
@@ -109,10 +97,8 @@ class ProductsRepositoryImpl implements ProductsRepository {
     try {
       final product = await _remoteDataSource.deleteProduct(id);
       return product.toEntity();
-    } on DioException catch (error) {
-      throw ApiExceptions.fromDio(error);
-    } on DataParsingException catch (error) {
-      throw ApiExceptions.fromParsing(error);
+    } catch (error) {
+      throw AppFailureMapper.fromException(error);
     }
   }
 }

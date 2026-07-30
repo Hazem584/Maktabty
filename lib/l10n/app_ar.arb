@@ -169,7 +169,6 @@
   "toggleFlashlight": "تشغيل / إيقاف الفلاش",
   "flipCamera": "تبديل الكاميرا",
   "scanOverlayHint": "ضع الباركود أو رمز QR داخل الإطار",
-  "salesNotImplemented": "هذه الميزة لم تُنفّذ بعد.",
   "selectDate": "اختر التاريخ",
   "hoursLabel": "{value} ساعة",
   "@hoursLabel": {
@@ -251,5 +250,11 @@
   "bluetoothDisabled": "شغّل البلوتوث ثم حاول مرة أخرى.",
   "bluetoothPermissionRequired": "يلزم إذن البلوتوث للعثور على الطابعات المقترنة.",
   "printerConnectionFailed": "تعذّر الاتصال بالطابعة المحددة.",
-  "printerDisconnected": "انقطع اتصال الطابعة أثناء الطباعة."
+  "printerDisconnected": "انقطع اتصال الطابعة أثناء الطباعة.",
+  "invalidProductCode": "أدخل كود منتج صالحًا.",
+  "invalidSaleQuantity": "أدخل كمية بيع صالحة.",
+  "duplicateSaleItem": "لا يمكن تكرار المنتج في عملية البيع.",
+  "overlappingShifts": "لا يمكن أن تتداخل ورديات العمل.",
+  "routeNotFound": "تعذّر العثور على هذه الصفحة.",
+  "backToHome": "العودة إلى الرئيسية"
 }

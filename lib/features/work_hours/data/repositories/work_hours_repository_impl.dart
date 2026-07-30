@@ -1,6 +1,4 @@
-import 'package:dio/dio.dart';
-import 'package:maktabty/core/network/api_exceptions.dart';
-import 'package:maktabty/core/network/data_parsing_exception.dart';
+import 'package:maktabty/core/network/app_failure_mapper.dart';
 import 'package:maktabty/features/work_hours/data/datasources/work_hours_remote_datasource.dart';
 import 'package:maktabty/features/work_hours/domain/entities/monthly_work_hours_report.dart';
 import 'package:maktabty/features/work_hours/domain/entities/work_day.dart';
@@ -29,10 +27,8 @@ class WorkHoursRepositoryImpl implements WorkHoursRepository {
         shift2End: shift2End,
       );
       return workDay.toEntity();
-    } on DioException catch (error) {
-      throw ApiExceptions.fromDio(error);
-    } on DataParsingException catch (error) {
-      throw ApiExceptions.fromParsing(error);
+    } catch (error) {
+      throw AppFailureMapper.fromException(error);
     }
   }
 
@@ -47,10 +43,8 @@ class WorkHoursRepositoryImpl implements WorkHoursRepository {
         userId: userId,
       );
       return days.map((item) => item.toEntity()).toList();
-    } on DioException catch (error) {
-      throw ApiExceptions.fromDio(error);
-    } on DataParsingException catch (error) {
-      throw ApiExceptions.fromParsing(error);
+    } catch (error) {
+      throw AppFailureMapper.fromException(error);
     }
   }
 
@@ -61,10 +55,8 @@ class WorkHoursRepositoryImpl implements WorkHoursRepository {
     try {
       final report = await _remoteDataSource.getMonthly(month: month);
       return report.toEntity();
-    } on DioException catch (error) {
-      throw ApiExceptions.fromDio(error);
-    } on DataParsingException catch (error) {
-      throw ApiExceptions.fromParsing(error);
+    } catch (error) {
+      throw AppFailureMapper.fromException(error);
     }
   }
 }

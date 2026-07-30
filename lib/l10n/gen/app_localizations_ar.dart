@@ -505,9 +505,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get scanOverlayHint => 'ضع الباركود أو رمز QR داخل الإطار';
 
   @override
-  String get salesNotImplemented => 'هذه الميزة لم تُنفّذ بعد.';
-
-  @override
   String get selectDate => 'اختر التاريخ';
 
   @override
@@ -736,4 +733,22 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get printerDisconnected => 'انقطع اتصال الطابعة أثناء الطباعة.';
+
+  @override
+  String get invalidProductCode => 'أدخل كود منتج صالحًا.';
+
+  @override
+  String get invalidSaleQuantity => 'أدخل كمية بيع صالحة.';
+
+  @override
+  String get duplicateSaleItem => 'لا يمكن تكرار المنتج في عملية البيع.';
+
+  @override
+  String get overlappingShifts => 'لا يمكن أن تتداخل ورديات العمل.';
+
+  @override
+  String get routeNotFound => 'تعذّر العثور على هذه الصفحة.';
+
+  @override
+  String get backToHome => 'العودة إلى الرئيسية';
 }

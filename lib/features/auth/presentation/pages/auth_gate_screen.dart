@@ -20,10 +20,9 @@ class AuthGateScreen extends StatefulWidget {
 class _AuthGateScreenState extends State<AuthGateScreen> {
   static const Duration _minimumSplashDuration = Duration(milliseconds: 1400);
 
-  bool _initialized = false;
   bool _authBootstrapResolved = false;
   bool _splashCompleted = false;
-  String? _lastToastMessage;
+  Object? _lastToastFailure;
   Timer? _splashTimer;
 
   @override
@@ -38,15 +37,6 @@ class _AuthGateScreenState extends State<AuthGateScreen> {
   }
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (!_initialized) {
-      context.read<AuthCubit>().initialize();
-      _initialized = true;
-    }
-  }
-
-  @override
   void dispose() {
     _splashTimer?.cancel();
     super.dispose();
@@ -57,7 +47,7 @@ class _AuthGateScreenState extends State<AuthGateScreen> {
     return BlocConsumer<AuthCubit, AuthState>(
       listenWhen: (previous, current) =>
           previous.status != current.status ||
-          previous.message != current.message,
+          previous.failure != current.failure,
       listener: (context, state) {
         if (!_authBootstrapResolved &&
             state.status != AuthStatus.initial &&
@@ -66,26 +56,32 @@ class _AuthGateScreenState extends State<AuthGateScreen> {
         }
 
         if (state.status == AuthStatus.loading) {
-          _lastToastMessage = null;
+          _lastToastFailure = null;
           return;
         }
 
         String? message;
         if (state.status == AuthStatus.failure) {
-          message = _mapAuthMessage(context, state.message);
+          message = context.localizeFailure(state.failure);
         } else if (state.status == AuthStatus.unauthenticated) {
-          message = _mapAuthMessage(context, state.message);
+          message = state.failure == null
+              ? null
+              : context.localizeFailure(state.failure);
         }
 
         if (message != null &&
             message.isNotEmpty &&
-            message != _lastToastMessage) {
-          _lastToastMessage = message;
+            state.failure != _lastToastFailure) {
+          _lastToastFailure = state.failure;
           AppToast.show(message);
         }
       },
       builder: (context, state) {
-        if (!_splashCompleted || !_authBootstrapResolved) {
+        final authBootstrapResolved =
+            _authBootstrapResolved ||
+            (state.status != AuthStatus.initial &&
+                state.status != AuthStatus.loading);
+        if (!_splashCompleted || !authBootstrapResolved) {
           return const AppStartupSplash();
         }
 
@@ -108,8 +104,10 @@ class _AuthGateScreenState extends State<AuthGateScreen> {
                     const Icon(Icons.cloud_off_outlined, size: 48),
                     const SizedBox(height: 16),
                     Text(
-                      _mapAuthMessage(context, state.message) ??
-                          context.l10n.unableToVerifySession,
+                      context.localizeFailure(
+                        state.failure,
+                        fallback: context.l10n.unableToVerifySession,
+                      ),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 16),
@@ -128,45 +126,5 @@ class _AuthGateScreenState extends State<AuthGateScreen> {
         return const LoginScreen();
       },
     );
-  }
-
-  String? _mapAuthMessage(BuildContext context, String? rawMessage) {
-    if (rawMessage == null || rawMessage.isEmpty) {
-      return null;
-    }
-
-    final lower = rawMessage.toLowerCase();
-    if (lower.contains('invalid email or password')) {
-      return context.l10n.invalidEmailOrPassword;
-    }
-    if (lower.contains('password') &&
-        (lower.contains('longer than or equal') ||
-            lower.contains('at least') ||
-            lower.contains('min'))) {
-      return context.l10n.passwordTooShort;
-    }
-    if (lower.contains('email') &&
-        (lower.contains('must be an email') ||
-            lower.contains('valid email') ||
-            lower.contains('invalid email'))) {
-      return context.l10n.invalidEmail;
-    }
-    if (rawMessage == 'Session expired. Please sign in again.') {
-      return context.l10n.sessionExpired;
-    }
-    if (lower.contains('request timed out')) {
-      return context.l10n.requestTimedOut;
-    }
-    if (lower.contains('no internet')) {
-      return context.l10n.noInternet;
-    }
-    if (lower.contains('unauthorized')) {
-      return context.l10n.unauthorized;
-    }
-    if (lower.contains('unable to verify your session')) {
-      return context.l10n.unableToVerifySession;
-    }
-
-    return context.localizeAppError(rawMessage);
   }
 }

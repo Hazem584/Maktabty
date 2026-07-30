@@ -12,12 +12,10 @@ class AuthInterceptor extends Interceptor {
   Completer<String>? _refreshCompleter;
 
   AuthInterceptor({
-    required TokenStorage tokenStorage,
-    required Dio refreshDio,
-    required AuthSessionManager sessionManager,
-  }) : _tokenStorage = tokenStorage,
-       _refreshDio = refreshDio,
-       _sessionManager = sessionManager;
+    required this._tokenStorage,
+    required this._refreshDio,
+    required this._sessionManager,
+  });
 
   @override
   void onRequest(
@@ -175,9 +173,9 @@ class AuthInterceptor extends Interceptor {
 
     final candidates = <Map<String, dynamic>>[
       root,
-      if (_asStringMap(root['data']) case final data?) data,
-      if (_asStringMap(root['tokens']) case final tokens?) tokens,
-      if (_asStringMap(root['auth']) case final auth?) auth,
+      ?_asStringMap(root['data']),
+      ?_asStringMap(root['tokens']),
+      ?_asStringMap(root['auth']),
     ];
 
     for (final candidate in candidates) {

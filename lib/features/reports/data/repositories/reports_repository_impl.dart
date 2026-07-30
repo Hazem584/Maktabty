@@ -1,10 +1,8 @@
-import 'package:dio/dio.dart';
-import 'package:maktabty/core/network/api_exceptions.dart';
-import 'package:maktabty/core/network/data_parsing_exception.dart';
+import 'package:maktabty/core/network/app_failure_mapper.dart';
 import 'package:maktabty/features/reports/data/datasources/reports_remote_datasource.dart';
 import 'package:maktabty/features/reports/domain/entities/daily_report.dart';
 import 'package:maktabty/features/reports/domain/entities/monthly_report.dart';
-import 'package:maktabty/features/reports/domain/repositories/reports_repo.dart';
+import 'package:maktabty/features/reports/domain/repositories/reports_repository.dart';
 
 class ReportsRepositoryImpl implements ReportsRepository {
   final ReportsRemoteDataSource _remoteDataSource;
@@ -17,10 +15,8 @@ class ReportsRepositoryImpl implements ReportsRepository {
     try {
       final report = await _remoteDataSource.getDailyReport(date: date);
       return report.toEntity();
-    } on DioException catch (error) {
-      throw ApiExceptions.fromDio(error);
-    } on DataParsingException catch (error) {
-      throw ApiExceptions.fromParsing(error);
+    } catch (error) {
+      throw AppFailureMapper.fromException(error);
     }
   }
 
@@ -29,10 +25,8 @@ class ReportsRepositoryImpl implements ReportsRepository {
     try {
       final report = await _remoteDataSource.getMonthlyReport(month: month);
       return report.toEntity();
-    } on DioException catch (error) {
-      throw ApiExceptions.fromDio(error);
-    } on DataParsingException catch (error) {
-      throw ApiExceptions.fromParsing(error);
+    } catch (error) {
+      throw AppFailureMapper.fromException(error);
     }
   }
 }

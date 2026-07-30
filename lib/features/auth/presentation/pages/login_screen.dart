@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:maktabty/core/routes/app_routes.dart';
 import 'package:maktabty/core/widgets/app_toast.dart';
 import 'package:maktabty/core/localization/l10n_ext.dart';
+import 'package:maktabty/features/auth/domain/validation/auth_validator.dart';
 import 'package:maktabty/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:maktabty/features/auth/presentation/cubit/auth_state.dart';
 import 'package:maktabty/features/auth/presentation/pages/login_screen_body.dart';
@@ -23,23 +24,19 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _submit() {
-    final email = _emailController.text.trim();
-    final password = _passwordController.text;
-
-    if (email.isEmpty || password.isEmpty) {
-      AppToast.show(context.l10n.enterEmailPassword);
+    final result = AuthValidator.login(
+      email: _emailController.text,
+      password: _passwordController.text,
+    );
+    if (!result.isValid) {
+      AppToast.show(context.localizeValidation(result.error!));
       return;
     }
-    if (!email.contains('@') || !email.contains('.')) {
-      AppToast.show(context.l10n.invalidEmail);
-      return;
-    }
-    if (password.length < 8) {
-      AppToast.show(context.l10n.passwordTooShort);
-      return;
-    }
-
-    context.read<AuthCubit>().login(email: email, password: password);
+    final input = result.value!;
+    context.read<AuthCubit>().login(
+      email: input.email,
+      password: input.password,
+    );
   }
 
   @override
@@ -54,15 +51,15 @@ class _LoginScreenState extends State<LoginScreen> {
     return BlocConsumer<AuthCubit, AuthState>(
       listenWhen: (previous, current) =>
           previous.status != current.status ||
-          previous.message != current.message,
+          previous.failure != current.failure,
       listener: (context, state) {
         if (state.status == AuthStatus.failure) {
-          final rawMessage = state.message ?? context.l10n.signInFailed;
-          final lower = rawMessage.toLowerCase();
-          final message = lower.contains('invalid email or password')
-              ? context.l10n.invalidEmailOrPassword
-              : context.localizeAppError(rawMessage);
-          AppToast.show(message);
+          AppToast.show(
+            context.localizeFailure(
+              state.failure,
+              fallback: context.l10n.signInFailed,
+            ),
+          );
         }
 
         if (state.status == AuthStatus.authenticated) {

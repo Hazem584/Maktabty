@@ -1,4 +1,6 @@
-class SaleItemInput {
+import 'package:equatable/equatable.dart';
+
+class SaleItemInput extends Equatable {
   final String productId;
   final int quantity;
   final double? unitPriceOverride;
@@ -16,4 +18,7 @@ class SaleItemInput {
       if (unitPriceOverride != null) 'unitPriceOverride': unitPriceOverride,
     };
   }
+
+  @override
+  List<Object?> get props => [productId, quantity, unitPriceOverride];
 }

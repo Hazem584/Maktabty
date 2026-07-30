@@ -1,4 +1,6 @@
-class UserMiniEntity {
+import 'package:equatable/equatable.dart';
+
+class UserMiniEntity extends Equatable {
   final String id;
   final String fullName;
   final String email;
@@ -10,4 +12,7 @@ class UserMiniEntity {
     required this.email,
     required this.role,
   });
+
+  @override
+  List<Object?> get props => [id, fullName, email, role];
 }

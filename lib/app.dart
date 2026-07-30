@@ -18,7 +18,7 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider<AuthCubit>.value(value: sl<AuthCubit>()),
+        BlocProvider<AuthCubit>.value(value: sl<AuthCubit>()..initialize()),
         BlocProvider<LocaleCubit>.value(value: sl<LocaleCubit>()..load()),
       ],
       child: BlocBuilder<LocaleCubit, LocaleState>(

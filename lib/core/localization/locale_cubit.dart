@@ -6,9 +6,8 @@ import 'package:maktabty/core/localization/locale_storage.dart';
 class LocaleCubit extends Cubit<LocaleState> {
   final LocaleStorage _storage;
 
-  LocaleCubit({required LocaleStorage storage})
-    : _storage = storage,
-      super(LocaleState.initial());
+  LocaleCubit({required this._storage})
+    : super(LocaleState.initial());
 
   Future<void> load() async {
     if (state.initialized) return;

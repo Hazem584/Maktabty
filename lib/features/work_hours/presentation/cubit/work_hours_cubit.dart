@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:maktabty/core/network/api_exceptions.dart';
+import 'package:maktabty/core/errors/app_failure.dart';
 import 'package:maktabty/features/work_hours/domain/usecases/get_work_hours_by_date.dart';
 import 'package:maktabty/features/work_hours/domain/usecases/upsert_work_day.dart';
+import 'package:maktabty/features/work_hours/domain/validation/work_hours_validator.dart';
 import 'package:maktabty/features/work_hours/presentation/cubit/work_hours_state.dart';
 
 class WorkHoursCubit extends Cubit<WorkHoursState> {
@@ -19,7 +20,11 @@ class WorkHoursCubit extends Cubit<WorkHoursState> {
   Future<void> loadByDate({required DateTime date, String? userId}) async {
     if (isClosed) return;
     emit(
-      state.copyWith(loadStatus: WorkHoursStatus.loading, loadMessage: null),
+      state.copyWith(
+        loadStatus: WorkHoursStatus.loading,
+        items: const [],
+        loadFailure: null,
+      ),
     );
 
     try {
@@ -28,13 +33,19 @@ class WorkHoursCubit extends Cubit<WorkHoursState> {
         userId: userId,
       );
       if (isClosed) return;
-      emit(state.copyWith(loadStatus: WorkHoursStatus.success, items: result));
-    } on ApiException catch (error) {
+      emit(
+        state.copyWith(
+          loadStatus: WorkHoursStatus.success,
+          items: result,
+          loadFailure: null,
+        ),
+      );
+    } on AppFailure catch (failure) {
       if (isClosed) return;
       emit(
         state.copyWith(
           loadStatus: WorkHoursStatus.failure,
-          loadMessage: _mapError(error),
+          loadFailure: failure,
         ),
       );
     } catch (_) {
@@ -42,7 +53,7 @@ class WorkHoursCubit extends Cubit<WorkHoursState> {
       emit(
         state.copyWith(
           loadStatus: WorkHoursStatus.failure,
-          loadMessage: 'Something went wrong. Please try again.',
+          loadFailure: const UnknownFailure(),
         ),
       );
     }
@@ -55,31 +66,30 @@ class WorkHoursCubit extends Cubit<WorkHoursState> {
     TimeOfDay? shift2Start,
     TimeOfDay? shift2End,
   }) async {
-    if ((shift1Start != null && shift1End == null) ||
-        (shift1Start == null && shift1End != null)) {
+    if (isClosed || state.saveStatus == WorkHoursStatus.loading) return;
+    final validationError = WorkHoursValidator.validate(
+      shift1StartMinutes: _minutes(shift1Start),
+      shift1EndMinutes: _minutes(shift1End),
+      shift2StartMinutes: _minutes(shift2Start),
+      shift2EndMinutes: _minutes(shift2End),
+    );
+    if (validationError != null) {
       emit(
         state.copyWith(
           saveStatus: WorkHoursStatus.failure,
-          saveMessage: 'Shift 1 requires both start and end time.',
-        ),
-      );
-      return;
-    }
-    if ((shift2Start != null && shift2End == null) ||
-        (shift2Start == null && shift2End != null)) {
-      if (isClosed) return;
-      emit(
-        state.copyWith(
-          saveStatus: WorkHoursStatus.failure,
-          saveMessage: 'Shift 2 requires both start and end time.',
+          saveFailure: null,
+          validationError: validationError,
         ),
       );
       return;
     }
 
-    if (isClosed) return;
     emit(
-      state.copyWith(saveStatus: WorkHoursStatus.loading, saveMessage: null),
+      state.copyWith(
+        saveStatus: WorkHoursStatus.loading,
+        saveFailure: null,
+        validationError: null,
+      ),
     );
 
     try {
@@ -91,15 +101,21 @@ class WorkHoursCubit extends Cubit<WorkHoursState> {
         shift2End: _formatTime(shift2End),
       );
       if (isClosed) return;
-      emit(state.copyWith(saveStatus: WorkHoursStatus.success));
+      emit(
+        state.copyWith(
+          saveStatus: WorkHoursStatus.success,
+          saveFailure: null,
+          validationError: null,
+        ),
+      );
       if (isClosed) return;
       await loadByDate(date: date);
-    } on ApiException catch (error) {
+    } on AppFailure catch (failure) {
       if (isClosed) return;
       emit(
         state.copyWith(
           saveStatus: WorkHoursStatus.failure,
-          saveMessage: _mapError(error),
+          saveFailure: failure,
         ),
       );
     } catch (_) {
@@ -107,7 +123,7 @@ class WorkHoursCubit extends Cubit<WorkHoursState> {
       emit(
         state.copyWith(
           saveStatus: WorkHoursStatus.failure,
-          saveMessage: 'Something went wrong. Please try again.',
+          saveFailure: const UnknownFailure(),
         ),
       );
     }
@@ -127,14 +143,6 @@ class WorkHoursCubit extends Cubit<WorkHoursState> {
     return '$hour:$minute';
   }
 
-  String _mapError(ApiException error) {
-    final status = error.statusCode;
-    if (status == 401) {
-      return 'Session expired. Please sign in again.';
-    }
-    if (status == 403) {
-      return 'Access denied. Owner or cashier role required.';
-    }
-    return error.message;
-  }
+  int? _minutes(TimeOfDay? time) =>
+      time == null ? null : time.hour * 60 + time.minute;
 }

@@ -504,9 +504,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get scanOverlayHint => 'Align the barcode or QR code inside the frame';
 
   @override
-  String get salesNotImplemented => 'Sales are not implemented yet.';
-
-  @override
   String get selectDate => 'Select Date';
 
   @override
@@ -736,4 +733,23 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get printerDisconnected => 'The printer disconnected while printing.';
+
+  @override
+  String get invalidProductCode => 'Enter a valid product code.';
+
+  @override
+  String get invalidSaleQuantity => 'Enter a valid sale quantity.';
+
+  @override
+  String get duplicateSaleItem =>
+      'A product cannot appear more than once in a sale.';
+
+  @override
+  String get overlappingShifts => 'Work shifts cannot overlap.';
+
+  @override
+  String get routeNotFound => 'This page could not be found.';
+
+  @override
+  String get backToHome => 'Back to home';
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:maktabty/core/theme/app_theme.dart';
 import 'package:maktabty/core/widgets/app_loading.dart';
 import 'package:maktabty/core/widgets/app_toast.dart';
@@ -12,6 +13,7 @@ import 'package:maktabty/features/work_hours/presentation/widgets/day_picker_car
 import 'package:maktabty/features/work_hours/presentation/widgets/saved_day_tile.dart';
 import 'package:maktabty/features/work_hours/presentation/widgets/shift_time_card.dart';
 import 'package:maktabty/features/work_hours/presentation/widgets/work_hours_summary_card.dart';
+import 'package:maktabty/features/work_hours/domain/validation/work_hours_validator.dart';
 
 class AddWorkHoursScreenBody extends StatefulWidget {
   const AddWorkHoursScreenBody({super.key});
@@ -38,11 +40,28 @@ class _AddWorkHoursScreenBodyState extends State<AddWorkHoursScreenBody> {
   }
 
   bool get _shift1Valid =>
-      !_shift1Worked || _isEndAfterStart(_shift1Start, _shift1End);
+      !_shift1Worked ||
+      WorkHoursValidator.validate(
+            shift1StartMinutes: _minutes(_shift1Start),
+            shift1EndMinutes: _minutes(_shift1End),
+          ) ==
+          null;
   bool get _shift2Valid =>
-      !_shift2Worked || _isEndAfterStart(_shift2Start, _shift2End);
+      !_shift2Worked ||
+      WorkHoursValidator.validate(
+            shift2StartMinutes: _minutes(_shift2Start),
+            shift2EndMinutes: _minutes(_shift2End),
+          ) ==
+          null;
 
-  bool get _hasInvalidTimes => !_shift1Valid || !_shift2Valid;
+  bool get _hasInvalidTimes =>
+      WorkHoursValidator.validate(
+        shift1StartMinutes: _shift1Worked ? _minutes(_shift1Start) : null,
+        shift1EndMinutes: _shift1Worked ? _minutes(_shift1End) : null,
+        shift2StartMinutes: _shift2Worked ? _minutes(_shift2Start) : null,
+        shift2EndMinutes: _shift2Worked ? _minutes(_shift2End) : null,
+      ) !=
+      null;
 
   double? get _totalHours {
     if (_hasInvalidTimes) {
@@ -65,6 +84,7 @@ class _AddWorkHoursScreenBodyState extends State<AddWorkHoursScreenBody> {
       firstDate: DateTime(2020),
       lastDate: DateTime(2035),
     );
+    if (!mounted) return;
     if (picked != null) {
       setState(() {
         _selectedDate = picked;
@@ -78,6 +98,7 @@ class _AddWorkHoursScreenBodyState extends State<AddWorkHoursScreenBody> {
     required ValueChanged<TimeOfDay> onPicked,
   }) async {
     final picked = await showTimePicker(context: context, initialTime: initial);
+    if (!mounted) return;
     if (picked != null) {
       onPicked(picked);
     }
@@ -114,11 +135,19 @@ class _AddWorkHoursScreenBodyState extends State<AddWorkHoursScreenBody> {
     return BlocListener<WorkHoursCubit, WorkHoursState>(
       listenWhen: (previous, current) =>
           previous.saveStatus != current.saveStatus ||
-          previous.loadStatus != current.loadStatus,
+          previous.loadStatus != current.loadStatus ||
+          previous.validationError != current.validationError ||
+          previous.saveFailure != current.saveFailure ||
+          previous.loadFailure != current.loadFailure,
       listener: (context, state) {
         if (state.saveStatus == WorkHoursStatus.failure) {
           AppToast.show(
-            state.saveMessage ?? context.l10n.unableToSaveWorkHours,
+            state.validationError != null
+                ? context.localizeValidation(state.validationError!)
+                : context.localizeFailure(
+                    state.saveFailure,
+                    fallback: context.l10n.unableToSaveWorkHours,
+                  ),
           );
         }
         if (state.saveStatus == WorkHoursStatus.success) {
@@ -126,7 +155,10 @@ class _AddWorkHoursScreenBodyState extends State<AddWorkHoursScreenBody> {
         }
         if (state.loadStatus == WorkHoursStatus.failure) {
           AppToast.show(
-            state.loadMessage ?? context.l10n.unableToLoadWorkHours,
+            context.localizeFailure(
+              state.loadFailure,
+              fallback: context.l10n.unableToLoadWorkHours,
+            ),
           );
         }
       },
@@ -275,34 +307,16 @@ class _AddWorkHoursScreenBodyState extends State<AddWorkHoursScreenBody> {
     );
   }
 
-  bool _isEndAfterStart(TimeOfDay start, TimeOfDay end) {
-    final startMinutes = start.hour * 60 + start.minute;
-    final endMinutes = end.hour * 60 + end.minute;
-    return endMinutes > startMinutes;
-  }
-
   double _durationHours(TimeOfDay start, TimeOfDay end) {
     final startMinutes = start.hour * 60 + start.minute;
     final endMinutes = end.hour * 60 + end.minute;
     return (endMinutes - startMinutes) / 60.0;
   }
 
+  int _minutes(TimeOfDay time) => time.hour * 60 + time.minute;
+
   String _formatDate(DateTime date) {
-    const months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ];
-    final month = months[date.month - 1];
-    return '$month ${date.day}, ${date.year}';
+    final locale = Localizations.localeOf(context).languageCode;
+    return DateFormat.yMMMd(locale).format(date);
   }
 }

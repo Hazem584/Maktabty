@@ -1,0 +1,1 @@
+const Object stateFieldUnchanged = Object();

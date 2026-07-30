@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:maktabty/core/network/api_exceptions.dart';
+import 'package:maktabty/core/errors/app_failure.dart';
 import 'package:maktabty/core/network/auth_session_manager.dart';
 import 'package:maktabty/core/storage/token_storage.dart';
 import 'package:maktabty/features/auth/domain/entities/user_entity.dart';
@@ -64,10 +64,7 @@ void main() {
     () async {
       when(() => storage.getRefreshToken()).thenAnswer((_) async => 'refresh');
       when(() => refresh()).thenThrow(
-        const ApiException(
-          'No internet connection. Please try again.',
-          kind: ApiErrorKind.network,
-        ),
+        const NetworkFailure(),
       );
 
       await cubit.initialize();
@@ -80,11 +77,7 @@ void main() {
   test('invalid refresh credentials clear the stored session', () async {
     when(() => storage.getRefreshToken()).thenAnswer((_) async => 'refresh');
     when(() => refresh()).thenThrow(
-      const ApiException(
-        'Unauthorized',
-        statusCode: 401,
-        kind: ApiErrorKind.unauthorized,
-      ),
+      const UnauthorizedFailure(),
     );
 
     await cubit.initialize();
@@ -98,11 +91,7 @@ void main() {
     () async {
       when(() => storage.getRefreshToken()).thenAnswer((_) async => 'refresh');
       when(() => refresh()).thenThrow(
-        const ApiException(
-          'Server unavailable',
-          statusCode: 503,
-          kind: ApiErrorKind.server,
-        ),
+        const ServerFailure(statusCode: 503),
       );
 
       await cubit.initialize();
@@ -118,7 +107,7 @@ void main() {
     when(() => refresh()).thenAnswer((_) async {
       calls++;
       if (calls == 1) {
-        throw const ApiException('Offline', kind: ApiErrorKind.network);
+        throw const NetworkFailure();
       }
       return const UserEntity(
         id: 'u1',

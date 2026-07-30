@@ -1,23 +1,26 @@
 ﻿import 'package:maktabty/features/reports/domain/entities/daily_report.dart';
 import 'package:maktabty/features/reports/domain/entities/monthly_report.dart';
+import 'package:equatable/equatable.dart';
+import 'package:maktabty/core/errors/app_failure.dart';
+import 'package:maktabty/core/utils/copy_with_sentinel.dart';
 
 enum ReportsStatus { idle, loading, success, failure }
 
-class ReportsState {
+class ReportsState extends Equatable {
   final ReportsStatus dailyStatus;
   final ReportsStatus monthlyStatus;
   final DailyReportEntity? dailyReport;
   final MonthlyReportEntity? monthlyReport;
-  final String? dailyMessage;
-  final String? monthlyMessage;
+  final AppFailure? dailyFailure;
+  final AppFailure? monthlyFailure;
 
   const ReportsState({
     required this.dailyStatus,
     required this.monthlyStatus,
     required this.dailyReport,
     required this.monthlyReport,
-    required this.dailyMessage,
-    required this.monthlyMessage,
+    required this.dailyFailure,
+    required this.monthlyFailure,
   });
 
   factory ReportsState.initial() {
@@ -26,26 +29,44 @@ class ReportsState {
       monthlyStatus: ReportsStatus.idle,
       dailyReport: null,
       monthlyReport: null,
-      dailyMessage: null,
-      monthlyMessage: null,
+      dailyFailure: null,
+      monthlyFailure: null,
     );
   }
 
   ReportsState copyWith({
     ReportsStatus? dailyStatus,
     ReportsStatus? monthlyStatus,
-    DailyReportEntity? dailyReport,
-    MonthlyReportEntity? monthlyReport,
-    String? dailyMessage,
-    String? monthlyMessage,
+    Object? dailyReport = stateFieldUnchanged,
+    Object? monthlyReport = stateFieldUnchanged,
+    Object? dailyFailure = stateFieldUnchanged,
+    Object? monthlyFailure = stateFieldUnchanged,
   }) {
     return ReportsState(
       dailyStatus: dailyStatus ?? this.dailyStatus,
       monthlyStatus: monthlyStatus ?? this.monthlyStatus,
-      dailyReport: dailyReport ?? this.dailyReport,
-      monthlyReport: monthlyReport ?? this.monthlyReport,
-      dailyMessage: dailyMessage,
-      monthlyMessage: monthlyMessage,
+      dailyReport: identical(dailyReport, stateFieldUnchanged)
+          ? this.dailyReport
+          : dailyReport as DailyReportEntity?,
+      monthlyReport: identical(monthlyReport, stateFieldUnchanged)
+          ? this.monthlyReport
+          : monthlyReport as MonthlyReportEntity?,
+      dailyFailure: identical(dailyFailure, stateFieldUnchanged)
+          ? this.dailyFailure
+          : dailyFailure as AppFailure?,
+      monthlyFailure: identical(monthlyFailure, stateFieldUnchanged)
+          ? this.monthlyFailure
+          : monthlyFailure as AppFailure?,
     );
   }
+
+  @override
+  List<Object?> get props => [
+    dailyStatus,
+    monthlyStatus,
+    dailyReport,
+    monthlyReport,
+    dailyFailure,
+    monthlyFailure,
+  ];
 }

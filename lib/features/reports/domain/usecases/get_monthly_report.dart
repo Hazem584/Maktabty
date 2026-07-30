@@ -1,5 +1,5 @@
 ﻿import 'package:maktabty/features/reports/domain/entities/monthly_report.dart';
-import 'package:maktabty/features/reports/domain/repositories/reports_repo.dart';
+import 'package:maktabty/features/reports/domain/repositories/reports_repository.dart';
 
 class GetMonthlyReportUseCase {
   final ReportsRepository _repository;

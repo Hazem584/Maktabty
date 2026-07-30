@@ -1,4 +1,6 @@
-class TotalsByUserItemEntity {
+import 'package:equatable/equatable.dart';
+
+class TotalsByUserItemEntity extends Equatable {
   final String userId;
   final String fullName;
   final String email;
@@ -10,16 +12,22 @@ class TotalsByUserItemEntity {
     required this.email,
     required this.totalMinutes,
   });
+
+  @override
+  List<Object?> get props => [userId, fullName, email, totalMinutes];
 }
 
-class TotalsByDayItemEntity {
+class TotalsByDayItemEntity extends Equatable {
   final String date;
   final int totalMinutes;
 
   const TotalsByDayItemEntity({required this.date, required this.totalMinutes});
+
+  @override
+  List<Object?> get props => [date, totalMinutes];
 }
 
-class MonthlyWorkHoursReportEntity {
+class MonthlyWorkHoursReportEntity extends Equatable {
   final String month;
   final List<TotalsByUserItemEntity> totalsByUser;
   final List<TotalsByDayItemEntity> totalsByDay;
@@ -29,4 +37,7 @@ class MonthlyWorkHoursReportEntity {
     required this.totalsByUser,
     required this.totalsByDay,
   });
+
+  @override
+  List<Object?> get props => [month, totalsByUser, totalsByDay];
 }

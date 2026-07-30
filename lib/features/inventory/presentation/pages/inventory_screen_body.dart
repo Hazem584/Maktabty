@@ -4,6 +4,7 @@ import 'package:maktabty/core/theme/app_theme.dart';
 import 'package:maktabty/core/widgets/app_loading.dart';
 import 'package:maktabty/core/widgets/app_toast.dart';
 import 'package:maktabty/core/localization/l10n_ext.dart';
+import 'package:maktabty/core/errors/app_failure.dart';
 import 'package:maktabty/features/inventory/presentation/pages/edit_product_screen.dart';
 import 'package:maktabty/features/inventory/presentation/widgets/inventory_product_tile.dart';
 import 'package:maktabty/features/inventory/presentation/widgets/inventory_search_bar.dart';
@@ -86,6 +87,7 @@ class _InventoryScreenBodyState extends State<InventoryScreenBody> {
       },
     );
 
+    if (!mounted) return;
     if (confirmed == true) {
       final success = await context.read<ProductsListCubit>().deleteProduct(
         product.id,
@@ -128,7 +130,7 @@ class _InventoryScreenBodyState extends State<InventoryScreenBody> {
     );
   }
 
-  Widget _buildErrorState(String? message) {
+  Widget _buildErrorState(AppFailure? failure) {
     return ListView(
       physics: const AlwaysScrollableScrollPhysics(),
       children: [
@@ -136,9 +138,10 @@ class _InventoryScreenBodyState extends State<InventoryScreenBody> {
           height: 240,
           child: Center(
             child: Text(
-              message == null
-                  ? context.l10n.inventoryLoadFailed
-                  : context.localizeAppError(message),
+              context.localizeFailure(
+                failure,
+                fallback: context.l10n.inventoryLoadFailed,
+              ),
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: Theme.of(context).colorScheme.outline,
               ),
@@ -165,13 +168,18 @@ class _InventoryScreenBodyState extends State<InventoryScreenBody> {
           Expanded(
             child: BlocConsumer<ProductsListCubit, ProductsListState>(
               listenWhen: (previous, current) {
-                return current.errorMessage != null &&
-                    current.errorMessage != previous.errorMessage;
+                return current.failure != null &&
+                    current.failure != previous.failure;
               },
               listener: (context, state) {
-                final message = state.errorMessage;
-                if (message != null && message.isNotEmpty) {
-                  AppToast.show(context.localizeAppError(message));
+                final failure = state.failure;
+                if (failure != null) {
+                  AppToast.show(
+                    context.localizeFailure(
+                      failure,
+                      notFoundFallback: context.l10n.productNotFound,
+                    ),
+                  );
                 }
               },
               builder: (context, state) {
@@ -186,7 +194,7 @@ class _InventoryScreenBodyState extends State<InventoryScreenBody> {
                     builder: (_) {
                       if (state.status == ProductsListStatus.failure &&
                           state.products.isEmpty) {
-                        return _buildErrorState(state.errorMessage);
+                        return _buildErrorState(state.failure);
                       }
 
                       if (state.products.isEmpty) {

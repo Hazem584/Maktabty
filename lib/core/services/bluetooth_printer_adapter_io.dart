@@ -56,10 +56,9 @@ class BluetoothPrinterAdapterIo implements BluetoothPrinterAdapter {
   final bool _isAndroid;
 
   BluetoothPrinterAdapterIo({
-    BluetoothPrinterPlatform platform = const PrintBluetoothThermalPlatform(),
+    this._platform = const PrintBluetoothThermalPlatform(),
     bool? isAndroidOverride,
-  }) : _platform = platform,
-       _isAndroid = isAndroidOverride ?? Platform.isAndroid;
+  }) : _isAndroid = isAndroidOverride ?? Platform.isAndroid;
 
   @override
   Future<void> connect(PrinterDevice device) async {
