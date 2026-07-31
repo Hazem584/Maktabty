@@ -30,10 +30,9 @@ class RouteNotFoundScreen extends StatelessWidget {
               ],
               const SizedBox(height: 20),
               FilledButton(
-                onPressed: () => Navigator.of(context).pushNamedAndRemoveUntil(
-                  AppRoutes.root,
-                  (route) => false,
-                ),
+                onPressed: () => Navigator.of(
+                  context,
+                ).pushNamedAndRemoveUntil(AppRoutes.root, (route) => false),
                 child: Text(context.l10n.backToHome),
               ),
             ],

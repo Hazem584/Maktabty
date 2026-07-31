@@ -1,4 +1,4 @@
-﻿import 'package:maktabty/features/work_hours/domain/entities/monthly_work_hours_report.dart';
+import 'package:maktabty/features/work_hours/domain/entities/monthly_work_hours_report.dart';
 
 import 'package:equatable/equatable.dart';
 import 'package:maktabty/core/errors/app_failure.dart';

@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:maktabty/core/errors/app_failure.dart';
+import 'package:maktabty/core/database/database_exception.dart';
 import 'package:maktabty/core/network/data_parsing_exception.dart';
 
 class AppFailureMapper {
@@ -10,6 +11,16 @@ class AppFailureMapper {
 
   static AppFailure fromException(Object error) {
     if (error is AppFailure) return error;
+    if (error is LocalDatabaseException) {
+      return const LocalDatabaseFailure();
+    }
+    if (error is LocalStockException) {
+      return StockConflictFailure(
+        productId: error.productId,
+        requestedQuantity: error.requested,
+        availableQuantity: error.available,
+      );
+    }
     if (error is DataParsingException || error is FormatException) {
       return const ParsingFailure();
     }
@@ -27,6 +38,8 @@ class AppFailureMapper {
       case DioExceptionType.sendTimeout:
         return const TimeoutFailure(FailureCode.sendTimeout);
       case DioExceptionType.receiveTimeout:
+        return const TimeoutFailure(FailureCode.receiveTimeout);
+      case DioExceptionType.transformTimeout:
         return const TimeoutFailure(FailureCode.receiveTimeout);
       case DioExceptionType.badCertificate:
         return const NetworkFailure(code: FailureCode.secureConnection);
@@ -49,10 +62,8 @@ class AppFailureMapper {
     final message = _safeServerMessage(response?.data);
 
     return switch (statusCode) {
-      400 || 422 => ValidationFailure(
-        statusCode: statusCode,
-        serverMessage: message,
-      ),
+      400 ||
+      422 => ValidationFailure(statusCode: statusCode, serverMessage: message),
       401 => const UnauthorizedFailure(),
       403 => const ForbiddenFailure(),
       404 => NotFoundFailure(serverMessage: message),
@@ -75,7 +86,9 @@ class AppFailureMapper {
     }
 
     if (values.isEmpty) return null;
-    final joined = values.join('\n').replaceAll(RegExp(r'[\x00-\x08\x0B-\x1F]'), '');
+    final joined = values
+        .join('\n')
+        .replaceAll(RegExp(r'[\x00-\x08\x0B-\x1F]'), '');
     if (joined.length > 500) return '${joined.substring(0, 497)}...';
     return joined;
   }

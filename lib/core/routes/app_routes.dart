@@ -8,6 +8,7 @@ import 'package:maktabty/features/home/presentation/pages/home_screen.dart';
 import 'package:maktabty/features/products/presentation/pages/add_product_screen.dart';
 import 'package:maktabty/features/products/presentation/pages/sell_product_screen.dart';
 import 'package:maktabty/features/sales/presentation/pages/printer_settings_screen.dart';
+import 'package:maktabty/features/sales/presentation/pages/offline_sales_screen.dart';
 import 'package:maktabty/features/work_hours/presentation/pages/add_work_hours_screen.dart';
 
 class AppRoutes {
@@ -21,6 +22,7 @@ class AppRoutes {
   static const String sellProduct = '/sales/sell-product';
   static const String addWorkHours = '/work-hours/add';
   static const String printerSettings = '/settings/printer';
+  static const String offlineSales = '/sales/offline';
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -49,6 +51,10 @@ class AppRoutes {
       case printerSettings:
         return MaterialPageRoute(
           builder: (_) => const AuthGuard(child: PrinterSettingsScreen()),
+        );
+      case offlineSales:
+        return MaterialPageRoute(
+          builder: (_) => const AuthGuard(child: OfflineSalesScreen()),
         );
       default:
         return MaterialPageRoute(

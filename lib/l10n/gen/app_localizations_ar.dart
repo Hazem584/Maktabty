@@ -751,4 +751,106 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get backToHome => 'العودة إلى الرئيسية';
+
+  @override
+  String get offlineSalesTitle => 'المبيعات دون اتصال';
+
+  @override
+  String get syncNow => 'مزامنة الآن';
+
+  @override
+  String get syncingSales => 'جارٍ مزامنة المبيعات المعلقة...';
+
+  @override
+  String get noOfflineSales => 'لم يتم حفظ مبيعات محلية بعد.';
+
+  @override
+  String previousAccountPendingSales(int count) {
+    return 'هناك $count عملية بيع غير متزامنة تخص حسابًا آخر ولن تُرفع باستخدام هذه الجلسة.';
+  }
+
+  @override
+  String temporarySaleReference(String reference) {
+    return 'المرجع المحلي: $reference';
+  }
+
+  @override
+  String localSaleItemsAndTotal(int count, String total) {
+    return '$count عنصر · الإجمالي $total';
+  }
+
+  @override
+  String syncAttempts(int count) {
+    return 'محاولات المزامنة: $count';
+  }
+
+  @override
+  String stockConflictDetails(int requested, int available) {
+    return 'تغيّر المخزون على الخادم. المطلوب: $requested، المتاح: $available.';
+  }
+
+  @override
+  String get idempotencyConflictHelp =>
+      'يتعارض معرّف هذه العملية مع بيانات مختلفة على الخادم. احتفظ بالسجل وتواصل مع المسؤول.';
+
+  @override
+  String get saleSyncFailed =>
+      'تعذّرت مزامنة هذه العملية. راجعها قبل إعادة المحاولة.';
+
+  @override
+  String get pendingReceiptNotice =>
+      'هذه عملية بيع محلية. يتوفر رقم الإيصال المؤكد بعد المزامنة فقط.';
+
+  @override
+  String get saleQueuedForSync => 'تمت إضافة العملية إلى قائمة المزامنة.';
+
+  @override
+  String get unableToRetrySale => 'لا يمكن إعادة محاولة هذه العملية الآن.';
+
+  @override
+  String get retrySync => 'إعادة المزامنة';
+
+  @override
+  String get viewConfirmedReceipt => 'عرض الإيصال المؤكد';
+
+  @override
+  String get syncStatusPending => 'معلقة';
+
+  @override
+  String get syncStatusSyncing => 'جارٍ المزامنة';
+
+  @override
+  String get syncStatusSynced => 'تمت المزامنة';
+
+  @override
+  String get syncStatusFailed => 'فشلت';
+
+  @override
+  String get syncStatusStockConflict => 'تعارض المخزون';
+
+  @override
+  String get syncStatusIdempotencyConflict => 'تعارض المعرّف';
+
+  @override
+  String get saleSavedLocally =>
+      'تم حفظ عملية البيع محليًا وإضافتها إلى قائمة المزامنة.';
+
+  @override
+  String get cachedProductsNotice =>
+      'يتم عرض المنتجات المحفوظة. يشمل المخزون الحجوزات المحلية.';
+
+  @override
+  String get refreshProducts => 'تحديث';
+
+  @override
+  String get localDatabaseError =>
+      'التخزين المحلي غير متاح. لم يتم مسح عملية البيع؛ حاول مرة أخرى.';
+
+  @override
+  String get insufficientLocalStock =>
+      'المخزون المحلي المتاح لا يكفي لهذه العملية.';
+
+  @override
+  String get idempotencyConflict =>
+      'توجد مشكلة في معرّف هذه العملية وتحتاج إلى مراجعة المسؤول.';
 }

@@ -6,16 +6,27 @@ class PaginatedProductsEntity extends Equatable {
   final int page;
   final int limit;
   final int total;
+  final bool isFromCache;
+  final DateTime? lastCachedAt;
 
   const PaginatedProductsEntity({
     required this.items,
     required this.page,
     required this.limit,
     required this.total,
+    this.isFromCache = false,
+    this.lastCachedAt,
   });
 
   bool get hasMore => total > 0 && items.length < total;
 
   @override
-  List<Object?> get props => [items, page, limit, total];
+  List<Object?> get props => [
+    items,
+    page,
+    limit,
+    total,
+    isFromCache,
+    lastCachedAt,
+  ];
 }

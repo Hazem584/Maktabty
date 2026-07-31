@@ -4,11 +4,17 @@ class SaleItemInput extends Equatable {
   final String productId;
   final int quantity;
   final double? unitPriceOverride;
+  final String? productName;
+  final String? productCode;
+  final double? sellingPrice;
 
   const SaleItemInput({
     required this.productId,
     required this.quantity,
     this.unitPriceOverride,
+    this.productName,
+    this.productCode,
+    this.sellingPrice,
   });
 
   Map<String, dynamic> toJson() {
@@ -20,5 +26,12 @@ class SaleItemInput extends Equatable {
   }
 
   @override
-  List<Object?> get props => [productId, quantity, unitPriceOverride];
+  List<Object?> get props => [
+    productId,
+    quantity,
+    unitPriceOverride,
+    productName,
+    productCode,
+    sellingPrice,
+  ];
 }

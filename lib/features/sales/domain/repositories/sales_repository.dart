@@ -14,16 +14,6 @@ abstract class SalesRepository {
     double? cardAmount,
   });
 
-  Future<SaleResponseEntity> createSaleByCode({
-    required String code,
-    required int quantity,
-    required PaymentMethod paymentMethod,
-    double? unitPriceOverride,
-    double? paidAmount,
-    double? cashAmount,
-    double? cardAmount,
-  });
-
   Future<TodaySalesResponseEntity> getTodaySales({String? date});
 
   Future<SaleEntity> deleteSale({required String id});

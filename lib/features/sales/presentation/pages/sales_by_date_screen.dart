@@ -372,10 +372,7 @@ Future<void> _showSaleActions(
           return true;
         }).onError((error, stackTrace) {
           final message = error is AppFailure && context.mounted
-              ? context.localizeFailure(
-                  error,
-                  fallback: l10n.unableToLoadSales,
-                )
+              ? context.localizeFailure(error, fallback: l10n.unableToLoadSales)
               : l10n.unableToLoadSales;
           AppToast.show(message);
           return false;
@@ -439,10 +436,7 @@ Future<void> _openReceipt(BuildContext context, SaleEntity sale) async {
         () => context.read<TodaySalesCubit>().getReceiptForSale(sale.id),
       ).onError((error, stackTrace) {
         final message = error is AppFailure && context.mounted
-            ? context.localizeFailure(
-                error,
-                fallback: l10n.unableToLoadReceipt,
-              )
+            ? context.localizeFailure(error, fallback: l10n.unableToLoadReceipt)
             : l10n.unableToLoadReceipt;
         AppToast.show(message);
         return null;

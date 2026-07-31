@@ -1549,6 +1549,174 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Back to home'**
   String get backToHome;
+
+  /// No description provided for @offlineSalesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline sales'**
+  String get offlineSalesTitle;
+
+  /// No description provided for @syncNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync now'**
+  String get syncNow;
+
+  /// No description provided for @syncingSales.
+  ///
+  /// In en, this message translates to:
+  /// **'Synchronizing pending sales...'**
+  String get syncingSales;
+
+  /// No description provided for @noOfflineSales.
+  ///
+  /// In en, this message translates to:
+  /// **'No local sales have been saved yet.'**
+  String get noOfflineSales;
+
+  /// No description provided for @previousAccountPendingSales.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} unsynchronized sale(s) belong to another account and will not be uploaded with this session.'**
+  String previousAccountPendingSales(int count);
+
+  /// No description provided for @temporarySaleReference.
+  ///
+  /// In en, this message translates to:
+  /// **'Local reference: {reference}'**
+  String temporarySaleReference(String reference);
+
+  /// No description provided for @localSaleItemsAndTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} item(s) · Total {total}'**
+  String localSaleItemsAndTotal(int count, String total);
+
+  /// No description provided for @syncAttempts.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync attempts: {count}'**
+  String syncAttempts(int count);
+
+  /// No description provided for @stockConflictDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Stock changed on the server. Requested: {requested}, available: {available}.'**
+  String stockConflictDetails(int requested, int available);
+
+  /// No description provided for @idempotencyConflictHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'This sale ID conflicts with different server data. Keep the record and contact an administrator.'**
+  String get idempotencyConflictHelp;
+
+  /// No description provided for @saleSyncFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'This sale could not be synchronized. Review it before retrying.'**
+  String get saleSyncFailed;
+
+  /// No description provided for @pendingReceiptNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'This is a local sale. A confirmed receipt number is available only after synchronization.'**
+  String get pendingReceiptNotice;
+
+  /// No description provided for @saleQueuedForSync.
+  ///
+  /// In en, this message translates to:
+  /// **'Sale queued for synchronization.'**
+  String get saleQueuedForSync;
+
+  /// No description provided for @unableToRetrySale.
+  ///
+  /// In en, this message translates to:
+  /// **'This sale cannot be retried right now.'**
+  String get unableToRetrySale;
+
+  /// No description provided for @retrySync.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry sync'**
+  String get retrySync;
+
+  /// No description provided for @viewConfirmedReceipt.
+  ///
+  /// In en, this message translates to:
+  /// **'View confirmed receipt'**
+  String get viewConfirmedReceipt;
+
+  /// No description provided for @syncStatusPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get syncStatusPending;
+
+  /// No description provided for @syncStatusSyncing.
+  ///
+  /// In en, this message translates to:
+  /// **'Syncing'**
+  String get syncStatusSyncing;
+
+  /// No description provided for @syncStatusSynced.
+  ///
+  /// In en, this message translates to:
+  /// **'Synced'**
+  String get syncStatusSynced;
+
+  /// No description provided for @syncStatusFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed'**
+  String get syncStatusFailed;
+
+  /// No description provided for @syncStatusStockConflict.
+  ///
+  /// In en, this message translates to:
+  /// **'Stock conflict'**
+  String get syncStatusStockConflict;
+
+  /// No description provided for @syncStatusIdempotencyConflict.
+  ///
+  /// In en, this message translates to:
+  /// **'ID conflict'**
+  String get syncStatusIdempotencyConflict;
+
+  /// No description provided for @saleSavedLocally.
+  ///
+  /// In en, this message translates to:
+  /// **'Sale saved locally and queued for synchronization.'**
+  String get saleSavedLocally;
+
+  /// No description provided for @cachedProductsNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Showing cached products. Stock includes local reservations.'**
+  String get cachedProductsNotice;
+
+  /// No description provided for @refreshProducts.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh'**
+  String get refreshProducts;
+
+  /// No description provided for @localDatabaseError.
+  ///
+  /// In en, this message translates to:
+  /// **'Local storage is unavailable. The sale was not cleared; please try again.'**
+  String get localDatabaseError;
+
+  /// No description provided for @insufficientLocalStock.
+  ///
+  /// In en, this message translates to:
+  /// **'There is not enough locally available stock for this sale.'**
+  String get insufficientLocalStock;
+
+  /// No description provided for @idempotencyConflict.
+  ///
+  /// In en, this message translates to:
+  /// **'This sale has an identifier conflict and needs administrator review.'**
+  String get idempotencyConflict;
 }
 
 class _AppLocalizationsDelegate

@@ -1,14 +1,19 @@
 import 'package:maktabty/core/network/app_failure_mapper.dart';
 import 'package:maktabty/features/products/data/datasources/products_remote_datasource.dart';
+import 'package:maktabty/features/products/data/datasources/products_local_datasource.dart';
 import 'package:maktabty/features/products/domain/entities/paginated_products_entity.dart';
 import 'package:maktabty/features/products/domain/entities/product_entity.dart';
 import 'package:maktabty/features/products/domain/repositories/products_repository.dart';
 
 class ProductsRepositoryImpl implements ProductsRepository {
   final ProductsRemoteDataSource _remoteDataSource;
+  final ProductsLocalDataSource _localDataSource;
 
-  ProductsRepositoryImpl({required ProductsRemoteDataSource remoteDataSource})
-    : _remoteDataSource = remoteDataSource;
+  ProductsRepositoryImpl({
+    required ProductsRemoteDataSource remoteDataSource,
+    required ProductsLocalDataSource localDataSource,
+  }) : _remoteDataSource = remoteDataSource,
+       _localDataSource = localDataSource;
 
   @override
   Future<PaginatedProductsEntity> getProducts({
@@ -24,8 +29,28 @@ class ProductsRepositoryImpl implements ProductsRepository {
         page: page,
         limit: limit,
       );
-      return response.toEntity();
+      final entity = response.toEntity();
+      await _localDataSource.cacheProducts(
+        entity.items,
+        replaceAll:
+            page == 1 &&
+            search == null &&
+            lowStock != true &&
+            entity.items.length == entity.total,
+      );
+      return entity;
     } catch (error) {
+      try {
+        final cached = await _localDataSource.getProducts(
+          search: search,
+          lowStock: lowStock,
+          page: page,
+          limit: limit,
+        );
+        if (cached.items.isNotEmpty) return cached;
+      } catch (localError) {
+        throw AppFailureMapper.fromException(localError);
+      }
       throw AppFailureMapper.fromException(error);
     }
   }
@@ -34,8 +59,16 @@ class ProductsRepositoryImpl implements ProductsRepository {
   Future<ProductEntity> getProductById(String id) async {
     try {
       final product = await _remoteDataSource.getProductById(id);
-      return product.toEntity();
+      final entity = product.toEntity();
+      await _localDataSource.cacheProducts([entity], replaceAll: false);
+      return entity;
     } catch (error) {
+      try {
+        final cached = await _localDataSource.getProductById(id);
+        if (cached != null) return cached;
+      } catch (localError) {
+        throw AppFailureMapper.fromException(localError);
+      }
       throw AppFailureMapper.fromException(error);
     }
   }
@@ -44,8 +77,16 @@ class ProductsRepositoryImpl implements ProductsRepository {
   Future<ProductEntity> getProductByCode(String code) async {
     try {
       final product = await _remoteDataSource.getProductByCode(code);
-      return product.toEntity();
+      final entity = product.toEntity();
+      await _localDataSource.cacheProducts([entity], replaceAll: false);
+      return entity;
     } catch (error) {
+      try {
+        final cached = await _localDataSource.getProductByCode(code);
+        if (cached != null) return cached;
+      } catch (localError) {
+        throw AppFailureMapper.fromException(localError);
+      }
       throw AppFailureMapper.fromException(error);
     }
   }
@@ -64,7 +105,9 @@ class ProductsRepositoryImpl implements ProductsRepository {
         stock: stock,
         code: code,
       );
-      return product.toEntity();
+      final entity = product.toEntity();
+      await _localDataSource.cacheProducts([entity], replaceAll: false);
+      return entity;
     } catch (error) {
       throw AppFailureMapper.fromException(error);
     }
@@ -86,7 +129,9 @@ class ProductsRepositoryImpl implements ProductsRepository {
         stock: stock,
         code: code,
       );
-      return product.toEntity();
+      final entity = product.toEntity();
+      await _localDataSource.cacheProducts([entity], replaceAll: false);
+      return entity;
     } catch (error) {
       throw AppFailureMapper.fromException(error);
     }
@@ -96,7 +141,9 @@ class ProductsRepositoryImpl implements ProductsRepository {
   Future<ProductEntity> deleteProduct({required String id}) async {
     try {
       final product = await _remoteDataSource.deleteProduct(id);
-      return product.toEntity();
+      final entity = product.toEntity();
+      await _localDataSource.removeProduct(id);
+      return entity;
     } catch (error) {
       throw AppFailureMapper.fromException(error);
     }

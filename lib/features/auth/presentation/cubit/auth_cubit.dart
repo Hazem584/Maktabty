@@ -10,6 +10,7 @@ import 'package:maktabty/features/auth/domain/usecases/logout_usecase.dart';
 import 'package:maktabty/features/auth/domain/usecases/refresh_usecase.dart';
 import 'package:maktabty/features/auth/domain/usecases/register_usecase.dart';
 import 'package:maktabty/features/auth/presentation/cubit/auth_state.dart';
+import 'package:maktabty/features/auth/domain/entities/user_entity.dart';
 
 class AuthCubit extends Cubit<AuthState> {
   static const Duration _loginTimeout = Duration(seconds: 90);
@@ -45,11 +46,7 @@ class AuthCubit extends Cubit<AuthState> {
        super(AuthState.initial()) {
     _sessionSubscription = _sessionManager.stream.listen((event) {
       if (!isClosed && event == AuthSessionEvent.expired) {
-        emit(
-          AuthState.unauthenticated(
-            failure: const UnauthorizedFailure(),
-          ),
-        );
+        emit(AuthState.unauthenticated(failure: const UnauthorizedFailure()));
       }
     });
   }
@@ -69,6 +66,7 @@ class AuthCubit extends Cubit<AuthState> {
       }
 
       final user = await _refreshUseCase().timeout(_startupTimeout);
+      await _cacheUserSafely(user);
       _initialized = true;
       if (!isClosed) emit(AuthState.authenticated(user));
     } on AppFailure catch (failure) {
@@ -79,10 +77,20 @@ class AuthCubit extends Cubit<AuthState> {
           emit(AuthState.unauthenticated(failure: failure));
         }
       } else {
-        if (!isClosed) emit(AuthState.startupFailure(failure));
+        final cachedUser = await _readCachedUser();
+        if (cachedUser != null) {
+          _initialized = true;
+          if (!isClosed) emit(AuthState.authenticated(cachedUser));
+        } else if (!isClosed) {
+          emit(AuthState.startupFailure(failure));
+        }
       }
     } on TimeoutException {
-      if (!isClosed) {
+      final cachedUser = await _readCachedUser();
+      if (cachedUser != null) {
+        _initialized = true;
+        if (!isClosed) emit(AuthState.authenticated(cachedUser));
+      } else if (!isClosed) {
         emit(
           AuthState.startupFailure(
             const TimeoutFailure(FailureCode.receiveTimeout),
@@ -105,15 +113,14 @@ class AuthCubit extends Cubit<AuthState> {
     emit(AuthState.loading());
     try {
       final user = await _loginUseCase(email: email, password: password);
+      await _cacheUserSafely(user);
       if (!isClosed) emit(AuthState.authenticated(user));
     } on AppFailure catch (failure) {
       if (!isClosed) emit(AuthState.failure(failure));
     } on TimeoutException {
       if (!isClosed) {
         emit(
-          AuthState.failure(
-            const TimeoutFailure(FailureCode.receiveTimeout),
-          ),
+          AuthState.failure(const TimeoutFailure(FailureCode.receiveTimeout)),
         );
       }
     } catch (_) {
@@ -136,6 +143,7 @@ class AuthCubit extends Cubit<AuthState> {
         password: password,
         role: role,
       );
+      await _cacheUserSafely(user);
       if (!isClosed) emit(AuthState.authenticated(user));
     } on AppFailure catch (failure) {
       if (!isClosed) emit(AuthState.failure(failure));
@@ -147,6 +155,7 @@ class AuthCubit extends Cubit<AuthState> {
   Future<void> getMe() async {
     try {
       final user = await _getMeUseCase();
+      await _cacheUserSafely(user);
       if (!isClosed) emit(AuthState.authenticated(user));
     } on AppFailure catch (failure) {
       if (!isClosed) emit(AuthState.failure(failure));
@@ -172,5 +181,33 @@ class AuthCubit extends Cubit<AuthState> {
   Future<void> close() async {
     await _sessionSubscription?.cancel();
     await super.close();
+  }
+
+  Future<void> _cacheUserSafely(UserEntity user) async {
+    try {
+      await _tokenStorage.saveUserIdentity(
+        id: user.id,
+        email: user.email,
+        fullName: user.fullName,
+        role: user.role,
+      );
+    } catch (_) {
+      // Authentication remains valid even if optional identity caching fails.
+    }
+  }
+
+  Future<UserEntity?> _readCachedUser() async {
+    try {
+      final stored = await _tokenStorage.getUserIdentity();
+      if (stored == null) return null;
+      return UserEntity(
+        id: stored.id,
+        email: stored.email,
+        fullName: stored.fullName,
+        role: stored.role,
+      );
+    } catch (_) {
+      return null;
+    }
   }
 }

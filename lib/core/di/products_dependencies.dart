@@ -1,6 +1,8 @@
 import 'package:get_it/get_it.dart';
 import 'package:maktabty/core/network/dio_client.dart';
 import 'package:maktabty/features/products/data/datasources/products_remote_datasource.dart';
+import 'package:maktabty/features/products/data/datasources/products_local_datasource.dart';
+import 'package:maktabty/core/database/app_database.dart';
 import 'package:maktabty/features/products/data/repositories/products_repository_impl.dart';
 import 'package:maktabty/features/products/domain/repositories/products_repository.dart';
 import 'package:maktabty/features/products/domain/usecases/create_product_usecase.dart';
@@ -19,9 +21,17 @@ void registerProductsDependencies(GetIt getIt) {
       () => ProductsRemoteDataSource(getIt<DioClient>().dio),
     );
   }
+  if (!getIt.isRegistered<ProductsLocalDataSource>()) {
+    getIt.registerLazySingleton(
+      () => ProductsLocalDataSource(getIt<AppDatabase>()),
+    );
+  }
   if (!getIt.isRegistered<ProductsRepository>()) {
     getIt.registerLazySingleton<ProductsRepository>(
-      () => ProductsRepositoryImpl(remoteDataSource: getIt()),
+      () => ProductsRepositoryImpl(
+        remoteDataSource: getIt(),
+        localDataSource: getIt(),
+      ),
     );
   }
   if (!getIt.isRegistered<GetProductsUseCase>()) {

@@ -67,10 +67,7 @@ class ProductsListCubit extends Cubit<ProductsListState> {
     } on AppFailure catch (failure) {
       if (!isClosed) {
         emit(
-          state.copyWith(
-            status: ProductsListStatus.failure,
-            failure: failure,
-          ),
+          state.copyWith(status: ProductsListStatus.failure, failure: failure),
         );
       }
       return false;
@@ -137,6 +134,8 @@ class ProductsListCubit extends Cubit<ProductsListState> {
           isLoadingMore: false,
           isRefreshing: false,
           failure: null,
+          isFromCache: response.isFromCache,
+          lastCachedAt: response.lastCachedAt,
         ),
       );
     } on AppFailure catch (failure) {

@@ -41,6 +41,9 @@ extension L10nX on BuildContext {
         _localizeServerMessage(failure.serverMessage) ??
             fallback ??
             l10n.somethingWentWrong,
+      FailureCode.stockConflict => l10n.insufficientLocalStock,
+      FailureCode.idempotencyConflict => l10n.idempotencyConflict,
+      FailureCode.localDatabase => l10n.localDatabaseError,
       FailureCode.parsing => l10n.unexpectedServerResponse,
       FailureCode.server => l10n.backendServerUnavailable,
       FailureCode.unknown => fallback ?? l10n.somethingWentWrong,

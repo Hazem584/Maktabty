@@ -62,5 +62,4 @@ class MonthlyWorkHoursCubit extends Cubit<MonthlyWorkHoursState> {
     final month = date.month.toString().padLeft(2, '0');
     return '$year-$month';
   }
-
 }

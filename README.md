@@ -85,5 +85,22 @@ flutter build apk --debug
 flutter build windows
 ```
 
-No separate application code generation step is currently required beyond
-Flutter localization generation.
+Flutter localization and Drift bindings are generated source and must be kept
+up to date when their inputs change.
+
+## Offline sales database
+
+Offline-first sales use a versioned Drift database named
+`maktabty_offline`. Product prices and all persisted payment values are stored
+as integer minor units. Cached product availability is calculated from the
+latest server stock minus active, account-owned local sale reservations.
+
+After changing `lib/core/database/app_database.dart`, regenerate Drift bindings:
+
+```bash
+dart run build_runner build --delete-conflicting-outputs
+```
+
+Schema upgrades must use explicit, non-destructive migration steps. Never reset
+the database to apply a schema change because pending sales must survive app
+updates.

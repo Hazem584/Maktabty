@@ -16,6 +16,8 @@ class ProductsListState extends Equatable {
   final bool isLoadingMore;
   final bool isRefreshing;
   final AppFailure? failure;
+  final bool isFromCache;
+  final DateTime? lastCachedAt;
 
   const ProductsListState({
     required this.status,
@@ -28,6 +30,8 @@ class ProductsListState extends Equatable {
     required this.isLoadingMore,
     required this.isRefreshing,
     required this.failure,
+    required this.isFromCache,
+    required this.lastCachedAt,
   });
 
   factory ProductsListState.initial() {
@@ -42,6 +46,8 @@ class ProductsListState extends Equatable {
       isLoadingMore: false,
       isRefreshing: false,
       failure: null,
+      isFromCache: false,
+      lastCachedAt: null,
     );
   }
 
@@ -58,6 +64,8 @@ class ProductsListState extends Equatable {
     bool? isLoadingMore,
     bool? isRefreshing,
     Object? failure = stateFieldUnchanged,
+    bool? isFromCache,
+    Object? lastCachedAt = stateFieldUnchanged,
   }) {
     return ProductsListState(
       status: status ?? this.status,
@@ -72,6 +80,10 @@ class ProductsListState extends Equatable {
       failure: identical(failure, stateFieldUnchanged)
           ? this.failure
           : failure as AppFailure?,
+      isFromCache: isFromCache ?? this.isFromCache,
+      lastCachedAt: identical(lastCachedAt, stateFieldUnchanged)
+          ? this.lastCachedAt
+          : lastCachedAt as DateTime?,
     );
   }
 
@@ -87,5 +99,7 @@ class ProductsListState extends Equatable {
     isLoadingMore,
     isRefreshing,
     failure,
+    isFromCache,
+    lastCachedAt,
   ];
 }

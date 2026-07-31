@@ -127,7 +127,7 @@ class CreateSaleByCodeCubit extends Cubit<CreateSaleByCodeState> {
           state.copyWith(
             status: CreateSaleByCodeStatus.success,
             response: response,
-            lastReceipt: response.receipt,
+            lastReceipt: response.isServerConfirmed ? response.receipt : null,
             failure: null,
           ),
         );

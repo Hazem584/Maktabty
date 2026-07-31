@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:maktabty/core/theme/app_theme.dart';
 import 'package:maktabty/core/errors/app_failure.dart';
@@ -212,7 +212,7 @@ class _NewSaleTabState extends State<_NewSaleTab> {
           );
         }
         if (state.status == CreateSaleStatus.success) {
-          AppToast.show(context.l10n.saleCreated);
+          AppToast.show(context.l10n.saleSavedLocally);
           context.read<TodaySalesCubit>().load();
           context.read<ProductsListCubit>().refresh();
           final receipt = state.lastReceipt;
@@ -253,7 +253,8 @@ class _NewSaleTabState extends State<_NewSaleTab> {
                 );
               }
 
-              if (state.status == ProductsListStatus.failure) {
+              if (state.status == ProductsListStatus.failure &&
+                  state.products.isEmpty) {
                 return Text(
                   context.localizeFailure(
                     state.failure,
@@ -265,9 +266,34 @@ class _NewSaleTabState extends State<_NewSaleTab> {
                 );
               }
 
-              return ProductSearchResults(
-                products: state.products,
-                onSelect: _selectProduct,
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (state.isFromCache)
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(AppSpacing.s),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.cloud_off_outlined),
+                            const SizedBox(width: AppSpacing.s),
+                            Expanded(
+                              child: Text(context.l10n.cachedProductsNotice),
+                            ),
+                            TextButton(
+                              onPressed: () =>
+                                  context.read<ProductsListCubit>().refresh(),
+                              child: Text(context.l10n.refreshProducts),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ProductSearchResults(
+                    products: state.products,
+                    onSelect: _selectProduct,
+                  ),
+                ],
               );
             },
           ),
@@ -468,7 +494,7 @@ class _NewSaleByCodeTabState extends State<_NewSaleByCodeTab> {
           );
         }
         if (state.status == CreateSaleByCodeStatus.success) {
-          AppToast.show(context.l10n.saleCreated);
+          AppToast.show(context.l10n.saleSavedLocally);
           context.read<TodaySalesCubit>().load();
           context.read<ProductsListCubit>().refresh();
           final receipt = state.lastReceipt;
@@ -558,6 +584,9 @@ class _PendingSaleItem {
       productId: product.id,
       quantity: quantity,
       unitPriceOverride: unitPriceOverride,
+      productName: product.name,
+      productCode: product.code,
+      sellingPrice: product.price,
     );
   }
 

@@ -1,10 +1,8 @@
 ﻿import 'package:dio/dio.dart';
 import 'package:maktabty/features/sales/data/models/receipt_model.dart';
 import 'package:maktabty/features/sales/data/models/sale_model.dart';
-import 'package:maktabty/features/sales/data/models/sale_response_model.dart';
 import 'package:maktabty/features/sales/data/models/today_sales_response_model.dart';
-import 'package:maktabty/features/sales/domain/entities/payment_method.dart';
-import 'package:maktabty/features/sales/domain/entities/sale_item_input.dart';
+import 'package:maktabty/features/sales/data/models/sync_sale_models.dart';
 import 'package:maktabty/core/network/data_parsing_exception.dart';
 
 class SalesRemoteDataSource {
@@ -12,56 +10,33 @@ class SalesRemoteDataSource {
 
   SalesRemoteDataSource(this._dio);
 
-  Future<SaleResponseModel> createSale({
-    required List<SaleItemInput> items,
-    required PaymentMethod paymentMethod,
-    double? paidAmount,
-    double? cashAmount,
-    double? cardAmount,
-  }) async {
-    final response = await _dio.post(
-      '/sales',
-      data: {
-        'items': items.map((item) => item.toJson()).toList(),
-        'paymentMethod': paymentMethod.apiValue,
-        'paidAmount': ?paidAmount,
-        'cashAmount': ?cashAmount,
-        'cardAmount': ?cardAmount,
-      },
-    );
-    return _parseSaleResponse(response.data);
-  }
-
-  Future<SaleResponseModel> createSaleByCode({
-    required String code,
-    required int quantity,
-    required PaymentMethod paymentMethod,
-    double? unitPriceOverride,
-    double? paidAmount,
-    double? cashAmount,
-    double? cardAmount,
-  }) async {
-    final response = await _dio.post(
-      '/sales/by-code',
-      data: {
-        'code': code,
-        'quantity': quantity,
-        'paymentMethod': paymentMethod.apiValue,
-        'unitPriceOverride': ?unitPriceOverride,
-        'paidAmount': ?paidAmount,
-        'cashAmount': ?cashAmount,
-        'cardAmount': ?cardAmount,
-      },
-    );
-    return _parseSaleResponse(response.data);
-  }
-
   Future<TodaySalesResponseModel> getTodaySales({String? date}) async {
     final response = await _dio.get(
       '/sales/today',
       queryParameters: {if (date != null && date.isNotEmpty) 'date': date},
     );
     return _parseTodaySales(response.data);
+  }
+
+  Future<SyncSalesResponseModel> syncSales(
+    List<SyncSaleRequestModel> sales, {
+    CancelToken? cancelToken,
+  }) async {
+    if (sales.isEmpty || sales.length > 50) {
+      throw ArgumentError.value(
+        sales.length,
+        'sales',
+        'A sync batch must contain between 1 and 50 sales.',
+      );
+    }
+    final response = await _dio.post(
+      '/sales/sync',
+      data: {
+        'sales': sales.map((sale) => sale.toJson()).toList(growable: false),
+      },
+      cancelToken: cancelToken,
+    );
+    return SyncSalesResponseModel.fromJson(response.data);
   }
 
   Future<SaleModel> deleteSale(String saleId) async {
@@ -72,12 +47,6 @@ class SalesRemoteDataSource {
   Future<ReceiptModel> getReceiptForSale(String saleId) async {
     final response = await _dio.get('/sales/$saleId/receipt');
     return _parseReceipt(response.data);
-  }
-
-  SaleResponseModel _parseSaleResponse(dynamic data) {
-    return SaleResponseModel.fromJson(
-      requireStringMap(data, operation: 'POST /sales'),
-    );
   }
 
   TodaySalesResponseModel _parseTodaySales(dynamic data) {

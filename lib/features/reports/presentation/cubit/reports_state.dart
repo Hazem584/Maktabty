@@ -1,4 +1,4 @@
-﻿import 'package:maktabty/features/reports/domain/entities/daily_report.dart';
+import 'package:maktabty/features/reports/domain/entities/daily_report.dart';
 import 'package:maktabty/features/reports/domain/entities/monthly_report.dart';
 import 'package:equatable/equatable.dart';
 import 'package:maktabty/core/errors/app_failure.dart';

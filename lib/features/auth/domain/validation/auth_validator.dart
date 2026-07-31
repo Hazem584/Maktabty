@@ -59,9 +59,7 @@ class AuthValidator {
       return const ValidationResult.invalid(ValidationKey.passwordTooShort);
     }
     if (password != confirmPassword) {
-      return const ValidationResult.invalid(
-        ValidationKey.passwordsDoNotMatch,
-      );
+      return const ValidationResult.invalid(ValidationKey.passwordsDoNotMatch);
     }
     return ValidationResult.valid(
       RegistrationInput(

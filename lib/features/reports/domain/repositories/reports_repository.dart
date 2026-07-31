@@ -1,4 +1,4 @@
-﻿import 'package:maktabty/features/reports/domain/entities/daily_report.dart';
+import 'package:maktabty/features/reports/domain/entities/daily_report.dart';
 import 'package:maktabty/features/reports/domain/entities/monthly_report.dart';
 
 abstract class ReportsRepository {

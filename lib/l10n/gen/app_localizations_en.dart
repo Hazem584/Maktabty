@@ -752,4 +752,106 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get backToHome => 'Back to home';
+
+  @override
+  String get offlineSalesTitle => 'Offline sales';
+
+  @override
+  String get syncNow => 'Sync now';
+
+  @override
+  String get syncingSales => 'Synchronizing pending sales...';
+
+  @override
+  String get noOfflineSales => 'No local sales have been saved yet.';
+
+  @override
+  String previousAccountPendingSales(int count) {
+    return '$count unsynchronized sale(s) belong to another account and will not be uploaded with this session.';
+  }
+
+  @override
+  String temporarySaleReference(String reference) {
+    return 'Local reference: $reference';
+  }
+
+  @override
+  String localSaleItemsAndTotal(int count, String total) {
+    return '$count item(s) · Total $total';
+  }
+
+  @override
+  String syncAttempts(int count) {
+    return 'Sync attempts: $count';
+  }
+
+  @override
+  String stockConflictDetails(int requested, int available) {
+    return 'Stock changed on the server. Requested: $requested, available: $available.';
+  }
+
+  @override
+  String get idempotencyConflictHelp =>
+      'This sale ID conflicts with different server data. Keep the record and contact an administrator.';
+
+  @override
+  String get saleSyncFailed =>
+      'This sale could not be synchronized. Review it before retrying.';
+
+  @override
+  String get pendingReceiptNotice =>
+      'This is a local sale. A confirmed receipt number is available only after synchronization.';
+
+  @override
+  String get saleQueuedForSync => 'Sale queued for synchronization.';
+
+  @override
+  String get unableToRetrySale => 'This sale cannot be retried right now.';
+
+  @override
+  String get retrySync => 'Retry sync';
+
+  @override
+  String get viewConfirmedReceipt => 'View confirmed receipt';
+
+  @override
+  String get syncStatusPending => 'Pending';
+
+  @override
+  String get syncStatusSyncing => 'Syncing';
+
+  @override
+  String get syncStatusSynced => 'Synced';
+
+  @override
+  String get syncStatusFailed => 'Failed';
+
+  @override
+  String get syncStatusStockConflict => 'Stock conflict';
+
+  @override
+  String get syncStatusIdempotencyConflict => 'ID conflict';
+
+  @override
+  String get saleSavedLocally =>
+      'Sale saved locally and queued for synchronization.';
+
+  @override
+  String get cachedProductsNotice =>
+      'Showing cached products. Stock includes local reservations.';
+
+  @override
+  String get refreshProducts => 'Refresh';
+
+  @override
+  String get localDatabaseError =>
+      'Local storage is unavailable. The sale was not cleared; please try again.';
+
+  @override
+  String get insufficientLocalStock =>
+      'There is not enough locally available stock for this sale.';
+
+  @override
+  String get idempotencyConflict =>
+      'This sale has an identifier conflict and needs administrator review.';
 }

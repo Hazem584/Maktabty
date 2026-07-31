@@ -13,6 +13,9 @@ enum FailureCode {
   invalidCredentials,
   notFound,
   conflict,
+  stockConflict,
+  idempotencyConflict,
+  localDatabase,
   parsing,
   server,
   unknown,
@@ -23,11 +26,7 @@ abstract class AppFailure extends Equatable implements Exception {
   final int? statusCode;
   final String? serverMessage;
 
-  const AppFailure({
-    required this.code,
-    this.statusCode,
-    this.serverMessage,
-  });
+  const AppFailure({required this.code, this.statusCode, this.serverMessage});
 
   bool get isTemporary =>
       code == FailureCode.network ||
@@ -44,13 +43,10 @@ abstract class AppFailure extends Equatable implements Exception {
 }
 
 final class NetworkFailure extends AppFailure {
-  const NetworkFailure({
-    super.code = FailureCode.network,
-    super.serverMessage,
-  }) : assert(
-         code == FailureCode.network ||
-             code == FailureCode.secureConnection,
-       );
+  const NetworkFailure({super.code = FailureCode.network, super.serverMessage})
+    : assert(
+        code == FailureCode.network || code == FailureCode.secureConnection,
+      );
 }
 
 final class TimeoutFailure extends AppFailure {
@@ -97,13 +93,42 @@ final class ConflictFailure extends AppFailure {
     : super(code: FailureCode.conflict);
 }
 
+final class StockConflictFailure extends AppFailure {
+  final String? productId;
+  final int? requestedQuantity;
+  final int? availableQuantity;
+
+  const StockConflictFailure({
+    this.productId,
+    this.requestedQuantity,
+    this.availableQuantity,
+    super.serverMessage,
+  }) : super(code: FailureCode.stockConflict);
+
+  @override
+  List<Object?> get props => [
+    ...super.props,
+    productId,
+    requestedQuantity,
+    availableQuantity,
+  ];
+}
+
+final class IdempotencyConflictFailure extends AppFailure {
+  const IdempotencyConflictFailure({super.serverMessage})
+    : super(code: FailureCode.idempotencyConflict);
+}
+
+final class LocalDatabaseFailure extends AppFailure {
+  const LocalDatabaseFailure() : super(code: FailureCode.localDatabase);
+}
+
 final class ParsingFailure extends AppFailure {
   const ParsingFailure() : super(code: FailureCode.parsing);
 }
 
 final class ServerFailure extends AppFailure {
-  const ServerFailure({super.statusCode})
-    : super(code: FailureCode.server);
+  const ServerFailure({super.statusCode}) : super(code: FailureCode.server);
 }
 
 final class UnknownFailure extends AppFailure {

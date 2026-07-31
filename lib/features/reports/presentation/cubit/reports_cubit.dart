@@ -119,5 +119,4 @@ class ReportsCubit extends Cubit<ReportsState> {
     final month = date.month.toString().padLeft(2, '0');
     return '$year-$month';
   }
-
 }

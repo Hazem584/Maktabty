@@ -9,15 +9,9 @@ class WorkHoursValidator {
     int? shift2StartMinutes,
     int? shift2EndMinutes,
   }) {
-    final firstError = _validateShift(
-      shift1StartMinutes,
-      shift1EndMinutes,
-    );
+    final firstError = _validateShift(shift1StartMinutes, shift1EndMinutes);
     if (firstError != null) return firstError;
-    final secondError = _validateShift(
-      shift2StartMinutes,
-      shift2EndMinutes,
-    );
+    final secondError = _validateShift(shift2StartMinutes, shift2EndMinutes);
     if (secondError != null) return secondError;
 
     if (shift1StartMinutes != null &&
