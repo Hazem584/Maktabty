@@ -19,3 +19,8 @@ class LocalStockException implements Exception {
     required this.available,
   });
 }
+
+class LocalArchivedProductException implements Exception {
+  final String productId;
+  const LocalArchivedProductException(this.productId);
+}

@@ -2,19 +2,18 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:maktabty/core/errors/app_failure.dart';
-import 'package:maktabty/features/products/domain/usecases/delete_product_usecase.dart';
 import 'package:maktabty/features/products/domain/usecases/get_products_usecase.dart';
+import 'package:maktabty/features/products/domain/entities/product_entity.dart';
 import 'package:maktabty/features/products/presentation/cubit/products_list_state.dart';
 
 class ProductsListCubit extends Cubit<ProductsListState> {
   final GetProductsUseCase _getProductsUseCase;
-  final DeleteProductUseCase _deleteProductUseCase;
   Timer? _debounce;
   bool _initialized = false;
+  int _requestVersion = 0;
 
   ProductsListCubit({
     required this._getProductsUseCase,
-    required this._deleteProductUseCase,
   }) : super(ProductsListState.initial());
 
   void loadInitial() {
@@ -25,6 +24,13 @@ class ProductsListCubit extends Cubit<ProductsListState> {
 
   Future<void> refresh() async {
     await _fetch(page: 1, replace: true, showLoading: false, refreshing: true);
+  }
+
+  void setProductStatus(ProductStatus status) {
+    if (status == state.productStatus && _initialized) return;
+    _initialized = true;
+    emit(state.copyWith(productStatus: status));
+    _fetch(page: 1, replace: true, showLoading: true);
   }
 
   void updateSearch(String value) {
@@ -57,29 +63,25 @@ class ProductsListCubit extends Cubit<ProductsListState> {
     );
   }
 
-  Future<bool> deleteProduct(String id) async {
-    try {
-      await _deleteProductUseCase(id: id);
-      await _fetch(page: 1, replace: true, showLoading: false);
-      return true;
-    } on AppFailure catch (failure) {
-      if (!isClosed) {
-        emit(
-          state.copyWith(status: ProductsListStatus.failure, failure: failure),
-        );
-      }
-      return false;
-    } catch (_) {
-      if (!isClosed) {
-        emit(
-          state.copyWith(
-            status: ProductsListStatus.failure,
-            failure: const UnknownFailure(),
-          ),
-        );
-      }
-      return false;
-    }
+  void removeProductLocally(String id, {required bool markUnavailable}) {
+    if (isClosed) return;
+    final updated = state.products
+        .where((product) => product.id != id)
+        .toList(growable: false);
+    emit(
+      state.copyWith(
+        products: updated,
+        total: state.total > 0 && updated.length < state.products.length
+            ? state.total - 1
+            : state.total,
+        lastUnavailableProductId: markUnavailable
+            ? id
+            : state.lastUnavailableProductId,
+        catalogMutationVersion: markUnavailable
+            ? state.catalogMutationVersion + 1
+            : state.catalogMutationVersion,
+      ),
+    );
   }
 
   Future<void> _fetch({
@@ -90,6 +92,7 @@ class ProductsListCubit extends Cubit<ProductsListState> {
     bool loadMore = false,
   }) async {
     if (isClosed) return;
+    final requestVersion = ++_requestVersion;
     if (showLoading) {
       if (isClosed) return;
       emit(
@@ -113,6 +116,7 @@ class ProductsListCubit extends Cubit<ProductsListState> {
       final response = await _getProductsUseCase(
         search: state.search.isEmpty ? null : state.search,
         lowStock: state.lowStock ? true : null,
+        status: state.productStatus,
         page: page,
         limit: state.limit,
       );
@@ -121,7 +125,7 @@ class ProductsListCubit extends Cubit<ProductsListState> {
           ? response.items
           : [...state.products, ...response.items];
 
-      if (isClosed) return;
+      if (isClosed || requestVersion != _requestVersion) return;
       emit(
         state.copyWith(
           status: ProductsListStatus.success,
@@ -137,7 +141,7 @@ class ProductsListCubit extends Cubit<ProductsListState> {
         ),
       );
     } on AppFailure catch (failure) {
-      if (isClosed) return;
+      if (isClosed || requestVersion != _requestVersion) return;
       emit(
         state.copyWith(
           status: ProductsListStatus.failure,
@@ -147,7 +151,7 @@ class ProductsListCubit extends Cubit<ProductsListState> {
         ),
       );
     } catch (_) {
-      if (isClosed) return;
+      if (isClosed || requestVersion != _requestVersion) return;
       emit(
         state.copyWith(
           status: ProductsListStatus.failure,

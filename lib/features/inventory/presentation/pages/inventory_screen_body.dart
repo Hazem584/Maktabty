@@ -12,6 +12,9 @@ import 'package:maktabty/features/inventory/presentation/widgets/product_actions
 import 'package:maktabty/features/products/domain/entities/product_entity.dart';
 import 'package:maktabty/features/products/presentation/cubit/products_list_cubit.dart';
 import 'package:maktabty/features/products/presentation/cubit/products_list_state.dart';
+import 'package:maktabty/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:maktabty/features/inventory/presentation/widgets/archive_product_dialog.dart';
+import 'package:maktabty/features/products/presentation/cubit/product_archive_cubit.dart';
 
 class InventoryScreenBody extends StatefulWidget {
   const InventoryScreenBody({super.key});
@@ -46,6 +49,10 @@ class _InventoryScreenBodyState extends State<InventoryScreenBody> {
   }
 
   void _openActions(ProductEntity product) {
+    final isOwner = context.read<AuthCubit>().state.user?.role
+            ?.trim()
+            .toUpperCase() ==
+        'OWNER';
     showModalBottomSheet<void>(
       context: context,
       builder: (_) {
@@ -54,10 +61,12 @@ class _InventoryScreenBodyState extends State<InventoryScreenBody> {
             Navigator.of(context).pop();
             _editProduct(product);
           },
-          onDelete: () {
-            Navigator.of(context).pop();
-            _confirmDelete(product);
-          },
+          onDelete: isOwner
+              ? () {
+                  Navigator.of(context).pop();
+                  _archiveProduct(product);
+                }
+              : null,
           onCancel: () {
             Navigator.of(context).pop();
           },
@@ -66,37 +75,22 @@ class _InventoryScreenBodyState extends State<InventoryScreenBody> {
     );
   }
 
-  Future<void> _confirmDelete(ProductEntity product) async {
-    final confirmed = await showDialog<bool>(
+  Future<void> _archiveProduct(ProductEntity product) async {
+    final result = await showArchiveProductDialog(
       context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text(context.l10n.deleteProductTitle),
-          content: Text(context.l10n.deleteProductMessage),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              child: Text(context.l10n.cancel),
-            ),
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(true),
-              child: Text(context.l10n.delete),
-            ),
-          ],
-        );
-      },
+      product: product,
+      cubit: context.read<ProductArchiveCubit>(),
     );
-
-    if (!mounted) return;
-    if (confirmed == true) {
-      final success = await context.read<ProductsListCubit>().deleteProduct(
-        product.id,
-      );
-      if (!mounted) return;
-      if (success) {
-        AppToast.show(context.l10n.productDeleted);
-      }
-    }
+    if (!mounted || result == null) return;
+    context.read<ProductsListCubit>().removeProductLocally(
+      product.id,
+      markUnavailable: true,
+    );
+    AppToast.show(
+      result.wasAlreadyArchived
+          ? context.l10n.productAlreadyArchived
+          : context.l10n.productArchivedSuccessfully,
+    );
   }
 
   Future<void> _editProduct(ProductEntity product) async {

@@ -97,6 +97,11 @@ class _NewSaleTabState extends State<_NewSaleTab> {
       AppToast.show(context.l10n.selectProductFirst);
       return;
     }
+    if (!product.isActive) {
+      AppToast.show(context.l10n.archivedProductCannotBeSold);
+      _clearSelection();
+      return;
+    }
 
     final override = _parsePrice(_unitPriceController.text);
     if (_unitPriceController.text.trim().isNotEmpty && override == null) {
@@ -200,9 +205,11 @@ class _NewSaleTabState extends State<_NewSaleTab> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<CreateSaleCubit, CreateSaleState>(
-      listenWhen: (previous, current) => previous.status != current.status,
-      listener: (context, state) {
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<CreateSaleCubit, CreateSaleState>(
+          listenWhen: (previous, current) => previous.status != current.status,
+          listener: (context, state) {
         if (state.status == CreateSaleStatus.failure) {
           AppToast.show(
             context.localizeFailure(
@@ -227,7 +234,34 @@ class _NewSaleTabState extends State<_NewSaleTab> {
             _searchController.clear();
           });
         }
-      },
+          },
+        ),
+        BlocListener<ProductsListCubit, ProductsListState>(
+          listenWhen: (previous, current) =>
+              previous.catalogMutationVersion !=
+              current.catalogMutationVersion,
+          listener: (context, state) {
+            final unavailableId = state.lastUnavailableProductId;
+            if (unavailableId == null) return;
+            final hadItem = _items.any(
+              (item) => item.product.id == unavailableId,
+            );
+            final wasSelected = _selectedProduct?.id == unavailableId;
+            if (!hadItem && !wasSelected) return;
+            setState(() {
+              _items.removeWhere(
+                (item) => item.product.id == unavailableId,
+              );
+              if (wasSelected) {
+                _selectedProduct = null;
+                _quantity = 1;
+                _unitPriceController.clear();
+              }
+            });
+            AppToast.show(context.l10n.archivedProductRemovedFromCart);
+          },
+        ),
+      ],
       child: ListView(
         padding: const EdgeInsets.all(AppSpacing.l),
         children: [

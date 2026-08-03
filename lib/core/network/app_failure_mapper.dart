@@ -21,6 +21,9 @@ class AppFailureMapper {
         availableQuantity: error.available,
       );
     }
+    if (error is LocalArchivedProductException) {
+      return ArchivedProductFailure(productId: error.productId);
+    }
     if (error is DataParsingException || error is FormatException) {
       return const ParsingFailure();
     }

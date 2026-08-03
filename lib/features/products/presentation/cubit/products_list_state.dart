@@ -18,6 +18,9 @@ class ProductsListState extends Equatable {
   final AppFailure? failure;
   final bool isFromCache;
   final DateTime? lastCachedAt;
+  final ProductStatus productStatus;
+  final String? lastUnavailableProductId;
+  final int catalogMutationVersion;
 
   const ProductsListState({
     required this.status,
@@ -32,6 +35,9 @@ class ProductsListState extends Equatable {
     required this.failure,
     required this.isFromCache,
     required this.lastCachedAt,
+    required this.productStatus,
+    required this.lastUnavailableProductId,
+    required this.catalogMutationVersion,
   });
 
   factory ProductsListState.initial() {
@@ -48,6 +54,9 @@ class ProductsListState extends Equatable {
       failure: null,
       isFromCache: false,
       lastCachedAt: null,
+      productStatus: ProductStatus.active,
+      lastUnavailableProductId: null,
+      catalogMutationVersion: 0,
     );
   }
 
@@ -66,6 +75,9 @@ class ProductsListState extends Equatable {
     Object? failure = stateFieldUnchanged,
     bool? isFromCache,
     Object? lastCachedAt = stateFieldUnchanged,
+    ProductStatus? productStatus,
+    Object? lastUnavailableProductId = stateFieldUnchanged,
+    int? catalogMutationVersion,
   }) {
     return ProductsListState(
       status: status ?? this.status,
@@ -84,6 +96,13 @@ class ProductsListState extends Equatable {
       lastCachedAt: identical(lastCachedAt, stateFieldUnchanged)
           ? this.lastCachedAt
           : lastCachedAt as DateTime?,
+      productStatus: productStatus ?? this.productStatus,
+      lastUnavailableProductId:
+          identical(lastUnavailableProductId, stateFieldUnchanged)
+          ? this.lastUnavailableProductId
+          : lastUnavailableProductId as String?,
+      catalogMutationVersion:
+          catalogMutationVersion ?? this.catalogMutationVersion,
     );
   }
 
@@ -101,5 +120,8 @@ class ProductsListState extends Equatable {
     failure,
     isFromCache,
     lastCachedAt,
+    productStatus,
+    lastUnavailableProductId,
+    catalogMutationVersion,
   ];
 }

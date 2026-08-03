@@ -10,6 +10,9 @@ class CachedProducts extends Table {
   IntColumn get sellingPriceMinor => integer()();
   IntColumn get serverStock => integer()();
   IntColumn get reservedStock => integer().withDefault(const Constant(0))();
+  BoolColumn get isActive => boolean().withDefault(const Constant(true))();
+  DateTimeColumn get archivedAt => dateTime().nullable()();
+  TextColumn get archiveReason => text().nullable()();
   TextColumn get category => text().nullable()();
   DateTimeColumn get serverUpdatedAt => dateTime().nullable()();
   DateTimeColumn get lastCachedAt => dateTime()();
@@ -71,7 +74,7 @@ class AppDatabase extends _$AppDatabase {
       );
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -91,7 +94,22 @@ class AppDatabase extends _$AppDatabase {
       );
     },
     onUpgrade: (migrator, from, to) async {
-      // Future versions must add explicit, non-destructive migration steps.
+      if (from < 2) {
+        await migrator.addColumn(
+          cachedProducts,
+          cachedProducts.isActive,
+        );
+      }
+      if (from < 3) {
+        await migrator.addColumn(
+          cachedProducts,
+          cachedProducts.archivedAt,
+        );
+        await migrator.addColumn(
+          cachedProducts,
+          cachedProducts.archiveReason,
+        );
+      }
     },
     beforeOpen: (details) async {
       await customStatement('PRAGMA foreign_keys = ON');

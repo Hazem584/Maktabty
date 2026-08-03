@@ -4,7 +4,7 @@ import 'package:maktabty/core/localization/l10n_ext.dart';
 
 class ProductActionsSheet extends StatelessWidget {
   final VoidCallback onEdit;
-  final VoidCallback onDelete;
+  final VoidCallback? onDelete;
   final VoidCallback onCancel;
 
   const ProductActionsSheet({
@@ -27,11 +27,12 @@ class ProductActionsSheet extends StatelessWidget {
               title: Text(context.l10n.edit),
               onTap: onEdit,
             ),
-            ListTile(
-              leading: const Icon(Icons.delete_outline),
-              title: Text(context.l10n.delete),
-              onTap: onDelete,
-            ),
+            if (onDelete != null)
+              ListTile(
+                leading: const Icon(Icons.archive_outlined),
+                title: Text(context.l10n.archiveProduct),
+                onTap: onDelete,
+              ),
             ListTile(
               leading: const Icon(Icons.close),
               title: Text(context.l10n.cancel),

@@ -98,6 +98,210 @@ abstract class AppLocalizations {
     Locale('en'),
   ];
 
+  /// No description provided for @archiveProduct.
+  ///
+  /// In en, this message translates to:
+  /// **'Archive product'**
+  String get archiveProduct;
+
+  /// No description provided for @archivedProducts.
+  ///
+  /// In en, this message translates to:
+  /// **'Archived products'**
+  String get archivedProducts;
+
+  /// No description provided for @archiveReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Archive reason'**
+  String get archiveReason;
+
+  /// No description provided for @enterArchiveReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a reason for archiving this product'**
+  String get enterArchiveReason;
+
+  /// No description provided for @archiveReasonTooLong.
+  ///
+  /// In en, this message translates to:
+  /// **'The archive reason must be 1000 characters or fewer'**
+  String get archiveReasonTooLong;
+
+  /// No description provided for @productArchivedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Product archived successfully'**
+  String get productArchivedSuccessfully;
+
+  /// No description provided for @productAlreadyArchived.
+  ///
+  /// In en, this message translates to:
+  /// **'This product is already archived'**
+  String get productAlreadyArchived;
+
+  /// No description provided for @productHasRemainingStock.
+  ///
+  /// In en, this message translates to:
+  /// **'This product still has stock'**
+  String get productHasRemainingStock;
+
+  /// No description provided for @archiveAndSetStockToZero.
+  ///
+  /// In en, this message translates to:
+  /// **'Archive and set stock to zero'**
+  String get archiveAndSetStockToZero;
+
+  /// No description provided for @stockAdjustmentWillBeRecorded.
+  ///
+  /// In en, this message translates to:
+  /// **'A stock adjustment will be recorded in movement history'**
+  String get stockAdjustmentWillBeRecorded;
+
+  /// No description provided for @historicalRecordsRemain.
+  ///
+  /// In en, this message translates to:
+  /// **'Existing sales, purchases, payments, and stock history will remain available'**
+  String get historicalRecordsRemain;
+
+  /// No description provided for @barcodeRemainsReserved.
+  ///
+  /// In en, this message translates to:
+  /// **'The product code remains reserved while the product is archived'**
+  String get barcodeRemainsReserved;
+
+  /// No description provided for @productCanBeRestored.
+  ///
+  /// In en, this message translates to:
+  /// **'The product can be restored later by an owner'**
+  String get productCanBeRestored;
+
+  /// No description provided for @archiveProductExplanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Archiving removes the product from active sales, purchasing, and inventory lists without deleting its history.'**
+  String get archiveProductExplanation;
+
+  /// No description provided for @currentStockValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Current stock: {quantity}'**
+  String currentStockValue(int quantity);
+
+  /// No description provided for @archiveStockAdjustmentWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm again to set the remaining stock to zero and archive this product. This cannot be retried automatically.'**
+  String get archiveStockAdjustmentWarning;
+
+  /// No description provided for @archiveConflictRefreshStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'The product changed on the server. Review its current stock and confirm again.'**
+  String get archiveConflictRefreshStatus;
+
+  /// No description provided for @archiveRequestRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'The archive request could not be completed. Refresh the product and try again.'**
+  String get archiveRequestRejected;
+
+  /// No description provided for @archiveRequestFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not archive the product. Please try again.'**
+  String get archiveRequestFailed;
+
+  /// No description provided for @restoreProduct.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore product'**
+  String get restoreProduct;
+
+  /// No description provided for @restoreProductConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore this product to the active catalog? Its previous stock will not be restored; add stock through a purchase or manual adjustment.'**
+  String get restoreProductConfirmation;
+
+  /// No description provided for @productRestoredSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Product restored successfully'**
+  String get productRestoredSuccessfully;
+
+  /// No description provided for @productAlreadyActive.
+  ///
+  /// In en, this message translates to:
+  /// **'This product is already active'**
+  String get productAlreadyActive;
+
+  /// No description provided for @restoreRequestFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not restore the product. Please try again.'**
+  String get restoreRequestFailed;
+
+  /// No description provided for @restoreConflictRefreshStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'The product status changed on the server. Refresh the list and try again.'**
+  String get restoreConflictRefreshStatus;
+
+  /// No description provided for @noArchivedProducts.
+  ///
+  /// In en, this message translates to:
+  /// **'No archived products'**
+  String get noArchivedProducts;
+
+  /// No description provided for @archivedDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Archived date'**
+  String get archivedDate;
+
+  /// No description provided for @activeProducts.
+  ///
+  /// In en, this message translates to:
+  /// **'Active products'**
+  String get activeProducts;
+
+  /// No description provided for @allProducts.
+  ///
+  /// In en, this message translates to:
+  /// **'All products'**
+  String get allProducts;
+
+  /// No description provided for @archivedProductCannotBeSold.
+  ///
+  /// In en, this message translates to:
+  /// **'This product is archived and cannot be sold'**
+  String get archivedProductCannotBeSold;
+
+  /// No description provided for @archivedProductCannotBePurchased.
+  ///
+  /// In en, this message translates to:
+  /// **'This product is archived and cannot be purchased'**
+  String get archivedProductCannotBePurchased;
+
+  /// No description provided for @refreshProductStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh the product status and try again'**
+  String get refreshProductStatus;
+
+  /// No description provided for @pendingOfflineSaleArchivedProduct.
+  ///
+  /// In en, this message translates to:
+  /// **'This offline sale contains an archived product and cannot be synced'**
+  String get pendingOfflineSaleArchivedProduct;
+
+  /// No description provided for @archivedProductRemovedFromCart.
+  ///
+  /// In en, this message translates to:
+  /// **'An archived product was removed from the cart'**
+  String get archivedProductRemovedFromCart;
+
   /// No description provided for @appTitle.
   ///
   /// In en, this message translates to:

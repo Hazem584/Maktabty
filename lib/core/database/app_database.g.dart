@@ -72,6 +72,43 @@ class $CachedProductsTable extends CachedProducts
     requiredDuringInsert: false,
     defaultValue: const Constant(0),
   );
+  static const VerificationMeta _isActiveMeta = const VerificationMeta(
+    'isActive',
+  );
+  @override
+  late final GeneratedColumn<bool> isActive = GeneratedColumn<bool>(
+    'is_active',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_active" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _archivedAtMeta = const VerificationMeta(
+    'archivedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> archivedAt = GeneratedColumn<DateTime>(
+    'archived_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _archiveReasonMeta = const VerificationMeta(
+    'archiveReason',
+  );
+  @override
+  late final GeneratedColumn<String> archiveReason = GeneratedColumn<String>(
+    'archive_reason',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _categoryMeta = const VerificationMeta(
     'category',
   );
@@ -114,6 +151,9 @@ class $CachedProductsTable extends CachedProducts
     sellingPriceMinor,
     serverStock,
     reservedStock,
+    isActive,
+    archivedAt,
+    archiveReason,
     category,
     serverUpdatedAt,
     lastCachedAt,
@@ -183,6 +223,27 @@ class $CachedProductsTable extends CachedProducts
         ),
       );
     }
+    if (data.containsKey('is_active')) {
+      context.handle(
+        _isActiveMeta,
+        isActive.isAcceptableOrUnknown(data['is_active']!, _isActiveMeta),
+      );
+    }
+    if (data.containsKey('archived_at')) {
+      context.handle(
+        _archivedAtMeta,
+        archivedAt.isAcceptableOrUnknown(data['archived_at']!, _archivedAtMeta),
+      );
+    }
+    if (data.containsKey('archive_reason')) {
+      context.handle(
+        _archiveReasonMeta,
+        archiveReason.isAcceptableOrUnknown(
+          data['archive_reason']!,
+          _archiveReasonMeta,
+        ),
+      );
+    }
     if (data.containsKey('category')) {
       context.handle(
         _categoryMeta,
@@ -242,6 +303,18 @@ class $CachedProductsTable extends CachedProducts
         DriftSqlType.int,
         data['${effectivePrefix}reserved_stock'],
       )!,
+      isActive: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_active'],
+      )!,
+      archivedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}archived_at'],
+      ),
+      archiveReason: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}archive_reason'],
+      ),
       category: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}category'],
@@ -270,6 +343,9 @@ class CachedProduct extends DataClass implements Insertable<CachedProduct> {
   final int sellingPriceMinor;
   final int serverStock;
   final int reservedStock;
+  final bool isActive;
+  final DateTime? archivedAt;
+  final String? archiveReason;
   final String? category;
   final DateTime? serverUpdatedAt;
   final DateTime lastCachedAt;
@@ -280,6 +356,9 @@ class CachedProduct extends DataClass implements Insertable<CachedProduct> {
     required this.sellingPriceMinor,
     required this.serverStock,
     required this.reservedStock,
+    required this.isActive,
+    this.archivedAt,
+    this.archiveReason,
     this.category,
     this.serverUpdatedAt,
     required this.lastCachedAt,
@@ -295,6 +374,13 @@ class CachedProduct extends DataClass implements Insertable<CachedProduct> {
     map['selling_price_minor'] = Variable<int>(sellingPriceMinor);
     map['server_stock'] = Variable<int>(serverStock);
     map['reserved_stock'] = Variable<int>(reservedStock);
+    map['is_active'] = Variable<bool>(isActive);
+    if (!nullToAbsent || archivedAt != null) {
+      map['archived_at'] = Variable<DateTime>(archivedAt);
+    }
+    if (!nullToAbsent || archiveReason != null) {
+      map['archive_reason'] = Variable<String>(archiveReason);
+    }
     if (!nullToAbsent || category != null) {
       map['category'] = Variable<String>(category);
     }
@@ -313,6 +399,13 @@ class CachedProduct extends DataClass implements Insertable<CachedProduct> {
       sellingPriceMinor: Value(sellingPriceMinor),
       serverStock: Value(serverStock),
       reservedStock: Value(reservedStock),
+      isActive: Value(isActive),
+      archivedAt: archivedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(archivedAt),
+      archiveReason: archiveReason == null && nullToAbsent
+          ? const Value.absent()
+          : Value(archiveReason),
       category: category == null && nullToAbsent
           ? const Value.absent()
           : Value(category),
@@ -335,6 +428,9 @@ class CachedProduct extends DataClass implements Insertable<CachedProduct> {
       sellingPriceMinor: serializer.fromJson<int>(json['sellingPriceMinor']),
       serverStock: serializer.fromJson<int>(json['serverStock']),
       reservedStock: serializer.fromJson<int>(json['reservedStock']),
+      isActive: serializer.fromJson<bool>(json['isActive']),
+      archivedAt: serializer.fromJson<DateTime?>(json['archivedAt']),
+      archiveReason: serializer.fromJson<String?>(json['archiveReason']),
       category: serializer.fromJson<String?>(json['category']),
       serverUpdatedAt: serializer.fromJson<DateTime?>(json['serverUpdatedAt']),
       lastCachedAt: serializer.fromJson<DateTime>(json['lastCachedAt']),
@@ -350,6 +446,9 @@ class CachedProduct extends DataClass implements Insertable<CachedProduct> {
       'sellingPriceMinor': serializer.toJson<int>(sellingPriceMinor),
       'serverStock': serializer.toJson<int>(serverStock),
       'reservedStock': serializer.toJson<int>(reservedStock),
+      'isActive': serializer.toJson<bool>(isActive),
+      'archivedAt': serializer.toJson<DateTime?>(archivedAt),
+      'archiveReason': serializer.toJson<String?>(archiveReason),
       'category': serializer.toJson<String?>(category),
       'serverUpdatedAt': serializer.toJson<DateTime?>(serverUpdatedAt),
       'lastCachedAt': serializer.toJson<DateTime>(lastCachedAt),
@@ -363,6 +462,9 @@ class CachedProduct extends DataClass implements Insertable<CachedProduct> {
     int? sellingPriceMinor,
     int? serverStock,
     int? reservedStock,
+    bool? isActive,
+    Value<DateTime?> archivedAt = const Value.absent(),
+    Value<String?> archiveReason = const Value.absent(),
     Value<String?> category = const Value.absent(),
     Value<DateTime?> serverUpdatedAt = const Value.absent(),
     DateTime? lastCachedAt,
@@ -373,6 +475,11 @@ class CachedProduct extends DataClass implements Insertable<CachedProduct> {
     sellingPriceMinor: sellingPriceMinor ?? this.sellingPriceMinor,
     serverStock: serverStock ?? this.serverStock,
     reservedStock: reservedStock ?? this.reservedStock,
+    isActive: isActive ?? this.isActive,
+    archivedAt: archivedAt.present ? archivedAt.value : this.archivedAt,
+    archiveReason: archiveReason.present
+        ? archiveReason.value
+        : this.archiveReason,
     category: category.present ? category.value : this.category,
     serverUpdatedAt: serverUpdatedAt.present
         ? serverUpdatedAt.value
@@ -393,6 +500,13 @@ class CachedProduct extends DataClass implements Insertable<CachedProduct> {
       reservedStock: data.reservedStock.present
           ? data.reservedStock.value
           : this.reservedStock,
+      isActive: data.isActive.present ? data.isActive.value : this.isActive,
+      archivedAt: data.archivedAt.present
+          ? data.archivedAt.value
+          : this.archivedAt,
+      archiveReason: data.archiveReason.present
+          ? data.archiveReason.value
+          : this.archiveReason,
       category: data.category.present ? data.category.value : this.category,
       serverUpdatedAt: data.serverUpdatedAt.present
           ? data.serverUpdatedAt.value
@@ -412,6 +526,9 @@ class CachedProduct extends DataClass implements Insertable<CachedProduct> {
           ..write('sellingPriceMinor: $sellingPriceMinor, ')
           ..write('serverStock: $serverStock, ')
           ..write('reservedStock: $reservedStock, ')
+          ..write('isActive: $isActive, ')
+          ..write('archivedAt: $archivedAt, ')
+          ..write('archiveReason: $archiveReason, ')
           ..write('category: $category, ')
           ..write('serverUpdatedAt: $serverUpdatedAt, ')
           ..write('lastCachedAt: $lastCachedAt')
@@ -427,6 +544,9 @@ class CachedProduct extends DataClass implements Insertable<CachedProduct> {
     sellingPriceMinor,
     serverStock,
     reservedStock,
+    isActive,
+    archivedAt,
+    archiveReason,
     category,
     serverUpdatedAt,
     lastCachedAt,
@@ -441,6 +561,9 @@ class CachedProduct extends DataClass implements Insertable<CachedProduct> {
           other.sellingPriceMinor == this.sellingPriceMinor &&
           other.serverStock == this.serverStock &&
           other.reservedStock == this.reservedStock &&
+          other.isActive == this.isActive &&
+          other.archivedAt == this.archivedAt &&
+          other.archiveReason == this.archiveReason &&
           other.category == this.category &&
           other.serverUpdatedAt == this.serverUpdatedAt &&
           other.lastCachedAt == this.lastCachedAt);
@@ -453,6 +576,9 @@ class CachedProductsCompanion extends UpdateCompanion<CachedProduct> {
   final Value<int> sellingPriceMinor;
   final Value<int> serverStock;
   final Value<int> reservedStock;
+  final Value<bool> isActive;
+  final Value<DateTime?> archivedAt;
+  final Value<String?> archiveReason;
   final Value<String?> category;
   final Value<DateTime?> serverUpdatedAt;
   final Value<DateTime> lastCachedAt;
@@ -464,6 +590,9 @@ class CachedProductsCompanion extends UpdateCompanion<CachedProduct> {
     this.sellingPriceMinor = const Value.absent(),
     this.serverStock = const Value.absent(),
     this.reservedStock = const Value.absent(),
+    this.isActive = const Value.absent(),
+    this.archivedAt = const Value.absent(),
+    this.archiveReason = const Value.absent(),
     this.category = const Value.absent(),
     this.serverUpdatedAt = const Value.absent(),
     this.lastCachedAt = const Value.absent(),
@@ -476,6 +605,9 @@ class CachedProductsCompanion extends UpdateCompanion<CachedProduct> {
     required int sellingPriceMinor,
     required int serverStock,
     this.reservedStock = const Value.absent(),
+    this.isActive = const Value.absent(),
+    this.archivedAt = const Value.absent(),
+    this.archiveReason = const Value.absent(),
     this.category = const Value.absent(),
     this.serverUpdatedAt = const Value.absent(),
     required DateTime lastCachedAt,
@@ -492,6 +624,9 @@ class CachedProductsCompanion extends UpdateCompanion<CachedProduct> {
     Expression<int>? sellingPriceMinor,
     Expression<int>? serverStock,
     Expression<int>? reservedStock,
+    Expression<bool>? isActive,
+    Expression<DateTime>? archivedAt,
+    Expression<String>? archiveReason,
     Expression<String>? category,
     Expression<DateTime>? serverUpdatedAt,
     Expression<DateTime>? lastCachedAt,
@@ -504,6 +639,9 @@ class CachedProductsCompanion extends UpdateCompanion<CachedProduct> {
       if (sellingPriceMinor != null) 'selling_price_minor': sellingPriceMinor,
       if (serverStock != null) 'server_stock': serverStock,
       if (reservedStock != null) 'reserved_stock': reservedStock,
+      if (isActive != null) 'is_active': isActive,
+      if (archivedAt != null) 'archived_at': archivedAt,
+      if (archiveReason != null) 'archive_reason': archiveReason,
       if (category != null) 'category': category,
       if (serverUpdatedAt != null) 'server_updated_at': serverUpdatedAt,
       if (lastCachedAt != null) 'last_cached_at': lastCachedAt,
@@ -518,6 +656,9 @@ class CachedProductsCompanion extends UpdateCompanion<CachedProduct> {
     Value<int>? sellingPriceMinor,
     Value<int>? serverStock,
     Value<int>? reservedStock,
+    Value<bool>? isActive,
+    Value<DateTime?>? archivedAt,
+    Value<String?>? archiveReason,
     Value<String?>? category,
     Value<DateTime?>? serverUpdatedAt,
     Value<DateTime>? lastCachedAt,
@@ -530,6 +671,9 @@ class CachedProductsCompanion extends UpdateCompanion<CachedProduct> {
       sellingPriceMinor: sellingPriceMinor ?? this.sellingPriceMinor,
       serverStock: serverStock ?? this.serverStock,
       reservedStock: reservedStock ?? this.reservedStock,
+      isActive: isActive ?? this.isActive,
+      archivedAt: archivedAt ?? this.archivedAt,
+      archiveReason: archiveReason ?? this.archiveReason,
       category: category ?? this.category,
       serverUpdatedAt: serverUpdatedAt ?? this.serverUpdatedAt,
       lastCachedAt: lastCachedAt ?? this.lastCachedAt,
@@ -558,6 +702,15 @@ class CachedProductsCompanion extends UpdateCompanion<CachedProduct> {
     if (reservedStock.present) {
       map['reserved_stock'] = Variable<int>(reservedStock.value);
     }
+    if (isActive.present) {
+      map['is_active'] = Variable<bool>(isActive.value);
+    }
+    if (archivedAt.present) {
+      map['archived_at'] = Variable<DateTime>(archivedAt.value);
+    }
+    if (archiveReason.present) {
+      map['archive_reason'] = Variable<String>(archiveReason.value);
+    }
     if (category.present) {
       map['category'] = Variable<String>(category.value);
     }
@@ -582,6 +735,9 @@ class CachedProductsCompanion extends UpdateCompanion<CachedProduct> {
           ..write('sellingPriceMinor: $sellingPriceMinor, ')
           ..write('serverStock: $serverStock, ')
           ..write('reservedStock: $reservedStock, ')
+          ..write('isActive: $isActive, ')
+          ..write('archivedAt: $archivedAt, ')
+          ..write('archiveReason: $archiveReason, ')
           ..write('category: $category, ')
           ..write('serverUpdatedAt: $serverUpdatedAt, ')
           ..write('lastCachedAt: $lastCachedAt, ')
@@ -2646,6 +2802,9 @@ typedef $$CachedProductsTableCreateCompanionBuilder =
       required int sellingPriceMinor,
       required int serverStock,
       Value<int> reservedStock,
+      Value<bool> isActive,
+      Value<DateTime?> archivedAt,
+      Value<String?> archiveReason,
       Value<String?> category,
       Value<DateTime?> serverUpdatedAt,
       required DateTime lastCachedAt,
@@ -2659,6 +2818,9 @@ typedef $$CachedProductsTableUpdateCompanionBuilder =
       Value<int> sellingPriceMinor,
       Value<int> serverStock,
       Value<int> reservedStock,
+      Value<bool> isActive,
+      Value<DateTime?> archivedAt,
+      Value<String?> archiveReason,
       Value<String?> category,
       Value<DateTime?> serverUpdatedAt,
       Value<DateTime> lastCachedAt,
@@ -2701,6 +2863,21 @@ class $$CachedProductsTableFilterComposer
 
   ColumnFilters<int> get reservedStock => $composableBuilder(
     column: $table.reservedStock,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isActive => $composableBuilder(
+    column: $table.isActive,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get archivedAt => $composableBuilder(
+    column: $table.archivedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get archiveReason => $composableBuilder(
+    column: $table.archiveReason,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -2759,6 +2936,21 @@ class $$CachedProductsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<bool> get isActive => $composableBuilder(
+    column: $table.isActive,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get archivedAt => $composableBuilder(
+    column: $table.archivedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get archiveReason => $composableBuilder(
+    column: $table.archiveReason,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get category => $composableBuilder(
     column: $table.category,
     builder: (column) => ColumnOrderings(column),
@@ -2805,6 +2997,19 @@ class $$CachedProductsTableAnnotationComposer
 
   GeneratedColumn<int> get reservedStock => $composableBuilder(
     column: $table.reservedStock,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isActive =>
+      $composableBuilder(column: $table.isActive, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get archivedAt => $composableBuilder(
+    column: $table.archivedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get archiveReason => $composableBuilder(
+    column: $table.archiveReason,
     builder: (column) => column,
   );
 
@@ -2861,6 +3066,9 @@ class $$CachedProductsTableTableManager
                 Value<int> sellingPriceMinor = const Value.absent(),
                 Value<int> serverStock = const Value.absent(),
                 Value<int> reservedStock = const Value.absent(),
+                Value<bool> isActive = const Value.absent(),
+                Value<DateTime?> archivedAt = const Value.absent(),
+                Value<String?> archiveReason = const Value.absent(),
                 Value<String?> category = const Value.absent(),
                 Value<DateTime?> serverUpdatedAt = const Value.absent(),
                 Value<DateTime> lastCachedAt = const Value.absent(),
@@ -2872,6 +3080,9 @@ class $$CachedProductsTableTableManager
                 sellingPriceMinor: sellingPriceMinor,
                 serverStock: serverStock,
                 reservedStock: reservedStock,
+                isActive: isActive,
+                archivedAt: archivedAt,
+                archiveReason: archiveReason,
                 category: category,
                 serverUpdatedAt: serverUpdatedAt,
                 lastCachedAt: lastCachedAt,
@@ -2885,6 +3096,9 @@ class $$CachedProductsTableTableManager
                 required int sellingPriceMinor,
                 required int serverStock,
                 Value<int> reservedStock = const Value.absent(),
+                Value<bool> isActive = const Value.absent(),
+                Value<DateTime?> archivedAt = const Value.absent(),
+                Value<String?> archiveReason = const Value.absent(),
                 Value<String?> category = const Value.absent(),
                 Value<DateTime?> serverUpdatedAt = const Value.absent(),
                 required DateTime lastCachedAt,
@@ -2896,6 +3110,9 @@ class $$CachedProductsTableTableManager
                 sellingPriceMinor: sellingPriceMinor,
                 serverStock: serverStock,
                 reservedStock: reservedStock,
+                isActive: isActive,
+                archivedAt: archivedAt,
+                archiveReason: archiveReason,
                 category: category,
                 serverUpdatedAt: serverUpdatedAt,
                 lastCachedAt: lastCachedAt,

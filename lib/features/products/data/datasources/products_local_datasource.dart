@@ -12,21 +12,23 @@ class ProductsLocalDataSource {
 
   Future<void> cacheProducts(
     List<ProductEntity> products, {
-    required bool replaceAll,
+    required bool reconcileActiveCatalog,
   }) async {
     final cachedAt = DateTime.now().toUtc();
     try {
       await _database.transaction(() async {
-        if (replaceAll) {
+        if (reconcileActiveCatalog) {
           final incomingIds = products.map((product) => product.id).toSet();
           final existing = await _database
               .select(_database.cachedProducts)
               .get();
           for (final row in existing) {
-            if (!incomingIds.contains(row.productId)) {
-              await (_database.delete(
+            if (row.isActive && !incomingIds.contains(row.productId)) {
+              await (_database.update(
                 _database.cachedProducts,
-              )..where((table) => table.productId.equals(row.productId))).go();
+              )..where((table) => table.productId.equals(row.productId))).write(
+                const CachedProductsCompanion(isActive: Value(false)),
+              );
             }
           }
         }
@@ -42,6 +44,9 @@ class ProductsLocalDataSource {
             sellingPriceMinor: Value(MoneyMinor.fromDouble(product.price) ?? 0),
             serverStock: Value(product.stock),
             reservedStock: Value(activeReservation),
+          isActive: Value(product.isActive),
+          archivedAt: Value(product.archivedAt),
+          archiveReason: Value(product.archiveReason),
             category: Value(product.category),
             serverUpdatedAt: Value(product.updatedAt?.toUtc()),
             lastCachedAt: Value(cachedAt),
@@ -59,6 +64,7 @@ class ProductsLocalDataSource {
   Future<PaginatedProductsEntity> getProducts({
     String? search,
     bool? lowStock,
+    ProductStatus status = ProductStatus.active,
     int page = 1,
     int limit = 20,
   }) async {
@@ -67,6 +73,11 @@ class ProductsLocalDataSource {
       final query = _database.select(_database.cachedProducts)
         ..where((table) {
           Expression<bool> predicate = const Constant(true);
+          if (status == ProductStatus.active) {
+            predicate = predicate & table.isActive.equals(true);
+          } else if (status == ProductStatus.archived) {
+            predicate = predicate & table.isActive.equals(false);
+          }
           if (normalizedSearch != null && normalizedSearch.isNotEmpty) {
             predicate =
                 table.name.lower().contains(normalizedSearch) |
@@ -90,6 +101,11 @@ class ProductsLocalDataSource {
         ..where(() {
           final table = _database.cachedProducts;
           Expression<bool> predicate = const Constant(true);
+          if (status == ProductStatus.active) {
+            predicate = predicate & table.isActive.equals(true);
+          } else if (status == ProductStatus.archived) {
+            predicate = predicate & table.isActive.equals(false);
+          }
           if (normalizedSearch != null && normalizedSearch.isNotEmpty) {
             predicate =
                 table.name.lower().contains(normalizedSearch) |
@@ -142,7 +158,10 @@ class ProductsLocalDataSource {
   Future<ProductEntity?> getProductByCode(String code) async {
     try {
       final query = _database.select(_database.cachedProducts)
-        ..where((table) => table.code.equals(code.trim()));
+        ..where(
+          (table) =>
+              table.code.equals(code.trim()) & table.isActive.equals(true),
+        );
       final row = await query.getSingleOrNull();
       return row == null ? null : _toEntity(row);
     } catch (error) {
@@ -173,6 +192,9 @@ class ProductsLocalDataSource {
       code: row.code,
       updatedAt: row.serverUpdatedAt,
       category: row.category,
+      isActive: row.isActive,
+      archivedAt: row.archivedAt,
+      archiveReason: row.archiveReason,
     );
   }
 

@@ -1,3 +1,4 @@
+import 'package:maktabty/core/errors/app_failure.dart';
 import 'package:maktabty/core/network/app_failure_mapper.dart';
 import 'package:maktabty/features/products/data/datasources/products_remote_datasource.dart';
 import 'package:maktabty/features/products/data/datasources/products_local_datasource.dart';
@@ -18,6 +19,7 @@ class ProductsRepositoryImpl implements ProductsRepository {
   Future<PaginatedProductsEntity> getProducts({
     String? search,
     bool? lowStock,
+    ProductStatus status = ProductStatus.active,
     int page = 1,
     int limit = 20,
   }) async {
@@ -25,13 +27,15 @@ class ProductsRepositoryImpl implements ProductsRepository {
       final response = await _remoteDataSource.getProducts(
         search: search,
         lowStock: lowStock,
+        status: status,
         page: page,
         limit: limit,
       );
       final entity = response.toEntity();
       await _localDataSource.cacheProducts(
         entity.items,
-        replaceAll:
+        reconcileActiveCatalog:
+            status == ProductStatus.active &&
             page == 1 &&
             search == null &&
             lowStock != true &&
@@ -43,6 +47,7 @@ class ProductsRepositoryImpl implements ProductsRepository {
         final cached = await _localDataSource.getProducts(
           search: search,
           lowStock: lowStock,
+          status: status,
           page: page,
           limit: limit,
         );
@@ -59,7 +64,10 @@ class ProductsRepositoryImpl implements ProductsRepository {
     try {
       final product = await _remoteDataSource.getProductById(id);
       final entity = product.toEntity();
-      await _localDataSource.cacheProducts([entity], replaceAll: false);
+      await _localDataSource.cacheProducts(
+        [entity],
+        reconcileActiveCatalog: false,
+      );
       return entity;
     } catch (error) {
       try {
@@ -77,7 +85,11 @@ class ProductsRepositoryImpl implements ProductsRepository {
     try {
       final product = await _remoteDataSource.getProductByCode(code);
       final entity = product.toEntity();
-      await _localDataSource.cacheProducts([entity], replaceAll: false);
+      await _localDataSource.cacheProducts(
+        [entity],
+        reconcileActiveCatalog: false,
+      );
+      if (!entity.isActive) throw const ArchivedProductFailure();
       return entity;
     } catch (error) {
       try {
@@ -105,7 +117,10 @@ class ProductsRepositoryImpl implements ProductsRepository {
         code: code,
       );
       final entity = product.toEntity();
-      await _localDataSource.cacheProducts([entity], replaceAll: false);
+      await _localDataSource.cacheProducts(
+        [entity],
+        reconcileActiveCatalog: false,
+      );
       return entity;
     } catch (error) {
       throw AppFailureMapper.fromException(error);
@@ -131,7 +146,10 @@ class ProductsRepositoryImpl implements ProductsRepository {
         adjustmentReason: adjustmentReason,
       );
       final entity = product.toEntity();
-      await _localDataSource.cacheProducts([entity], replaceAll: false);
+      await _localDataSource.cacheProducts(
+        [entity],
+        reconcileActiveCatalog: false,
+      );
       return entity;
     } catch (error) {
       throw AppFailureMapper.fromException(error);
@@ -144,6 +162,36 @@ class ProductsRepositoryImpl implements ProductsRepository {
       final product = await _remoteDataSource.deleteProduct(id);
       final entity = product.toEntity();
       await _localDataSource.removeProduct(id);
+      return entity;
+    } catch (error) {
+      throw AppFailureMapper.fromException(error);
+    }
+  }
+
+  @override
+  Future<ProductEntity> archiveProduct(ArchiveProductInput input) async {
+    try {
+      final model = await _remoteDataSource.archiveProduct(input);
+      final entity = model.toEntity();
+      await _localDataSource.cacheProducts(
+        [entity],
+        reconcileActiveCatalog: false,
+      );
+      return entity;
+    } catch (error) {
+      throw AppFailureMapper.fromException(error);
+    }
+  }
+
+  @override
+  Future<ProductEntity> restoreProduct({required String id}) async {
+    try {
+      final model = await _remoteDataSource.restoreProduct(id);
+      final entity = model.toEntity();
+      await _localDataSource.cacheProducts(
+        [entity],
+        reconcileActiveCatalog: false,
+      );
       return entity;
     } catch (error) {
       throw AppFailureMapper.fromException(error);

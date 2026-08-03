@@ -9,6 +9,121 @@ class AppLocalizationsAr extends AppLocalizations {
   AppLocalizationsAr([String locale = 'ar']) : super(locale);
 
   @override
+  String get archiveProduct => 'أرشفة المنتج';
+
+  @override
+  String get archivedProducts => 'المنتجات المؤرشفة';
+
+  @override
+  String get archiveReason => 'سبب الأرشفة';
+
+  @override
+  String get enterArchiveReason => 'أدخل سبب أرشفة هذا المنتج';
+
+  @override
+  String get archiveReasonTooLong => 'يجب ألا يزيد سبب الأرشفة عن 1000 حرف';
+
+  @override
+  String get productArchivedSuccessfully => 'تمت أرشفة المنتج بنجاح';
+
+  @override
+  String get productAlreadyArchived => 'هذا المنتج مؤرشف بالفعل';
+
+  @override
+  String get productHasRemainingStock => 'لا يزال لهذا المنتج مخزون';
+
+  @override
+  String get archiveAndSetStockToZero => 'الأرشفة وتصفير المخزون';
+
+  @override
+  String get stockAdjustmentWillBeRecorded =>
+      'سيتم تسجيل تسوية للمخزون في سجل الحركات';
+
+  @override
+  String get historicalRecordsRemain =>
+      'ستظل المبيعات والمشتريات والمدفوعات وسجلات المخزون السابقة متاحة';
+
+  @override
+  String get barcodeRemainsReserved =>
+      'يظل كود المنتج محجوزًا أثناء أرشفة المنتج';
+
+  @override
+  String get productCanBeRestored => 'يمكن للمالك استعادة المنتج لاحقًا';
+
+  @override
+  String get archiveProductExplanation =>
+      'تزيل الأرشفة المنتج من قوائم البيع والشراء والمخزون النشطة دون حذف سجله.';
+
+  @override
+  String currentStockValue(int quantity) {
+    return 'المخزون الحالي: $quantity';
+  }
+
+  @override
+  String get archiveStockAdjustmentWarning =>
+      'أكد مرة أخرى لتصفير المخزون المتبقي وأرشفة هذا المنتج. لن تتم إعادة المحاولة تلقائيًا.';
+
+  @override
+  String get archiveConflictRefreshStatus =>
+      'تغير المنتج على الخادم. راجع المخزون الحالي ثم أكد مرة أخرى.';
+
+  @override
+  String get archiveRequestRejected =>
+      'تعذر إكمال طلب الأرشفة. حدّث المنتج ثم حاول مرة أخرى.';
+
+  @override
+  String get archiveRequestFailed => 'تعذرت أرشفة المنتج. حاول مرة أخرى.';
+
+  @override
+  String get restoreProduct => 'استعادة المنتج';
+
+  @override
+  String get restoreProductConfirmation =>
+      'هل تريد إعادة هذا المنتج إلى القائمة النشطة؟ لن تتم استعادة مخزونه السابق؛ أضف المخزون من خلال عملية شراء أو تسوية يدوية.';
+
+  @override
+  String get productRestoredSuccessfully => 'تمت استعادة المنتج بنجاح';
+
+  @override
+  String get productAlreadyActive => 'هذا المنتج نشط بالفعل';
+
+  @override
+  String get restoreRequestFailed => 'تعذرت استعادة المنتج. حاول مرة أخرى.';
+
+  @override
+  String get restoreConflictRefreshStatus =>
+      'تغيرت حالة المنتج على الخادم. حدّث القائمة ثم حاول مرة أخرى.';
+
+  @override
+  String get noArchivedProducts => 'لا توجد منتجات مؤرشفة';
+
+  @override
+  String get archivedDate => 'تاريخ الأرشفة';
+
+  @override
+  String get activeProducts => 'المنتجات النشطة';
+
+  @override
+  String get allProducts => 'كل المنتجات';
+
+  @override
+  String get archivedProductCannotBeSold => 'هذا المنتج مؤرشف ولا يمكن بيعه';
+
+  @override
+  String get archivedProductCannotBePurchased =>
+      'هذا المنتج مؤرشف ولا يمكن شراؤه';
+
+  @override
+  String get refreshProductStatus => 'حدّث حالة المنتج ثم حاول مرة أخرى';
+
+  @override
+  String get pendingOfflineSaleArchivedProduct =>
+      'تحتوي هذه المبيعة غير المتصلة على منتج مؤرشف ولا يمكن مزامنتها';
+
+  @override
+  String get archivedProductRemovedFromCart => 'تمت إزالة منتج مؤرشف من السلة';
+
+  @override
   String get appTitle => 'مكتبتي';
 
   @override

@@ -2,6 +2,8 @@ import 'package:dio/dio.dart';
 import 'package:maktabty/core/network/data_parsing_exception.dart';
 import 'package:maktabty/features/products/data/models/paginated_products_model.dart';
 import 'package:maktabty/features/products/data/models/product_model.dart';
+import 'package:maktabty/core/network/json_helpers.dart';
+import 'package:maktabty/features/products/domain/entities/product_entity.dart';
 
 class ProductsRemoteDataSource {
   final Dio _dio;
@@ -11,6 +13,7 @@ class ProductsRemoteDataSource {
   Future<PaginatedProductsModel> getProducts({
     String? search,
     bool? lowStock,
+    ProductStatus status = ProductStatus.active,
     int page = 1,
     int limit = 20,
   }) async {
@@ -19,6 +22,7 @@ class ProductsRemoteDataSource {
       queryParameters: {
         if (search != null && search.isNotEmpty) 'search': search,
         'lowStock': ?lowStock,
+        'status': status.apiValue,
         'page': page,
         'limit': limit,
       },
@@ -84,9 +88,29 @@ class ProductsRemoteDataSource {
     return _parseProduct(response.data);
   }
 
-  ProductModel _parseProduct(dynamic data) {
+  Future<ProductModel> archiveProduct(ArchiveProductInput input) async {
+    final response = await _dio.post(
+      '/products/${input.productId}/archive',
+      data: {
+        'reason': input.reason,
+        'adjustStockToZero': input.adjustStockToZero,
+      },
+    );
+    return _parseProduct(response.data);
+  }
+
+  Future<ProductModel> restoreProduct(String id) async {
+    final response = await _dio.post('/products/$id/restore');
+    return _parseProduct(response.data);
+  }
+
+  ProductModel _parseProduct(Object? data) {
     return ProductModel.fromJson(
-      requireStringMap(data, operation: 'parse product response'),
+      unwrapObject(
+        data,
+        operation: 'parse product response',
+        keys: const ['data', 'product'],
+      ),
     );
   }
 }

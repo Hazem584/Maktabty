@@ -1,6 +1,30 @@
 import 'package:equatable/equatable.dart';
 import 'package:maktabty/core/utils/copy_with_sentinel.dart';
 
+enum ProductStatus {
+  active('ACTIVE'),
+  archived('ARCHIVED'),
+  all('ALL');
+
+  final String apiValue;
+  const ProductStatus(this.apiValue);
+}
+
+class ArchiveProductInput extends Equatable {
+  final String productId;
+  final String reason;
+  final bool adjustStockToZero;
+
+  const ArchiveProductInput({
+    required this.productId,
+    required this.reason,
+    required this.adjustStockToZero,
+  });
+
+  @override
+  List<Object?> get props => [productId, reason, adjustStockToZero];
+}
+
 class ProductEntity extends Equatable {
   final String id;
   final String name;
@@ -12,6 +36,9 @@ class ProductEntity extends Equatable {
   final String? category;
   final double? lastPurchasePrice;
   final double? averageCost;
+  final bool isActive;
+  final DateTime? archivedAt;
+  final String? archiveReason;
 
   const ProductEntity({
     required this.id,
@@ -24,6 +51,9 @@ class ProductEntity extends Equatable {
     this.category,
     this.lastPurchasePrice,
     this.averageCost,
+    this.isActive = true,
+    this.archivedAt,
+    this.archiveReason,
   });
 
   ProductEntity copyWith({
@@ -37,6 +67,9 @@ class ProductEntity extends Equatable {
     Object? category = stateFieldUnchanged,
     Object? lastPurchasePrice = stateFieldUnchanged,
     Object? averageCost = stateFieldUnchanged,
+    bool? isActive,
+    Object? archivedAt = stateFieldUnchanged,
+    Object? archiveReason = stateFieldUnchanged,
   }) {
     return ProductEntity(
       id: id ?? this.id,
@@ -59,6 +92,13 @@ class ProductEntity extends Equatable {
       averageCost: identical(averageCost, stateFieldUnchanged)
           ? this.averageCost
           : averageCost as double?,
+      isActive: isActive ?? this.isActive,
+      archivedAt: identical(archivedAt, stateFieldUnchanged)
+          ? this.archivedAt
+          : archivedAt as DateTime?,
+      archiveReason: identical(archiveReason, stateFieldUnchanged)
+          ? this.archiveReason
+          : archiveReason as String?,
     );
   }
 
@@ -74,5 +114,8 @@ class ProductEntity extends Equatable {
     category,
     lastPurchasePrice,
     averageCost,
+    isActive,
+    archivedAt,
+    archiveReason,
   ];
 }

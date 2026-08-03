@@ -13,6 +13,9 @@ class ProductModel {
   final String? category;
   final double? lastPurchasePrice;
   final double? averageCost;
+  final bool isActive;
+  final DateTime? archivedAt;
+  final String? archiveReason;
 
   const ProductModel({
     required this.id,
@@ -25,6 +28,9 @@ class ProductModel {
     this.category,
     this.lastPurchasePrice,
     this.averageCost,
+    this.isActive = true,
+    this.archivedAt,
+    this.archiveReason,
   });
 
   factory ProductModel.fromJson(Map<String, dynamic> json) {
@@ -44,6 +50,9 @@ class ProductModel {
           : null,
       lastPurchasePrice: _optionalDouble(json['lastPurchasePrice']),
       averageCost: _optionalDouble(json['averageCost']),
+      isActive: _parseActive(json['isActive']),
+      archivedAt: _optionalSafeDate(json['archivedAt']),
+      archiveReason: _optionalText(json['archiveReason']),
     );
   }
 
@@ -59,6 +68,9 @@ class ProductModel {
       category: category,
       lastPurchasePrice: lastPurchasePrice,
       averageCost: averageCost,
+      isActive: isActive,
+      archivedAt: archivedAt,
+      archiveReason: archiveReason,
     );
   }
 
@@ -74,5 +86,26 @@ class ProductModel {
       expected: 'number, numeric string, or null',
       field: 'purchase cost',
     );
+  }
+
+  static bool _parseActive(Object? value) {
+    if (value is bool) return value;
+    if (value is num) return value != 0;
+    if (value is String) {
+      if (value.toLowerCase() == 'false') return false;
+      if (value.toLowerCase() == 'true') return true;
+    }
+    return true;
+  }
+
+  static DateTime? _optionalSafeDate(Object? value) {
+    if (value is! String || value.trim().isEmpty) return null;
+    return DateTime.tryParse(value.trim());
+  }
+
+  static String? _optionalText(Object? value) {
+    if (value == null) return null;
+    final text = value.toString().trim();
+    return text.isEmpty ? null : text;
   }
 }

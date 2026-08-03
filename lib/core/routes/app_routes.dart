@@ -15,6 +15,7 @@ import 'package:maktabty/features/purchases/presentation/pages/purchases_pages.d
 import 'package:maktabty/features/stock_movements/presentation/pages/stock_movements_screen.dart';
 import 'package:maktabty/features/suppliers/domain/entities/supplier_entities.dart';
 import 'package:maktabty/features/suppliers/presentation/pages/suppliers_pages.dart';
+import 'package:maktabty/features/products/presentation/pages/archived_products_screen.dart';
 
 class AppRoutes {
   const AppRoutes._();
@@ -38,6 +39,7 @@ class AppRoutes {
   static const String purchaseEdit = '/purchases/edit';
   static const String purchaseDetails = '/purchases/details';
   static const String stockMovements = '/stock-movements';
+  static const String archivedProducts = '/inventory/archived-products';
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -103,6 +105,10 @@ class AppRoutes {
         final filters = settings.arguments;
         final values = filters is Map ? Map<String, Object?>.from(filters) : const <String, Object?>{};
         return MaterialPageRoute(builder: (_) => OwnerGuard(child: StockMovementsScreen(productId: values['productId'] as String?, purchaseInvoiceId: values['purchaseInvoiceId'] as String?, saleId: values['saleId'] as String?)));
+      case archivedProducts:
+        return MaterialPageRoute(
+          builder: (_) => const OwnerGuard(child: ArchivedProductsScreen()),
+        );
       default:
         return MaterialPageRoute(
           settings: settings,

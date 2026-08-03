@@ -55,6 +55,9 @@ class SalesLocalDataSource {
 
         for (final item in items) {
           final cached = await _cachedProduct(item.productId);
+          if (cached != null && !cached.isActive) {
+            throw LocalArchivedProductException(item.productId);
+          }
           final available = cached == null
               ? 0
               : max(0, cached.serverStock - cached.reservedStock);
@@ -377,6 +380,9 @@ class SalesLocalDataSource {
         final items = await _itemRows(clientSaleId);
         for (final item in items) {
           final cached = await _cachedProduct(item.productId);
+          if (cached != null && !cached.isActive) {
+            throw LocalArchivedProductException(item.productId);
+          }
           final available = cached == null
               ? 0
               : max(0, cached.serverStock - cached.reservedStock);

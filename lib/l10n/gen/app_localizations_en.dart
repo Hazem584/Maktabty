@@ -9,6 +9,127 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get archiveProduct => 'Archive product';
+
+  @override
+  String get archivedProducts => 'Archived products';
+
+  @override
+  String get archiveReason => 'Archive reason';
+
+  @override
+  String get enterArchiveReason => 'Enter a reason for archiving this product';
+
+  @override
+  String get archiveReasonTooLong =>
+      'The archive reason must be 1000 characters or fewer';
+
+  @override
+  String get productArchivedSuccessfully => 'Product archived successfully';
+
+  @override
+  String get productAlreadyArchived => 'This product is already archived';
+
+  @override
+  String get productHasRemainingStock => 'This product still has stock';
+
+  @override
+  String get archiveAndSetStockToZero => 'Archive and set stock to zero';
+
+  @override
+  String get stockAdjustmentWillBeRecorded =>
+      'A stock adjustment will be recorded in movement history';
+
+  @override
+  String get historicalRecordsRemain =>
+      'Existing sales, purchases, payments, and stock history will remain available';
+
+  @override
+  String get barcodeRemainsReserved =>
+      'The product code remains reserved while the product is archived';
+
+  @override
+  String get productCanBeRestored =>
+      'The product can be restored later by an owner';
+
+  @override
+  String get archiveProductExplanation =>
+      'Archiving removes the product from active sales, purchasing, and inventory lists without deleting its history.';
+
+  @override
+  String currentStockValue(int quantity) {
+    return 'Current stock: $quantity';
+  }
+
+  @override
+  String get archiveStockAdjustmentWarning =>
+      'Confirm again to set the remaining stock to zero and archive this product. This cannot be retried automatically.';
+
+  @override
+  String get archiveConflictRefreshStatus =>
+      'The product changed on the server. Review its current stock and confirm again.';
+
+  @override
+  String get archiveRequestRejected =>
+      'The archive request could not be completed. Refresh the product and try again.';
+
+  @override
+  String get archiveRequestFailed =>
+      'Could not archive the product. Please try again.';
+
+  @override
+  String get restoreProduct => 'Restore product';
+
+  @override
+  String get restoreProductConfirmation =>
+      'Restore this product to the active catalog? Its previous stock will not be restored; add stock through a purchase or manual adjustment.';
+
+  @override
+  String get productRestoredSuccessfully => 'Product restored successfully';
+
+  @override
+  String get productAlreadyActive => 'This product is already active';
+
+  @override
+  String get restoreRequestFailed =>
+      'Could not restore the product. Please try again.';
+
+  @override
+  String get restoreConflictRefreshStatus =>
+      'The product status changed on the server. Refresh the list and try again.';
+
+  @override
+  String get noArchivedProducts => 'No archived products';
+
+  @override
+  String get archivedDate => 'Archived date';
+
+  @override
+  String get activeProducts => 'Active products';
+
+  @override
+  String get allProducts => 'All products';
+
+  @override
+  String get archivedProductCannotBeSold =>
+      'This product is archived and cannot be sold';
+
+  @override
+  String get archivedProductCannotBePurchased =>
+      'This product is archived and cannot be purchased';
+
+  @override
+  String get refreshProductStatus => 'Refresh the product status and try again';
+
+  @override
+  String get pendingOfflineSaleArchivedProduct =>
+      'This offline sale contains an archived product and cannot be synced';
+
+  @override
+  String get archivedProductRemovedFromCart =>
+      'An archived product was removed from the cart';
+
+  @override
   String get appTitle => 'Maktabty';
 
   @override

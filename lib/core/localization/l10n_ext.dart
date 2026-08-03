@@ -43,6 +43,7 @@ extension L10nX on BuildContext {
             l10n.somethingWentWrong,
       FailureCode.stockConflict => l10n.insufficientLocalStock,
       FailureCode.idempotencyConflict => l10n.idempotencyConflict,
+      FailureCode.archivedProduct => l10n.archivedProductCannotBeSold,
       FailureCode.localDatabase => l10n.localDatabaseError,
       FailureCode.parsing => l10n.unexpectedServerResponse,
       FailureCode.server => l10n.backendServerUnavailable,

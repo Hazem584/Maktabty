@@ -5,6 +5,7 @@ abstract class ProductsRepository {
   Future<PaginatedProductsEntity> getProducts({
     String? search,
     bool? lowStock,
+    ProductStatus status = ProductStatus.active,
     int page = 1,
     int limit = 20,
   });
@@ -30,4 +31,8 @@ abstract class ProductsRepository {
   });
 
   Future<ProductEntity> deleteProduct({required String id});
+
+  Future<ProductEntity> archiveProduct(ArchiveProductInput input);
+
+  Future<ProductEntity> restoreProduct({required String id});
 }

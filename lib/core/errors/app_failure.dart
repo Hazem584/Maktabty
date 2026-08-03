@@ -15,6 +15,7 @@ enum FailureCode {
   conflict,
   stockConflict,
   idempotencyConflict,
+  archivedProduct,
   localDatabase,
   parsing,
   server,
@@ -117,6 +118,16 @@ final class StockConflictFailure extends AppFailure {
 final class IdempotencyConflictFailure extends AppFailure {
   const IdempotencyConflictFailure({super.serverMessage})
     : super(code: FailureCode.idempotencyConflict);
+}
+
+final class ArchivedProductFailure extends AppFailure {
+  final String? productId;
+
+  const ArchivedProductFailure({this.productId})
+    : super(code: FailureCode.archivedProduct);
+
+  @override
+  List<Object?> get props => [...super.props, productId];
 }
 
 final class LocalDatabaseFailure extends AppFailure {
