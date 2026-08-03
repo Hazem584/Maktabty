@@ -10,6 +10,8 @@ class ProductEntity extends Equatable {
   final DateTime? createdAt;
   final DateTime? updatedAt;
   final String? category;
+  final double? lastPurchasePrice;
+  final double? averageCost;
 
   const ProductEntity({
     required this.id,
@@ -20,6 +22,8 @@ class ProductEntity extends Equatable {
     this.createdAt,
     this.updatedAt,
     this.category,
+    this.lastPurchasePrice,
+    this.averageCost,
   });
 
   ProductEntity copyWith({
@@ -31,6 +35,8 @@ class ProductEntity extends Equatable {
     Object? createdAt = stateFieldUnchanged,
     Object? updatedAt = stateFieldUnchanged,
     Object? category = stateFieldUnchanged,
+    Object? lastPurchasePrice = stateFieldUnchanged,
+    Object? averageCost = stateFieldUnchanged,
   }) {
     return ProductEntity(
       id: id ?? this.id,
@@ -47,6 +53,12 @@ class ProductEntity extends Equatable {
       category: identical(category, stateFieldUnchanged)
           ? this.category
           : category as String?,
+      lastPurchasePrice: identical(lastPurchasePrice, stateFieldUnchanged)
+          ? this.lastPurchasePrice
+          : lastPurchasePrice as double?,
+      averageCost: identical(averageCost, stateFieldUnchanged)
+          ? this.averageCost
+          : averageCost as double?,
     );
   }
 
@@ -60,5 +72,7 @@ class ProductEntity extends Equatable {
     createdAt,
     updatedAt,
     category,
+    lastPurchasePrice,
+    averageCost,
   ];
 }

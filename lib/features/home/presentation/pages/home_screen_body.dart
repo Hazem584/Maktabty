@@ -101,6 +101,9 @@ class HomeScreenBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isOwner = context.select<AuthCubit, bool>(
+      (cubit) => cubit.state.user?.role?.trim().toUpperCase() == 'OWNER',
+    );
     final productsState = context.watch<ProductsListCubit>().state;
     final todaySalesState = context.watch<TodaySalesCubit>().state;
     final workHoursState = context.watch<WorkHoursCubit>().state;
@@ -189,6 +192,39 @@ class HomeScreenBody extends StatelessWidget {
               Navigator.of(context).pushNamed(AppRoutes.addWorkHours);
             },
           ),
+          if (isOwner) ...[
+            const SizedBox(height: AppSpacing.m),
+            Text(
+              context.l10n.procurementAndStock,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: AppSpacing.s),
+            Wrap(
+              spacing: AppSpacing.s,
+              runSpacing: AppSpacing.s,
+              children: [
+                FilledButton.tonalIcon(
+                  onPressed: () =>
+                      Navigator.of(context).pushNamed(AppRoutes.suppliers),
+                  icon: const Icon(Icons.business_outlined),
+                  label: Text(context.l10n.suppliers),
+                ),
+                FilledButton.tonalIcon(
+                  onPressed: () =>
+                      Navigator.of(context).pushNamed(AppRoutes.purchases),
+                  icon: const Icon(Icons.inventory_outlined),
+                  label: Text(context.l10n.purchases),
+                ),
+                FilledButton.tonalIcon(
+                  onPressed: () => Navigator.of(
+                    context,
+                  ).pushNamed(AppRoutes.stockMovements),
+                  icon: const Icon(Icons.swap_vert),
+                  label: Text(context.l10n.stockMovements),
+                ),
+              ],
+            ),
+          ],
           const SizedBox(height: AppSpacing.l),
           HomeStatsSection(
             items: [

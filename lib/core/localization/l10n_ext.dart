@@ -94,6 +94,20 @@ extension L10nX on BuildContext {
         normalized.contains('must be an email')) {
       return l10n.invalidEmail;
     }
+    if (normalized.contains('supplier') && normalized.contains('inactive')) {
+      return l10n.supplierInactive;
+    }
+    if (normalized.contains('already posted')) {
+      return l10n.invoiceAlreadyPosted;
+    }
+    if (normalized.contains('not editable') ||
+        normalized.contains('cannot be edited')) {
+      return l10n.invoiceNotEditable;
+    }
+    if (normalized.contains('overpayment') ||
+        normalized.contains('exceed') && normalized.contains('remaining')) {
+      return l10n.paymentExceedsRemaining;
+    }
     return message;
   }
 }

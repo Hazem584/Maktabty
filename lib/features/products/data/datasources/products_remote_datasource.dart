@@ -64,10 +64,17 @@ class ProductsRemoteDataSource {
     double? price,
     int? stock,
     String? code,
+    String? adjustmentReason,
   }) async {
     final response = await _dio.patch(
       '/products/$id',
-      data: {'name': ?name, 'price': ?price, 'stock': ?stock, 'code': ?code},
+      data: {
+        'name': ?name,
+        'price': ?price,
+        'stock': ?stock,
+        'code': ?code,
+        if (stock != null) 'adjustmentReason': adjustmentReason,
+      },
     );
     return _parseProduct(response.data);
   }

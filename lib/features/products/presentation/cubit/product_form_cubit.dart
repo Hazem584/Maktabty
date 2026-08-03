@@ -10,9 +10,8 @@ class ProductFormCubit extends Cubit<ProductFormState> {
 
   ProductFormCubit({
     required this._createProductUseCase,
-    required UpdateProductUseCase updateProductUseCase,
-  }) : _updateProductUseCase = updateProductUseCase,
-       super(ProductFormState.initial());
+    required this._updateProductUseCase,
+  }) : super(ProductFormState.initial());
 
   Future<void> createProduct({
     required String name,
@@ -75,6 +74,7 @@ class ProductFormCubit extends Cubit<ProductFormState> {
     double? price,
     int? stock,
     String? code,
+    String? adjustmentReason,
   }) async {
     if (state.status == ProductFormStatus.loading) return;
     if (isClosed) return;
@@ -93,6 +93,7 @@ class ProductFormCubit extends Cubit<ProductFormState> {
         price: price,
         stock: stock,
         code: code,
+        adjustmentReason: adjustmentReason,
       );
       if (!isClosed) {
         emit(

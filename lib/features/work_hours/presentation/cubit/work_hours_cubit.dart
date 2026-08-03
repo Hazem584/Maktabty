@@ -12,9 +12,8 @@ class WorkHoursCubit extends Cubit<WorkHoursState> {
 
   WorkHoursCubit({
     required this._upsertWorkDayUseCase,
-    required GetWorkHoursByDateUseCase getWorkHoursByDateUseCase,
-  }) : _getWorkHoursByDateUseCase = getWorkHoursByDateUseCase,
-       super(WorkHoursState.initial());
+    required this._getWorkHoursByDateUseCase,
+  }) : super(WorkHoursState.initial());
 
   Future<void> loadByDate({required DateTime date, String? userId}) async {
     if (isClosed) return;

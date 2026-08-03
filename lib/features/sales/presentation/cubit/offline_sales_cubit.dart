@@ -23,12 +23,11 @@ class OfflineSalesCubit extends Cubit<OfflineSalesState> {
 
   OfflineSalesCubit({
     required this._localDataSource,
-    required SalesSyncCoordinator coordinator,
+    required this._coordinator,
     required this._connectivityTrigger,
     required this._currentUserStore,
     required this._getReceiptForSaleUseCase,
-  }) : _coordinator = coordinator,
-       super(OfflineSalesState.initial()) {
+  }) : super(OfflineSalesState.initial()) {
     _progressSubscription = _coordinator.progress.listen((progress) {
       if (isClosed) return;
       emit(

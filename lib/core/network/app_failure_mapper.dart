@@ -89,6 +89,13 @@ class AppFailureMapper {
     final joined = values
         .join('\n')
         .replaceAll(RegExp(r'[\x00-\x08\x0B-\x1F]'), '');
+    final normalized = joined.toLowerCase();
+    if (normalized.contains('prisma') ||
+        normalized.contains('sqlstate') ||
+        normalized.contains('unique constraint') ||
+        normalized.contains('foreign key constraint')) {
+      return null;
+    }
     if (joined.length > 500) return '${joined.substring(0, 497)}...';
     return joined;
   }

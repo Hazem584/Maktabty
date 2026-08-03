@@ -26,6 +26,7 @@ abstract class ProductsRepository {
     double? price,
     int? stock,
     String? code,
+    String? adjustmentReason,
   });
 
   Future<ProductEntity> deleteProduct({required String id});

@@ -4,6 +4,7 @@ import 'package:maktabty/core/di/auth_dependencies.dart';
 import 'package:maktabty/core/di/core_dependencies.dart';
 import 'package:maktabty/core/di/database_dependencies.dart';
 import 'package:maktabty/core/di/products_dependencies.dart';
+import 'package:maktabty/core/di/procurement_dependencies.dart';
 import 'package:maktabty/core/di/reports_dependencies.dart';
 import 'package:maktabty/core/di/sales_dependencies.dart';
 import 'package:maktabty/core/di/services_dependencies.dart';
@@ -17,6 +18,7 @@ void setupAppDependencies({required ApiConfig apiConfig}) {
   registerServicesDependencies(sl);
   registerAuthDependencies(sl);
   registerProductsDependencies(sl);
+  registerProcurementDependencies(sl);
   registerSalesDependencies(sl);
   registerReportsDependencies(sl);
   registerWorkHoursDependencies(sl);

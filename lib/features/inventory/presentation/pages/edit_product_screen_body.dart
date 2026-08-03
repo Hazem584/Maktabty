@@ -8,6 +8,7 @@ import 'package:maktabty/features/products/domain/entities/product_entity.dart';
 import 'package:maktabty/features/products/presentation/cubit/product_form_cubit.dart';
 import 'package:maktabty/features/products/presentation/cubit/product_form_state.dart';
 import 'package:maktabty/features/products/domain/validation/product_validator.dart';
+import 'package:maktabty/features/auth/presentation/cubit/auth_cubit.dart';
 
 class EditProductScreenBody extends StatefulWidget {
   final ProductEntity product;
@@ -21,6 +22,7 @@ class EditProductScreenBody extends StatefulWidget {
 class _EditProductScreenBodyState extends State<EditProductScreenBody> {
   late final TextEditingController _nameController;
   late final TextEditingController _priceController;
+  late final TextEditingController _adjustmentReasonController;
   late int _stock;
 
   @override
@@ -30,6 +32,7 @@ class _EditProductScreenBodyState extends State<EditProductScreenBody> {
     _priceController = TextEditingController(
       text: widget.product.price.toStringAsFixed(2),
     );
+    _adjustmentReasonController = TextEditingController();
     _stock = widget.product.stock;
   }
 
@@ -37,6 +40,7 @@ class _EditProductScreenBodyState extends State<EditProductScreenBody> {
   void dispose() {
     _nameController.dispose();
     _priceController.dispose();
+    _adjustmentReasonController.dispose();
     super.dispose();
   }
 
@@ -52,12 +56,19 @@ class _EditProductScreenBodyState extends State<EditProductScreenBody> {
       return;
     }
     final input = result.value!;
+    final stockChanged = input.stock != widget.product.stock;
+    final adjustmentReason = _adjustmentReasonController.text.trim();
+    if (stockChanged && adjustmentReason.isEmpty) {
+      AppToast.show(context.l10n.adjustmentReasonRequired);
+      return;
+    }
     context.read<ProductFormCubit>().updateProduct(
       id: widget.product.id,
       name: input.name,
       price: input.price,
-      stock: input.stock,
+      stock: stockChanged ? input.stock : null,
       code: input.code,
+      adjustmentReason: stockChanged ? adjustmentReason : null,
     );
   }
 
@@ -79,6 +90,10 @@ class _EditProductScreenBodyState extends State<EditProductScreenBody> {
       },
       builder: (context, state) {
         final isLoading = state.status == ProductFormStatus.loading;
+        final isOwner = context.select<AuthCubit, bool>(
+          (cubit) =>
+              cubit.state.user?.role?.trim().toUpperCase() == 'OWNER',
+        );
 
         return SingleChildScrollView(
           padding: const EdgeInsets.all(AppSpacing.l),
@@ -103,6 +118,56 @@ class _EditProductScreenBodyState extends State<EditProductScreenBody> {
                   });
                 },
               ),
+              if (isOwner &&
+                  (widget.product.lastPurchasePrice != null ||
+                      widget.product.averageCost != null)) ...[
+                const SizedBox(height: AppSpacing.m),
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(AppSpacing.m),
+                    child: Column(
+                      children: [
+                        ListTile(
+                          title: Text(context.l10n.lastPurchasePrice),
+                          trailing: Text(
+                            widget.product.lastPurchasePrice == null
+                                ? context.l10n.notAvailable
+                                : '${widget.product.lastPurchasePrice!.toStringAsFixed(2)} EGP',
+                          ),
+                        ),
+                        ListTile(
+                          title: Text(context.l10n.averageCost),
+                          trailing: Text(
+                            widget.product.averageCost == null
+                                ? context.l10n.notAvailable
+                                : '${widget.product.averageCost!.toStringAsFixed(2)} EGP',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+              if (_stock != widget.product.stock) ...[
+                const SizedBox(height: AppSpacing.m),
+                Text(
+                  context.l10n.stockAdjustmentSummary(
+                    widget.product.stock,
+                    _stock,
+                    '${_stock - widget.product.stock >= 0 ? '+' : ''}${_stock - widget.product.stock}',
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.s),
+                TextFormField(
+                  controller: _adjustmentReasonController,
+                  enabled: !isLoading,
+                  maxLines: 2,
+                  decoration: InputDecoration(
+                    labelText: context.l10n.adjustmentReason,
+                    helperText: context.l10n.stockMovementWillBeRecorded,
+                  ),
+                ),
+              ],
               const SizedBox(height: AppSpacing.l),
               SizedBox(
                 width: double.infinity,

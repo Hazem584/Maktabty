@@ -36,8 +36,8 @@ class SalesSyncCoordinator {
 
   SalesSyncCoordinator({
     required this._localDataSource,
-    required SalesRemoteDataSource remoteDataSource,
-  }) : _remoteDataSource = remoteDataSource;
+    required this._remoteDataSource,
+  });
 
   Stream<SalesSyncProgress> get progress => _progressController.stream;
   bool get isRunning => _activeRun != null;

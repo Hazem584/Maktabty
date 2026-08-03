@@ -11,9 +11,8 @@ class ProductDetailsCubit extends Cubit<ProductDetailsState> {
 
   ProductDetailsCubit({
     required this._getProductByIdUseCase,
-    required GetProductByCodeUseCase getProductByCodeUseCase,
-  }) : _getProductByCodeUseCase = getProductByCodeUseCase,
-       super(ProductDetailsState.initial());
+    required this._getProductByCodeUseCase,
+  }) : super(ProductDetailsState.initial());
 
   Future<void> loadById(String id) async {
     if (isClosed) return;

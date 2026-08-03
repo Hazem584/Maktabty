@@ -30,14 +30,13 @@ class AuthCubit extends Cubit<AuthState> {
 
   AuthCubit({
     required this._loginUseCase,
-    required RegisterUseCase registerUseCase,
+    required this._registerUseCase,
     required this._logoutUseCase,
     required this._getMeUseCase,
     required this._refreshUseCase,
     required this._tokenStorage,
     required this._sessionManager,
-  }) : _registerUseCase = registerUseCase,
-       super(AuthState.initial()) {
+  }) : super(AuthState.initial()) {
     _sessionSubscription = _sessionManager.stream.listen((event) {
       if (!isClosed && event == AuthSessionEvent.expired) {
         emit(AuthState.unauthenticated(failure: const UnauthorizedFailure()));

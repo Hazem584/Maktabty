@@ -853,4 +853,349 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get idempotencyConflict =>
       'توجد مشكلة في معرّف هذه العملية وتحتاج إلى مراجعة المسؤول.';
+
+  @override
+  String get suppliers => 'الموردون';
+
+  @override
+  String get supplier => 'المورد';
+
+  @override
+  String get addSupplier => 'إضافة مورد';
+
+  @override
+  String get editSupplier => 'تعديل المورد';
+
+  @override
+  String get supplierName => 'اسم المورد';
+
+  @override
+  String get supplierDetails => 'تفاصيل المورد';
+
+  @override
+  String get supplierInformation => 'بيانات المورد';
+
+  @override
+  String get activeSupplier => 'مورد نشط';
+
+  @override
+  String get active => 'نشط';
+
+  @override
+  String get inactive => 'غير نشط';
+
+  @override
+  String get all => 'الكل';
+
+  @override
+  String get address => 'العنوان';
+
+  @override
+  String get notes => 'ملاحظات';
+
+  @override
+  String get searchSuppliers => 'البحث في الموردين';
+
+  @override
+  String get noSuppliers => 'لا يوجد موردون.';
+
+  @override
+  String get noSupplierData => 'بيانات المورد غير متاحة.';
+
+  @override
+  String get notAvailable => 'غير متاح';
+
+  @override
+  String get requiredField => 'هذا الحقل مطلوب.';
+
+  @override
+  String get outstandingBalance => 'الرصيد المستحق';
+
+  @override
+  String get purchaseInvoices => 'فواتير المشتريات';
+
+  @override
+  String get purchaseInvoice => 'فاتورة مشتريات';
+
+  @override
+  String get noPurchaseInvoices => 'لا توجد فواتير مشتريات.';
+
+  @override
+  String get payments => 'الدفعات';
+
+  @override
+  String get noPayments => 'لا توجد دفعات.';
+
+  @override
+  String get statement => 'كشف الحساب';
+
+  @override
+  String get noStatementEntries => 'لا توجد حركات في كشف الحساب.';
+
+  @override
+  String get totalPurchases => 'إجمالي المشتريات';
+
+  @override
+  String get totalPaid => 'إجمالي المدفوع';
+
+  @override
+  String get debit => 'مدين';
+
+  @override
+  String get credit => 'دائن';
+
+  @override
+  String get recordPayment => 'تسجيل دفعة';
+
+  @override
+  String get recordSupplierPayment => 'تسجيل دفعة للمورد';
+
+  @override
+  String get paymentRecorded => 'تم تسجيل الدفعة.';
+
+  @override
+  String get amount => 'المبلغ';
+
+  @override
+  String get paidDate => 'تاريخ الدفع';
+
+  @override
+  String get reference => 'المرجع';
+
+  @override
+  String get bankTransfer => 'تحويل بنكي';
+
+  @override
+  String get other => 'أخرى';
+
+  @override
+  String get invalidPaymentAmount =>
+      'أدخل مبلغًا موجبًا لا يتجاوز المتبقي على الفاتورة.';
+
+  @override
+  String remainingAmount(String amount) {
+    return 'المتبقي: $amount';
+  }
+
+  @override
+  String get purchases => 'المشتريات';
+
+  @override
+  String get createPurchase => 'إنشاء مشتريات';
+
+  @override
+  String get createPurchaseDraft => 'إنشاء مسودة مشتريات';
+
+  @override
+  String get editPurchaseDraft => 'تعديل مسودة المشتريات';
+
+  @override
+  String get purchaseDetails => 'تفاصيل فاتورة المشتريات';
+
+  @override
+  String get searchPurchases => 'البحث في المشتريات';
+
+  @override
+  String get noPurchases => 'لا توجد مشتريات.';
+
+  @override
+  String get draft => 'مسودة';
+
+  @override
+  String get posted => 'مرحّلة';
+
+  @override
+  String get cancelled => 'ملغاة';
+
+  @override
+  String get unknownStatus => 'غير معروف';
+
+  @override
+  String purchaseNumber(int number) {
+    return 'مشتريات رقم $number';
+  }
+
+  @override
+  String get unknownSupplier => 'مورد غير معروف';
+
+  @override
+  String get dateRange => 'نطاق التاريخ';
+
+  @override
+  String get supplierInvoiceNumber => 'رقم فاتورة المورد';
+
+  @override
+  String get purchaseDate => 'تاريخ الشراء';
+
+  @override
+  String get postingDate => 'تاريخ الترحيل';
+
+  @override
+  String get createdBy => 'أنشأها';
+
+  @override
+  String get initialPaidAmount => 'المبلغ المدفوع مبدئيًا';
+
+  @override
+  String get purchaseItems => 'عناصر المشتريات';
+
+  @override
+  String get unitCost => 'تكلفة الوحدة';
+
+  @override
+  String get lastPurchasePrice => 'آخر سعر شراء';
+
+  @override
+  String get averageCost => 'متوسط التكلفة';
+
+  @override
+  String get inStockLabel => 'المخزون الحالي';
+
+  @override
+  String get subtotalPreview => 'معاينة المجموع الفرعي';
+
+  @override
+  String get backendTotalsAuthoritative => 'يؤكد الخادم الإجماليات النهائية.';
+
+  @override
+  String get saveDraft => 'حفظ المسودة';
+
+  @override
+  String get selectSupplier => 'اختر موردًا.';
+
+  @override
+  String get invalidNonNegativeAmount => 'أدخل مبلغًا صحيحًا غير سالب.';
+
+  @override
+  String get addAtLeastOnePurchaseItem => 'أضف عنصر مشتريات واحدًا على الأقل.';
+
+  @override
+  String get duplicatePurchaseProduct =>
+      'لا يمكن تكرار المنتج في فاتورة المشتريات.';
+
+  @override
+  String get invalidPurchaseItem =>
+      'يجب أن تكون كمية كل عنصر عددًا صحيحًا موجبًا وتكلفته موجبة.';
+
+  @override
+  String get draftSavedNoStockChange =>
+      'تم حفظ المسودة دون تغيير مخزون المنتجات.';
+
+  @override
+  String get purchasesRequireInternet => 'تتطلب المشتريات اتصالًا بالإنترنت.';
+
+  @override
+  String get remaining => 'المتبقي';
+
+  @override
+  String get postInvoice => 'ترحيل الفاتورة';
+
+  @override
+  String get postPurchaseTitle => 'ترحيل فاتورة المشتريات؟';
+
+  @override
+  String get postPurchaseWarning =>
+      'سيزداد المخزون وتتحدث تكاليف المنتجات وتصبح الفاتورة غير قابلة للتعديل. لا يمكن حاليًا عكس هذا الإجراء من التطبيق.';
+
+  @override
+  String get purchasePosted => 'تم ترحيل فاتورة المشتريات.';
+
+  @override
+  String get postTimeoutRetryHelp =>
+      'تعذر تأكيد الترحيل. تم فحص الفاتورة مجددًا؛ أعد المحاولة فقط إذا ظلت مسودة.';
+
+  @override
+  String get deleteDraftTitle => 'حذف مسودة المشتريات؟';
+
+  @override
+  String get deleteDraftMessage =>
+      'سيتم حذف المسودة ولم يطرأ أي تغيير على المخزون.';
+
+  @override
+  String get stockMovements => 'حركات المخزون';
+
+  @override
+  String get filters => 'عوامل التصفية';
+
+  @override
+  String get applyFilters => 'تطبيق التصفية';
+
+  @override
+  String get movementType => 'نوع الحركة';
+
+  @override
+  String get purchaseInvoiceId => 'معرّف فاتورة المشتريات';
+
+  @override
+  String get saleId => 'معرّف البيع';
+
+  @override
+  String get movementHistoryNotice =>
+      'يتوفر سجل الحركات للمعاملات المسجلة بعد تفعيل تتبع المخزون.';
+
+  @override
+  String get noStockMovements => 'لا توجد حركات مخزون.';
+
+  @override
+  String get openingStock => 'مخزون افتتاحي';
+
+  @override
+  String get purchaseMovement => 'شراء';
+
+  @override
+  String get purchaseReversal => 'عكس شراء';
+
+  @override
+  String get saleMovement => 'بيع';
+
+  @override
+  String get saleReversal => 'عكس بيع';
+
+  @override
+  String get manualAdjustment => 'تسوية يدوية';
+
+  @override
+  String stockBeforeAfter(int before, int after) {
+    return '$before ← $after';
+  }
+
+  @override
+  String get adjustmentReason => 'سبب تعديل المخزون';
+
+  @override
+  String get adjustmentReasonRequired => 'أدخل سبب تعديل المخزون.';
+
+  @override
+  String get stockMovementWillBeRecorded => 'سيتم تسجيل حركة مخزون.';
+
+  @override
+  String stockAdjustmentSummary(int current, int next, String difference) {
+    return 'الحالي: $current · الجديد: $next · الفرق: $difference';
+  }
+
+  @override
+  String get procurementAndStock => 'المشتريات والمخزون';
+
+  @override
+  String get deactivate => 'إلغاء التنشيط';
+
+  @override
+  String get deactivateSupplierTitle => 'إلغاء تنشيط المورد؟';
+
+  @override
+  String get deactivateSupplierMessage =>
+      'سيُخفى المورد من الاختيارات النشطة مع بقاء سجل المشتريات السابق متاحًا.';
+
+  @override
+  String get supplierInactive => 'هذا المورد غير نشط.';
+
+  @override
+  String get invoiceAlreadyPosted => 'تم ترحيل هذه الفاتورة بالفعل.';
+
+  @override
+  String get invoiceNotEditable => 'لم تعد هذه الفاتورة قابلة للتعديل.';
+
+  @override
+  String get paymentExceedsRemaining =>
+      'تتجاوز الدفعة المبلغ المتبقي على الفاتورة. حدّث البيانات وحاول مجددًا.';
 }

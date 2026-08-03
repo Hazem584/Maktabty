@@ -16,10 +16,9 @@ class TodaySalesCubit extends Cubit<TodaySalesState> {
 
   TodaySalesCubit({
     required this._getTodaySalesUseCase,
-    required GetReceiptForSaleUseCase getReceiptForSaleUseCase,
+    required this._getReceiptForSaleUseCase,
     required this._deleteSaleUseCase,
-  }) : _getReceiptForSaleUseCase = getReceiptForSaleUseCase,
-       super(TodaySalesState.initial());
+  }) : super(TodaySalesState.initial());
 
   Future<void> load({String? date}) async {
     if (state.status == TodaySalesStatus.loading) return;

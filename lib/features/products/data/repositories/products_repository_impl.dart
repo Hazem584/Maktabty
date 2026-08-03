@@ -11,8 +11,8 @@ class ProductsRepositoryImpl implements ProductsRepository {
 
   ProductsRepositoryImpl({
     required this._remoteDataSource,
-    required ProductsLocalDataSource localDataSource,
-  }) : _localDataSource = localDataSource;
+    required this._localDataSource,
+  });
 
   @override
   Future<PaginatedProductsEntity> getProducts({
@@ -119,6 +119,7 @@ class ProductsRepositoryImpl implements ProductsRepository {
     double? price,
     int? stock,
     String? code,
+    String? adjustmentReason,
   }) async {
     try {
       final product = await _remoteDataSource.updateProduct(
@@ -127,6 +128,7 @@ class ProductsRepositoryImpl implements ProductsRepository {
         price: price,
         stock: stock,
         code: code,
+        adjustmentReason: adjustmentReason,
       );
       final entity = product.toEntity();
       await _localDataSource.cacheProducts([entity], replaceAll: false);

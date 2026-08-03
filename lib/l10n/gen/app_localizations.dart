@@ -1717,6 +1717,660 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This sale has an identifier conflict and needs administrator review.'**
   String get idempotencyConflict;
+
+  /// No description provided for @suppliers.
+  ///
+  /// In en, this message translates to:
+  /// **'Suppliers'**
+  String get suppliers;
+
+  /// No description provided for @supplier.
+  ///
+  /// In en, this message translates to:
+  /// **'Supplier'**
+  String get supplier;
+
+  /// No description provided for @addSupplier.
+  ///
+  /// In en, this message translates to:
+  /// **'Add supplier'**
+  String get addSupplier;
+
+  /// No description provided for @editSupplier.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit supplier'**
+  String get editSupplier;
+
+  /// No description provided for @supplierName.
+  ///
+  /// In en, this message translates to:
+  /// **'Supplier name'**
+  String get supplierName;
+
+  /// No description provided for @supplierDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Supplier details'**
+  String get supplierDetails;
+
+  /// No description provided for @supplierInformation.
+  ///
+  /// In en, this message translates to:
+  /// **'Supplier information'**
+  String get supplierInformation;
+
+  /// No description provided for @activeSupplier.
+  ///
+  /// In en, this message translates to:
+  /// **'Active supplier'**
+  String get activeSupplier;
+
+  /// No description provided for @active.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get active;
+
+  /// No description provided for @inactive.
+  ///
+  /// In en, this message translates to:
+  /// **'Inactive'**
+  String get inactive;
+
+  /// No description provided for @all.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get all;
+
+  /// No description provided for @address.
+  ///
+  /// In en, this message translates to:
+  /// **'Address'**
+  String get address;
+
+  /// No description provided for @notes.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get notes;
+
+  /// No description provided for @searchSuppliers.
+  ///
+  /// In en, this message translates to:
+  /// **'Search suppliers'**
+  String get searchSuppliers;
+
+  /// No description provided for @noSuppliers.
+  ///
+  /// In en, this message translates to:
+  /// **'No suppliers found.'**
+  String get noSuppliers;
+
+  /// No description provided for @noSupplierData.
+  ///
+  /// In en, this message translates to:
+  /// **'Supplier data is unavailable.'**
+  String get noSupplierData;
+
+  /// No description provided for @notAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Not available'**
+  String get notAvailable;
+
+  /// No description provided for @requiredField.
+  ///
+  /// In en, this message translates to:
+  /// **'This field is required.'**
+  String get requiredField;
+
+  /// No description provided for @outstandingBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Outstanding balance'**
+  String get outstandingBalance;
+
+  /// No description provided for @purchaseInvoices.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase invoices'**
+  String get purchaseInvoices;
+
+  /// No description provided for @purchaseInvoice.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase invoice'**
+  String get purchaseInvoice;
+
+  /// No description provided for @noPurchaseInvoices.
+  ///
+  /// In en, this message translates to:
+  /// **'No purchase invoices.'**
+  String get noPurchaseInvoices;
+
+  /// No description provided for @payments.
+  ///
+  /// In en, this message translates to:
+  /// **'Payments'**
+  String get payments;
+
+  /// No description provided for @noPayments.
+  ///
+  /// In en, this message translates to:
+  /// **'No payments.'**
+  String get noPayments;
+
+  /// No description provided for @statement.
+  ///
+  /// In en, this message translates to:
+  /// **'Statement'**
+  String get statement;
+
+  /// No description provided for @noStatementEntries.
+  ///
+  /// In en, this message translates to:
+  /// **'No statement entries.'**
+  String get noStatementEntries;
+
+  /// No description provided for @totalPurchases.
+  ///
+  /// In en, this message translates to:
+  /// **'Total purchases'**
+  String get totalPurchases;
+
+  /// No description provided for @totalPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Total paid'**
+  String get totalPaid;
+
+  /// No description provided for @debit.
+  ///
+  /// In en, this message translates to:
+  /// **'Debit'**
+  String get debit;
+
+  /// No description provided for @credit.
+  ///
+  /// In en, this message translates to:
+  /// **'Credit'**
+  String get credit;
+
+  /// No description provided for @recordPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Record payment'**
+  String get recordPayment;
+
+  /// No description provided for @recordSupplierPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Record supplier payment'**
+  String get recordSupplierPayment;
+
+  /// No description provided for @paymentRecorded.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment recorded.'**
+  String get paymentRecorded;
+
+  /// No description provided for @amount.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get amount;
+
+  /// No description provided for @paidDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid date'**
+  String get paidDate;
+
+  /// No description provided for @reference.
+  ///
+  /// In en, this message translates to:
+  /// **'Reference'**
+  String get reference;
+
+  /// No description provided for @bankTransfer.
+  ///
+  /// In en, this message translates to:
+  /// **'Bank transfer'**
+  String get bankTransfer;
+
+  /// No description provided for @other.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get other;
+
+  /// No description provided for @invalidPaymentAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a positive amount that does not exceed the invoice remainder.'**
+  String get invalidPaymentAmount;
+
+  /// No description provided for @remainingAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Remaining: {amount}'**
+  String remainingAmount(String amount);
+
+  /// No description provided for @purchases.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchases'**
+  String get purchases;
+
+  /// No description provided for @createPurchase.
+  ///
+  /// In en, this message translates to:
+  /// **'Create purchase'**
+  String get createPurchase;
+
+  /// No description provided for @createPurchaseDraft.
+  ///
+  /// In en, this message translates to:
+  /// **'Create purchase draft'**
+  String get createPurchaseDraft;
+
+  /// No description provided for @editPurchaseDraft.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit purchase draft'**
+  String get editPurchaseDraft;
+
+  /// No description provided for @purchaseDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase details'**
+  String get purchaseDetails;
+
+  /// No description provided for @searchPurchases.
+  ///
+  /// In en, this message translates to:
+  /// **'Search purchases'**
+  String get searchPurchases;
+
+  /// No description provided for @noPurchases.
+  ///
+  /// In en, this message translates to:
+  /// **'No purchases found.'**
+  String get noPurchases;
+
+  /// No description provided for @draft.
+  ///
+  /// In en, this message translates to:
+  /// **'Draft'**
+  String get draft;
+
+  /// No description provided for @posted.
+  ///
+  /// In en, this message translates to:
+  /// **'Posted'**
+  String get posted;
+
+  /// No description provided for @cancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get cancelled;
+
+  /// No description provided for @unknownStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown'**
+  String get unknownStatus;
+
+  /// No description provided for @purchaseNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase #{number}'**
+  String purchaseNumber(int number);
+
+  /// No description provided for @unknownSupplier.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown supplier'**
+  String get unknownSupplier;
+
+  /// No description provided for @dateRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Date range'**
+  String get dateRange;
+
+  /// No description provided for @supplierInvoiceNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Supplier invoice number'**
+  String get supplierInvoiceNumber;
+
+  /// No description provided for @purchaseDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase date'**
+  String get purchaseDate;
+
+  /// No description provided for @postingDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Posting date'**
+  String get postingDate;
+
+  /// No description provided for @createdBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Created by'**
+  String get createdBy;
+
+  /// No description provided for @initialPaidAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Initial paid amount'**
+  String get initialPaidAmount;
+
+  /// No description provided for @purchaseItems.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase items'**
+  String get purchaseItems;
+
+  /// No description provided for @unitCost.
+  ///
+  /// In en, this message translates to:
+  /// **'Unit cost'**
+  String get unitCost;
+
+  /// No description provided for @lastPurchasePrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Last purchase price'**
+  String get lastPurchasePrice;
+
+  /// No description provided for @averageCost.
+  ///
+  /// In en, this message translates to:
+  /// **'Average cost'**
+  String get averageCost;
+
+  /// No description provided for @inStockLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Current stock'**
+  String get inStockLabel;
+
+  /// No description provided for @subtotalPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Subtotal preview'**
+  String get subtotalPreview;
+
+  /// No description provided for @backendTotalsAuthoritative.
+  ///
+  /// In en, this message translates to:
+  /// **'Final totals are confirmed by the server.'**
+  String get backendTotalsAuthoritative;
+
+  /// No description provided for @saveDraft.
+  ///
+  /// In en, this message translates to:
+  /// **'Save draft'**
+  String get saveDraft;
+
+  /// No description provided for @selectSupplier.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a supplier.'**
+  String get selectSupplier;
+
+  /// No description provided for @invalidNonNegativeAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid non-negative amount.'**
+  String get invalidNonNegativeAmount;
+
+  /// No description provided for @addAtLeastOnePurchaseItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Add at least one purchase item.'**
+  String get addAtLeastOnePurchaseItem;
+
+  /// No description provided for @duplicatePurchaseProduct.
+  ///
+  /// In en, this message translates to:
+  /// **'A product cannot appear more than once in a purchase.'**
+  String get duplicatePurchaseProduct;
+
+  /// No description provided for @invalidPurchaseItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Each item needs a positive whole quantity and positive unit cost.'**
+  String get invalidPurchaseItem;
+
+  /// No description provided for @draftSavedNoStockChange.
+  ///
+  /// In en, this message translates to:
+  /// **'Draft saved. Product stock was not changed.'**
+  String get draftSavedNoStockChange;
+
+  /// No description provided for @purchasesRequireInternet.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchases require an internet connection.'**
+  String get purchasesRequireInternet;
+
+  /// No description provided for @remaining.
+  ///
+  /// In en, this message translates to:
+  /// **'Remaining'**
+  String get remaining;
+
+  /// No description provided for @postInvoice.
+  ///
+  /// In en, this message translates to:
+  /// **'Post invoice'**
+  String get postInvoice;
+
+  /// No description provided for @postPurchaseTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Post purchase invoice?'**
+  String get postPurchaseTitle;
+
+  /// No description provided for @postPurchaseWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Stock will increase, product costs will update, and this invoice will become immutable. This action cannot currently be reversed in the application.'**
+  String get postPurchaseWarning;
+
+  /// No description provided for @purchasePosted.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase invoice posted.'**
+  String get purchasePosted;
+
+  /// No description provided for @postTimeoutRetryHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Posting could not be confirmed. The invoice was checked again; retry only if it is still a draft.'**
+  String get postTimeoutRetryHelp;
+
+  /// No description provided for @deleteDraftTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete purchase draft?'**
+  String get deleteDraftTitle;
+
+  /// No description provided for @deleteDraftMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This removes the draft. No stock has been changed.'**
+  String get deleteDraftMessage;
+
+  /// No description provided for @stockMovements.
+  ///
+  /// In en, this message translates to:
+  /// **'Stock movements'**
+  String get stockMovements;
+
+  /// No description provided for @filters.
+  ///
+  /// In en, this message translates to:
+  /// **'Filters'**
+  String get filters;
+
+  /// No description provided for @applyFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply filters'**
+  String get applyFilters;
+
+  /// No description provided for @movementType.
+  ///
+  /// In en, this message translates to:
+  /// **'Movement type'**
+  String get movementType;
+
+  /// No description provided for @purchaseInvoiceId.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase invoice ID'**
+  String get purchaseInvoiceId;
+
+  /// No description provided for @saleId.
+  ///
+  /// In en, this message translates to:
+  /// **'Sale ID'**
+  String get saleId;
+
+  /// No description provided for @movementHistoryNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Movement history is available for transactions recorded after inventory tracking was enabled.'**
+  String get movementHistoryNotice;
+
+  /// No description provided for @noStockMovements.
+  ///
+  /// In en, this message translates to:
+  /// **'No stock movements found.'**
+  String get noStockMovements;
+
+  /// No description provided for @openingStock.
+  ///
+  /// In en, this message translates to:
+  /// **'Opening stock'**
+  String get openingStock;
+
+  /// No description provided for @purchaseMovement.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase'**
+  String get purchaseMovement;
+
+  /// No description provided for @purchaseReversal.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase reversal'**
+  String get purchaseReversal;
+
+  /// No description provided for @saleMovement.
+  ///
+  /// In en, this message translates to:
+  /// **'Sale'**
+  String get saleMovement;
+
+  /// No description provided for @saleReversal.
+  ///
+  /// In en, this message translates to:
+  /// **'Sale reversal'**
+  String get saleReversal;
+
+  /// No description provided for @manualAdjustment.
+  ///
+  /// In en, this message translates to:
+  /// **'Manual adjustment'**
+  String get manualAdjustment;
+
+  /// No description provided for @stockBeforeAfter.
+  ///
+  /// In en, this message translates to:
+  /// **'{before} → {after}'**
+  String stockBeforeAfter(int before, int after);
+
+  /// No description provided for @adjustmentReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Adjustment reason'**
+  String get adjustmentReason;
+
+  /// No description provided for @adjustmentReasonRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a reason for the stock adjustment.'**
+  String get adjustmentReasonRequired;
+
+  /// No description provided for @stockMovementWillBeRecorded.
+  ///
+  /// In en, this message translates to:
+  /// **'A stock movement will be recorded.'**
+  String get stockMovementWillBeRecorded;
+
+  /// No description provided for @stockAdjustmentSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Current: {current} · New: {next} · Difference: {difference}'**
+  String stockAdjustmentSummary(int current, int next, String difference);
+
+  /// No description provided for @procurementAndStock.
+  ///
+  /// In en, this message translates to:
+  /// **'Procurement and stock'**
+  String get procurementAndStock;
+
+  /// No description provided for @deactivate.
+  ///
+  /// In en, this message translates to:
+  /// **'Deactivate'**
+  String get deactivate;
+
+  /// No description provided for @deactivateSupplierTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Deactivate supplier?'**
+  String get deactivateSupplierTitle;
+
+  /// No description provided for @deactivateSupplierMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'The supplier will be hidden from active selections. Existing purchase history remains available.'**
+  String get deactivateSupplierMessage;
+
+  /// No description provided for @supplierInactive.
+  ///
+  /// In en, this message translates to:
+  /// **'This supplier is inactive.'**
+  String get supplierInactive;
+
+  /// No description provided for @invoiceAlreadyPosted.
+  ///
+  /// In en, this message translates to:
+  /// **'This invoice has already been posted.'**
+  String get invoiceAlreadyPosted;
+
+  /// No description provided for @invoiceNotEditable.
+  ///
+  /// In en, this message translates to:
+  /// **'This invoice can no longer be edited.'**
+  String get invoiceNotEditable;
+
+  /// No description provided for @paymentExceedsRemaining.
+  ///
+  /// In en, this message translates to:
+  /// **'The payment exceeds the invoice\'s remaining amount. Refresh and try again.'**
+  String get paymentExceedsRemaining;
 }
 
 class _AppLocalizationsDelegate

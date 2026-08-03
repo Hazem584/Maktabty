@@ -14,9 +14,8 @@ class ProductsListCubit extends Cubit<ProductsListState> {
 
   ProductsListCubit({
     required this._getProductsUseCase,
-    required DeleteProductUseCase deleteProductUseCase,
-  }) : _deleteProductUseCase = deleteProductUseCase,
-       super(ProductsListState.initial());
+    required this._deleteProductUseCase,
+  }) : super(ProductsListState.initial());
 
   void loadInitial() {
     if (_initialized) return;

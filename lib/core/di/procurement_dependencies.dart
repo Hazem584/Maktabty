@@ -1,0 +1,41 @@
+import 'package:get_it/get_it.dart';
+import 'package:maktabty/core/network/dio_client.dart';
+import 'package:maktabty/features/products/domain/usecases/get_product_by_id_usecase.dart';
+import 'package:maktabty/features/purchases/data/datasources/purchases_remote_datasource.dart';
+import 'package:maktabty/features/purchases/data/repositories/purchases_repository_impl.dart';
+import 'package:maktabty/features/purchases/domain/repositories/purchases_repository.dart';
+import 'package:maktabty/features/purchases/domain/usecases/purchase_usecases.dart';
+import 'package:maktabty/features/purchases/presentation/cubit/purchase_details_cubit.dart';
+import 'package:maktabty/features/purchases/presentation/cubit/purchase_form_cubit.dart';
+import 'package:maktabty/features/purchases/presentation/cubit/purchases_list_cubit.dart';
+import 'package:maktabty/features/stock_movements/data/datasources/stock_movements_remote_datasource.dart';
+import 'package:maktabty/features/stock_movements/data/repositories/stock_movements_repository_impl.dart';
+import 'package:maktabty/features/stock_movements/domain/repositories/stock_movements_repository.dart';
+import 'package:maktabty/features/stock_movements/presentation/cubit/stock_movements_cubit.dart';
+import 'package:maktabty/features/suppliers/data/datasources/suppliers_remote_datasource.dart';
+import 'package:maktabty/features/suppliers/data/repositories/suppliers_repository_impl.dart';
+import 'package:maktabty/features/suppliers/domain/repositories/suppliers_repository.dart';
+import 'package:maktabty/features/suppliers/domain/usecases/supplier_usecases.dart';
+import 'package:maktabty/features/suppliers/presentation/cubit/supplier_details_cubit.dart';
+import 'package:maktabty/features/suppliers/presentation/cubit/supplier_form_cubit.dart';
+import 'package:maktabty/features/suppliers/presentation/cubit/supplier_payment_cubit.dart';
+import 'package:maktabty/features/suppliers/presentation/cubit/suppliers_list_cubit.dart';
+
+void registerProcurementDependencies(GetIt getIt) {
+  getIt.registerLazySingleton(() => SuppliersRemoteDataSource(getIt<DioClient>().dio));
+  getIt.registerLazySingleton<SuppliersRepository>(() => SuppliersRepositoryImpl(getIt()));
+  getIt.registerLazySingleton(() => SupplierUseCases(getIt()));
+  getIt.registerLazySingleton(() => PurchasesRemoteDataSource(getIt<DioClient>().dio));
+  getIt.registerLazySingleton<PurchasesRepository>(() => PurchasesRepositoryImpl(getIt()));
+  getIt.registerLazySingleton(() => PurchaseUseCases(getIt()));
+  getIt.registerLazySingleton(() => StockMovementsRemoteDataSource(getIt<DioClient>().dio));
+  getIt.registerLazySingleton<StockMovementsRepository>(() => StockMovementsRepositoryImpl(getIt()));
+  getIt.registerFactory(() => SuppliersListCubit(getIt()));
+  getIt.registerFactory(() => SupplierFormCubit(getIt()));
+  getIt.registerFactory(() => SupplierDetailsCubit(getIt(), getIt()));
+  getIt.registerFactory(() => SupplierPaymentCubit(getIt(), getIt()));
+  getIt.registerFactory(() => PurchasesListCubit(getIt()));
+  getIt.registerFactory(() => PurchaseFormCubit(getIt()));
+  getIt.registerFactory(() => PurchaseDetailsCubit(getIt(), getIt(), getIt<GetProductByIdUseCase>()));
+  getIt.registerFactory(() => StockMovementsCubit(getIt()));
+}

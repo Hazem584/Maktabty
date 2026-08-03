@@ -854,4 +854,353 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get idempotencyConflict =>
       'This sale has an identifier conflict and needs administrator review.';
+
+  @override
+  String get suppliers => 'Suppliers';
+
+  @override
+  String get supplier => 'Supplier';
+
+  @override
+  String get addSupplier => 'Add supplier';
+
+  @override
+  String get editSupplier => 'Edit supplier';
+
+  @override
+  String get supplierName => 'Supplier name';
+
+  @override
+  String get supplierDetails => 'Supplier details';
+
+  @override
+  String get supplierInformation => 'Supplier information';
+
+  @override
+  String get activeSupplier => 'Active supplier';
+
+  @override
+  String get active => 'Active';
+
+  @override
+  String get inactive => 'Inactive';
+
+  @override
+  String get all => 'All';
+
+  @override
+  String get address => 'Address';
+
+  @override
+  String get notes => 'Notes';
+
+  @override
+  String get searchSuppliers => 'Search suppliers';
+
+  @override
+  String get noSuppliers => 'No suppliers found.';
+
+  @override
+  String get noSupplierData => 'Supplier data is unavailable.';
+
+  @override
+  String get notAvailable => 'Not available';
+
+  @override
+  String get requiredField => 'This field is required.';
+
+  @override
+  String get outstandingBalance => 'Outstanding balance';
+
+  @override
+  String get purchaseInvoices => 'Purchase invoices';
+
+  @override
+  String get purchaseInvoice => 'Purchase invoice';
+
+  @override
+  String get noPurchaseInvoices => 'No purchase invoices.';
+
+  @override
+  String get payments => 'Payments';
+
+  @override
+  String get noPayments => 'No payments.';
+
+  @override
+  String get statement => 'Statement';
+
+  @override
+  String get noStatementEntries => 'No statement entries.';
+
+  @override
+  String get totalPurchases => 'Total purchases';
+
+  @override
+  String get totalPaid => 'Total paid';
+
+  @override
+  String get debit => 'Debit';
+
+  @override
+  String get credit => 'Credit';
+
+  @override
+  String get recordPayment => 'Record payment';
+
+  @override
+  String get recordSupplierPayment => 'Record supplier payment';
+
+  @override
+  String get paymentRecorded => 'Payment recorded.';
+
+  @override
+  String get amount => 'Amount';
+
+  @override
+  String get paidDate => 'Paid date';
+
+  @override
+  String get reference => 'Reference';
+
+  @override
+  String get bankTransfer => 'Bank transfer';
+
+  @override
+  String get other => 'Other';
+
+  @override
+  String get invalidPaymentAmount =>
+      'Enter a positive amount that does not exceed the invoice remainder.';
+
+  @override
+  String remainingAmount(String amount) {
+    return 'Remaining: $amount';
+  }
+
+  @override
+  String get purchases => 'Purchases';
+
+  @override
+  String get createPurchase => 'Create purchase';
+
+  @override
+  String get createPurchaseDraft => 'Create purchase draft';
+
+  @override
+  String get editPurchaseDraft => 'Edit purchase draft';
+
+  @override
+  String get purchaseDetails => 'Purchase details';
+
+  @override
+  String get searchPurchases => 'Search purchases';
+
+  @override
+  String get noPurchases => 'No purchases found.';
+
+  @override
+  String get draft => 'Draft';
+
+  @override
+  String get posted => 'Posted';
+
+  @override
+  String get cancelled => 'Cancelled';
+
+  @override
+  String get unknownStatus => 'Unknown';
+
+  @override
+  String purchaseNumber(int number) {
+    return 'Purchase #$number';
+  }
+
+  @override
+  String get unknownSupplier => 'Unknown supplier';
+
+  @override
+  String get dateRange => 'Date range';
+
+  @override
+  String get supplierInvoiceNumber => 'Supplier invoice number';
+
+  @override
+  String get purchaseDate => 'Purchase date';
+
+  @override
+  String get postingDate => 'Posting date';
+
+  @override
+  String get createdBy => 'Created by';
+
+  @override
+  String get initialPaidAmount => 'Initial paid amount';
+
+  @override
+  String get purchaseItems => 'Purchase items';
+
+  @override
+  String get unitCost => 'Unit cost';
+
+  @override
+  String get lastPurchasePrice => 'Last purchase price';
+
+  @override
+  String get averageCost => 'Average cost';
+
+  @override
+  String get inStockLabel => 'Current stock';
+
+  @override
+  String get subtotalPreview => 'Subtotal preview';
+
+  @override
+  String get backendTotalsAuthoritative =>
+      'Final totals are confirmed by the server.';
+
+  @override
+  String get saveDraft => 'Save draft';
+
+  @override
+  String get selectSupplier => 'Select a supplier.';
+
+  @override
+  String get invalidNonNegativeAmount => 'Enter a valid non-negative amount.';
+
+  @override
+  String get addAtLeastOnePurchaseItem => 'Add at least one purchase item.';
+
+  @override
+  String get duplicatePurchaseProduct =>
+      'A product cannot appear more than once in a purchase.';
+
+  @override
+  String get invalidPurchaseItem =>
+      'Each item needs a positive whole quantity and positive unit cost.';
+
+  @override
+  String get draftSavedNoStockChange =>
+      'Draft saved. Product stock was not changed.';
+
+  @override
+  String get purchasesRequireInternet =>
+      'Purchases require an internet connection.';
+
+  @override
+  String get remaining => 'Remaining';
+
+  @override
+  String get postInvoice => 'Post invoice';
+
+  @override
+  String get postPurchaseTitle => 'Post purchase invoice?';
+
+  @override
+  String get postPurchaseWarning =>
+      'Stock will increase, product costs will update, and this invoice will become immutable. This action cannot currently be reversed in the application.';
+
+  @override
+  String get purchasePosted => 'Purchase invoice posted.';
+
+  @override
+  String get postTimeoutRetryHelp =>
+      'Posting could not be confirmed. The invoice was checked again; retry only if it is still a draft.';
+
+  @override
+  String get deleteDraftTitle => 'Delete purchase draft?';
+
+  @override
+  String get deleteDraftMessage =>
+      'This removes the draft. No stock has been changed.';
+
+  @override
+  String get stockMovements => 'Stock movements';
+
+  @override
+  String get filters => 'Filters';
+
+  @override
+  String get applyFilters => 'Apply filters';
+
+  @override
+  String get movementType => 'Movement type';
+
+  @override
+  String get purchaseInvoiceId => 'Purchase invoice ID';
+
+  @override
+  String get saleId => 'Sale ID';
+
+  @override
+  String get movementHistoryNotice =>
+      'Movement history is available for transactions recorded after inventory tracking was enabled.';
+
+  @override
+  String get noStockMovements => 'No stock movements found.';
+
+  @override
+  String get openingStock => 'Opening stock';
+
+  @override
+  String get purchaseMovement => 'Purchase';
+
+  @override
+  String get purchaseReversal => 'Purchase reversal';
+
+  @override
+  String get saleMovement => 'Sale';
+
+  @override
+  String get saleReversal => 'Sale reversal';
+
+  @override
+  String get manualAdjustment => 'Manual adjustment';
+
+  @override
+  String stockBeforeAfter(int before, int after) {
+    return '$before → $after';
+  }
+
+  @override
+  String get adjustmentReason => 'Adjustment reason';
+
+  @override
+  String get adjustmentReasonRequired =>
+      'Enter a reason for the stock adjustment.';
+
+  @override
+  String get stockMovementWillBeRecorded =>
+      'A stock movement will be recorded.';
+
+  @override
+  String stockAdjustmentSummary(int current, int next, String difference) {
+    return 'Current: $current · New: $next · Difference: $difference';
+  }
+
+  @override
+  String get procurementAndStock => 'Procurement and stock';
+
+  @override
+  String get deactivate => 'Deactivate';
+
+  @override
+  String get deactivateSupplierTitle => 'Deactivate supplier?';
+
+  @override
+  String get deactivateSupplierMessage =>
+      'The supplier will be hidden from active selections. Existing purchase history remains available.';
+
+  @override
+  String get supplierInactive => 'This supplier is inactive.';
+
+  @override
+  String get invoiceAlreadyPosted => 'This invoice has already been posted.';
+
+  @override
+  String get invoiceNotEditable => 'This invoice can no longer be edited.';
+
+  @override
+  String get paymentExceedsRemaining =>
+      'The payment exceeds the invoice\'s remaining amount. Refresh and try again.';
 }

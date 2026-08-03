@@ -12,6 +12,7 @@ class UpdateProductUseCase {
     double? price,
     int? stock,
     String? code,
+    String? adjustmentReason,
   }) {
     return _repository.updateProduct(
       id: id,
@@ -19,6 +20,7 @@ class UpdateProductUseCase {
       price: price,
       stock: stock,
       code: code,
+      adjustmentReason: adjustmentReason,
     );
   }
 }
