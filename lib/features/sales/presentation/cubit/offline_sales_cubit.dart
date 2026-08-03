@@ -22,16 +22,12 @@ class OfflineSalesCubit extends Cubit<OfflineSalesState> {
   StreamSubscription<SalesSyncProgress>? _progressSubscription;
 
   OfflineSalesCubit({
-    required SalesLocalDataSource localDataSource,
+    required this._localDataSource,
     required SalesSyncCoordinator coordinator,
-    required ConnectivitySyncTrigger connectivityTrigger,
-    required CurrentUserStore currentUserStore,
-    required GetReceiptForSaleUseCase getReceiptForSaleUseCase,
-  }) : _localDataSource = localDataSource,
-       _coordinator = coordinator,
-       _connectivityTrigger = connectivityTrigger,
-       _currentUserStore = currentUserStore,
-       _getReceiptForSaleUseCase = getReceiptForSaleUseCase,
+    required this._connectivityTrigger,
+    required this._currentUserStore,
+    required this._getReceiptForSaleUseCase,
+  }) : _coordinator = coordinator,
        super(OfflineSalesState.initial()) {
     _progressSubscription = _coordinator.progress.listen((progress) {
       if (isClosed) return;

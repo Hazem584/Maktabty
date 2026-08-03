@@ -29,16 +29,12 @@ class SalesRepositoryImpl implements SalesRepository {
   final Uuid _uuid;
 
   SalesRepositoryImpl({
-    required SalesRemoteDataSource remoteDataSource,
+    required this._remoteDataSource,
     required SalesLocalDataSource localDataSource,
-    required SalesSyncCoordinator syncCoordinator,
-    required CurrentUserStore currentUserStore,
-    Uuid uuid = const Uuid(),
-  }) : _remoteDataSource = remoteDataSource,
-       _localDataSource = localDataSource,
-       _syncCoordinator = syncCoordinator,
-       _currentUserStore = currentUserStore,
-       _uuid = uuid;
+    required this._syncCoordinator,
+    required this._currentUserStore,
+    this._uuid = const Uuid(),
+  }) : _localDataSource = localDataSource;
 
   @override
   Future<SaleResponseEntity> createSale({

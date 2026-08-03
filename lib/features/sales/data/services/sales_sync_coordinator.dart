@@ -35,10 +35,9 @@ class SalesSyncCoordinator {
   String? _queuedOwnerUserId;
 
   SalesSyncCoordinator({
-    required SalesLocalDataSource localDataSource,
+    required this._localDataSource,
     required SalesRemoteDataSource remoteDataSource,
-  }) : _localDataSource = localDataSource,
-       _remoteDataSource = remoteDataSource;
+  }) : _remoteDataSource = remoteDataSource;
 
   Stream<SalesSyncProgress> get progress => _progressController.stream;
   bool get isRunning => _activeRun != null;

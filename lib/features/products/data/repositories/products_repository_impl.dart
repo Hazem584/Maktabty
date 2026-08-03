@@ -10,10 +10,9 @@ class ProductsRepositoryImpl implements ProductsRepository {
   final ProductsLocalDataSource _localDataSource;
 
   ProductsRepositoryImpl({
-    required ProductsRemoteDataSource remoteDataSource,
+    required this._remoteDataSource,
     required ProductsLocalDataSource localDataSource,
-  }) : _remoteDataSource = remoteDataSource,
-       _localDataSource = localDataSource;
+  }) : _localDataSource = localDataSource;
 
   @override
   Future<PaginatedProductsEntity> getProducts({

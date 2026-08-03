@@ -9,9 +9,8 @@ import 'package:maktabty/features/sales/presentation/cubit/create_sale_state.dar
 class CreateSaleCubit extends Cubit<CreateSaleState> {
   final CreateSaleUseCase _createSaleUseCase;
 
-  CreateSaleCubit({required CreateSaleUseCase createSaleUseCase})
-    : _createSaleUseCase = createSaleUseCase,
-      super(CreateSaleState.initial());
+  CreateSaleCubit({required this._createSaleUseCase})
+    : super(CreateSaleState.initial());
 
   void setPaymentMethod(PaymentMethod method) {
     if (isClosed) return;

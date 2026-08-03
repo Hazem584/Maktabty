@@ -7,8 +7,7 @@ import 'package:maktabty/features/work_hours/domain/repositories/work_hours_repo
 class WorkHoursRepositoryImpl implements WorkHoursRepository {
   final WorkHoursRemoteDataSource _remoteDataSource;
 
-  WorkHoursRepositoryImpl({required WorkHoursRemoteDataSource remoteDataSource})
-    : _remoteDataSource = remoteDataSource;
+  WorkHoursRepositoryImpl({required this._remoteDataSource});
 
   @override
   Future<WorkDayEntity> upsertWorkDay({

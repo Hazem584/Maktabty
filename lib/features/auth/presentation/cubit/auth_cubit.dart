@@ -29,20 +29,14 @@ class AuthCubit extends Cubit<AuthState> {
   bool _initializing = false;
 
   AuthCubit({
-    required LoginUseCase loginUseCase,
+    required this._loginUseCase,
     required RegisterUseCase registerUseCase,
-    required LogoutUseCase logoutUseCase,
-    required GetMeUseCase getMeUseCase,
-    required RefreshUseCase refreshUseCase,
-    required TokenStorage tokenStorage,
-    required AuthSessionManager sessionManager,
-  }) : _loginUseCase = loginUseCase,
-       _registerUseCase = registerUseCase,
-       _logoutUseCase = logoutUseCase,
-       _getMeUseCase = getMeUseCase,
-       _refreshUseCase = refreshUseCase,
-       _tokenStorage = tokenStorage,
-       _sessionManager = sessionManager,
+    required this._logoutUseCase,
+    required this._getMeUseCase,
+    required this._refreshUseCase,
+    required this._tokenStorage,
+    required this._sessionManager,
+  }) : _registerUseCase = registerUseCase,
        super(AuthState.initial()) {
     _sessionSubscription = _sessionManager.stream.listen((event) {
       if (!isClosed && event == AuthSessionEvent.expired) {

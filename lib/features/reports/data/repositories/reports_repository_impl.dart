@@ -7,8 +7,7 @@ import 'package:maktabty/features/reports/domain/repositories/reports_repository
 class ReportsRepositoryImpl implements ReportsRepository {
   final ReportsRemoteDataSource _remoteDataSource;
 
-  ReportsRepositoryImpl({required ReportsRemoteDataSource remoteDataSource})
-    : _remoteDataSource = remoteDataSource;
+  ReportsRepositoryImpl({required this._remoteDataSource});
 
   @override
   Future<DailyReportEntity> getDailyReport({String? date}) async {

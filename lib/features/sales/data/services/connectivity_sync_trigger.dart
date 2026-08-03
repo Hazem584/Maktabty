@@ -11,10 +11,9 @@ class ConnectivitySyncTrigger {
   String? _ownerUserId;
 
   ConnectivitySyncTrigger({
-    required SalesSyncCoordinator coordinator,
+    required this._coordinator,
     Connectivity? connectivity,
-  }) : _coordinator = coordinator,
-       _connectivity = connectivity ?? Connectivity();
+  }) : _connectivity = connectivity ?? Connectivity();
 
   Future<void> start(String ownerUserId) async {
     _ownerUserId = ownerUserId;

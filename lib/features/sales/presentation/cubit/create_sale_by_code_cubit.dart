@@ -10,9 +10,8 @@ class CreateSaleByCodeCubit extends Cubit<CreateSaleByCodeState> {
   final CreateSaleByCodeUseCase _createSaleByCodeUseCase;
 
   CreateSaleByCodeCubit({
-    required CreateSaleByCodeUseCase createSaleByCodeUseCase,
-  }) : _createSaleByCodeUseCase = createSaleByCodeUseCase,
-       super(CreateSaleByCodeState.initial());
+    required this._createSaleByCodeUseCase,
+  }) : super(CreateSaleByCodeState.initial());
 
   void setPaymentMethod(PaymentMethod method) {
     if (isClosed) return;

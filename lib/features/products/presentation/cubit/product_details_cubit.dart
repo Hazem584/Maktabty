@@ -10,10 +10,9 @@ class ProductDetailsCubit extends Cubit<ProductDetailsState> {
   final GetProductByCodeUseCase _getProductByCodeUseCase;
 
   ProductDetailsCubit({
-    required GetProductByIdUseCase getProductByIdUseCase,
+    required this._getProductByIdUseCase,
     required GetProductByCodeUseCase getProductByCodeUseCase,
-  }) : _getProductByIdUseCase = getProductByIdUseCase,
-       _getProductByCodeUseCase = getProductByCodeUseCase,
+  }) : _getProductByCodeUseCase = getProductByCodeUseCase,
        super(ProductDetailsState.initial());
 
   Future<void> loadById(String id) async {

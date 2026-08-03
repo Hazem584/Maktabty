@@ -82,7 +82,7 @@ class _AppStartupSplashState extends State<AppStartupSplash>
                               color: colorScheme.surface,
                               boxShadow: [
                                 BoxShadow(
-                                  color: colorScheme.primary.withOpacity(0.22),
+                                  color: colorScheme.primary.withValues(alpha: 0.22),
                                   blurRadius: 30,
                                   spreadRadius: 2,
                                 ),
@@ -164,9 +164,9 @@ class _PosBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: colorScheme.surface.withOpacity(0.9),
+        color: colorScheme.surface.withValues(alpha: 0.9),
         borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: colorScheme.outlineVariant.withOpacity(0.6)),
+        border: Border.all(color: colorScheme.outlineVariant.withValues(alpha: 0.6)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

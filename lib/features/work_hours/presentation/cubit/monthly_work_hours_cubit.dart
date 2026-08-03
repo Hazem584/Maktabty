@@ -7,9 +7,8 @@ class MonthlyWorkHoursCubit extends Cubit<MonthlyWorkHoursState> {
   final GetMonthlyWorkHoursUseCase _getMonthlyWorkHoursUseCase;
 
   MonthlyWorkHoursCubit({
-    required GetMonthlyWorkHoursUseCase getMonthlyWorkHoursUseCase,
-  }) : _getMonthlyWorkHoursUseCase = getMonthlyWorkHoursUseCase,
-       super(MonthlyWorkHoursState.initial());
+    required this._getMonthlyWorkHoursUseCase,
+  }) : super(MonthlyWorkHoursState.initial());
 
   Future<void> load({required DateTime month}) async {
     if (isClosed || state.status == MonthlyWorkHoursStatus.loading) return;

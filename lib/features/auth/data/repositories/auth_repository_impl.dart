@@ -10,10 +10,9 @@ class AuthRepositoryImpl implements AuthRepository {
   final TokenStorage _tokenStorage;
 
   AuthRepositoryImpl({
-    required AuthRemoteDataSource remoteDataSource,
+    required this._remoteDataSource,
     required TokenStorage tokenStorage,
-  }) : _remoteDataSource = remoteDataSource,
-       _tokenStorage = tokenStorage;
+  }) : _tokenStorage = tokenStorage;
 
   @override
   Future<UserEntity> login({

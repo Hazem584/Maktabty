@@ -9,10 +9,9 @@ class ProductFormCubit extends Cubit<ProductFormState> {
   final UpdateProductUseCase _updateProductUseCase;
 
   ProductFormCubit({
-    required CreateProductUseCase createProductUseCase,
+    required this._createProductUseCase,
     required UpdateProductUseCase updateProductUseCase,
-  }) : _createProductUseCase = createProductUseCase,
-       _updateProductUseCase = updateProductUseCase,
+  }) : _updateProductUseCase = updateProductUseCase,
        super(ProductFormState.initial());
 
   Future<void> createProduct({

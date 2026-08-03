@@ -15,12 +15,10 @@ class TodaySalesCubit extends Cubit<TodaySalesState> {
   final DeleteSaleUseCase _deleteSaleUseCase;
 
   TodaySalesCubit({
-    required GetTodaySalesUseCase getTodaySalesUseCase,
+    required this._getTodaySalesUseCase,
     required GetReceiptForSaleUseCase getReceiptForSaleUseCase,
-    required DeleteSaleUseCase deleteSaleUseCase,
-  }) : _getTodaySalesUseCase = getTodaySalesUseCase,
-       _getReceiptForSaleUseCase = getReceiptForSaleUseCase,
-       _deleteSaleUseCase = deleteSaleUseCase,
+    required this._deleteSaleUseCase,
+  }) : _getReceiptForSaleUseCase = getReceiptForSaleUseCase,
        super(TodaySalesState.initial());
 
   Future<void> load({String? date}) async {

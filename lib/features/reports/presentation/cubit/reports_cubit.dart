@@ -9,10 +9,9 @@ class ReportsCubit extends Cubit<ReportsState> {
   final GetMonthlyReportUseCase _getMonthlyReportUseCase;
 
   ReportsCubit({
-    required GetDailyReportUseCase getDailyReportUseCase,
+    required this._getDailyReportUseCase,
     required GetMonthlyReportUseCase getMonthlyReportUseCase,
-  }) : _getDailyReportUseCase = getDailyReportUseCase,
-       _getMonthlyReportUseCase = getMonthlyReportUseCase,
+  }) : _getMonthlyReportUseCase = getMonthlyReportUseCase,
        super(ReportsState.initial());
 
   Future<void> loadDaily({DateTime? date}) async {
