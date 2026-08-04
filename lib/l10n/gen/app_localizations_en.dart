@@ -1324,4 +1324,110 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get paymentExceedsRemaining =>
       'The payment exceeds the invoice\'s remaining amount. Refresh and try again.';
+
+  @override
+  String get storeName => 'Store or business name';
+
+  @override
+  String get storeNameRequired => 'Enter your store or business name.';
+
+  @override
+  String get settings => 'Settings';
+
+  @override
+  String get openSettings => 'Open settings';
+
+  @override
+  String get language => 'Language';
+
+  @override
+  String get chooseLanguage => 'Choose the application language';
+
+  @override
+  String get cashiers => 'Cashiers';
+
+  @override
+  String get manageCashiers => 'Manage cashiers';
+
+  @override
+  String get ownerAdministration => 'Owner administration';
+
+  @override
+  String get addCashier => 'Add cashier';
+
+  @override
+  String get editCashier => 'Edit cashier';
+
+  @override
+  String get cashierDetails => 'Cashier details';
+
+  @override
+  String get searchCashiers => 'Search cashiers';
+
+  @override
+  String get noCashiers => 'No cashiers found.';
+
+  @override
+  String get disabled => 'Disabled';
+
+  @override
+  String get enableCashier => 'Enable cashier';
+
+  @override
+  String get disableCashier => 'Disable cashier';
+
+  @override
+  String get enableCashierConfirmation =>
+      'Enable this cashier? They will be able to sign in again.';
+
+  @override
+  String get disableCashierConfirmation =>
+      'Disable this cashier? Their sessions will be revoked, and they must sign in again after you re-enable the account.';
+
+  @override
+  String get resetPassword => 'Reset password';
+
+  @override
+  String get newPassword => 'New password';
+
+  @override
+  String get confirmNewPassword => 'Confirm new password';
+
+  @override
+  String get passwordResetConfirmation =>
+      'Reset this cashier\'s password? Existing sessions will be revoked.';
+
+  @override
+  String get passwordResetSessionNotice =>
+      'Resetting the password revokes existing sessions. The cashier must sign in again with the new password.';
+
+  @override
+  String get passwordResetSuccess => 'Cashier password reset successfully.';
+
+  @override
+  String get cashierCreatedSuccess => 'Cashier created successfully.';
+
+  @override
+  String get cashierUpdatedSuccess => 'Cashier updated successfully.';
+
+  @override
+  String get cashierEnabledSuccess => 'Cashier enabled successfully.';
+
+  @override
+  String get cashierDisabledSuccess => 'Cashier disabled successfully.';
+
+  @override
+  String get cashierSaveFailed =>
+      'Could not save the cashier. Please try again.';
+
+  @override
+  String get cashierUnavailable => 'This cashier is unavailable.';
+
+  @override
+  String get duplicateCashierEmail =>
+      'A cashier with this email already exists.';
+
+  @override
+  String get offlineDataOwnershipWarning =>
+      'Some older offline sales have no verified store ownership. They are quarantined and will not be synchronized or assigned to this account.';
 }

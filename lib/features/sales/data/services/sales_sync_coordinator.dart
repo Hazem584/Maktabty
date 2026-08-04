@@ -30,9 +30,9 @@ class SalesSyncCoordinator {
 
   Future<void>? _activeRun;
   CancelToken? _activeCancelToken;
-  String? _activeOwnerUserId;
-  String? _authorizedOwnerUserId;
-  String? _queuedOwnerUserId;
+  _SyncScope? _activeScope;
+  _SyncScope? _authorizedScope;
+  _SyncScope? _queuedScope;
 
   SalesSyncCoordinator({
     required this._localDataSource,
@@ -42,57 +42,70 @@ class SalesSyncCoordinator {
   Stream<SalesSyncProgress> get progress => _progressController.stream;
   bool get isRunning => _activeRun != null;
 
-  void setActiveOwner(String? ownerUserId) {
-    if (_authorizedOwnerUserId == ownerUserId) return;
-    _authorizedOwnerUserId = ownerUserId;
-    if (_activeRun != null && _activeOwnerUserId != ownerUserId) {
-      _queuedOwnerUserId = ownerUserId;
+  void setActiveScope(String? storeId, String? ownerUserId) {
+    final scope = storeId == null || ownerUserId == null
+        ? null
+        : _SyncScope(storeId, ownerUserId);
+    if (_authorizedScope == scope) return;
+    _authorizedScope = scope;
+    if (_activeRun != null && _activeScope != scope) {
+      _queuedScope = scope;
       _activeCancelToken?.cancel('Authenticated owner changed.');
     }
   }
 
-  Future<void> sync(String ownerUserId) {
-    if (_authorizedOwnerUserId != ownerUserId) {
+  Future<void> sync({required String storeId, required String ownerUserId}) {
+    final scope = _SyncScope(storeId, ownerUserId);
+    if (_authorizedScope != scope) {
       return Future.value();
     }
     final active = _activeRun;
     if (active != null) {
-      if (_activeOwnerUserId != ownerUserId) {
-        _queuedOwnerUserId = ownerUserId;
+      if (_activeScope != scope) {
+        _queuedScope = scope;
       }
       return active;
     }
 
-    final run = _run(ownerUserId);
+    final run = _run(scope);
     _activeRun = run;
-    _activeOwnerUserId = ownerUserId;
+    _activeScope = scope;
     return run.whenComplete(() {
       if (identical(_activeRun, run)) {
         _activeRun = null;
-        _activeOwnerUserId = null;
+        _activeScope = null;
         _activeCancelToken = null;
-        final queuedOwner = _queuedOwnerUserId;
-        _queuedOwnerUserId = null;
-        if (queuedOwner != null && queuedOwner == _authorizedOwnerUserId) {
-          unawaited(sync(queuedOwner));
+        final queuedScope = _queuedScope;
+        _queuedScope = null;
+        if (queuedScope != null && queuedScope == _authorizedScope) {
+          unawaited(
+            sync(
+              storeId: queuedScope.storeId,
+              ownerUserId: queuedScope.ownerUserId,
+            ),
+          );
         }
       }
     });
   }
 
-  Future<void> _run(String ownerUserId) async {
+  Future<void> _run(_SyncScope scope) async {
     var processed = 0;
     _emit(const SalesSyncProgress(isSyncing: true));
     try {
-      await _localDataSource.recoverStaleSyncing(ownerUserId: ownerUserId);
+      await _localDataSource.recoverStaleSyncing(
+        storeId: scope.storeId,
+        ownerUserId: scope.ownerUserId,
+      );
       for (
         var batchIndex = 0;
         batchIndex < _maximumBatchesPerRun;
         batchIndex++
       ) {
-        if (_authorizedOwnerUserId != ownerUserId) return;
+        if (_authorizedScope != scope) return;
         final batch = await _localDataSource.claimPendingBatch(
-          ownerUserId: ownerUserId,
+          storeId: scope.storeId,
+          ownerUserId: scope.ownerUserId,
         );
         if (batch.isEmpty) break;
 
@@ -104,9 +117,11 @@ class SalesSyncCoordinator {
             batch.map(_localDataSource.toSyncRequest).toList(growable: false),
             cancelToken: cancelToken,
           );
-          if (_authorizedOwnerUserId != ownerUserId) {
+          if (_authorizedScope != scope) {
             await _localDataSource.markBatchRetryable(
               ids,
+              storeId: scope.storeId,
+              ownerUserId: scope.ownerUserId,
               errorCode: 'OWNER_CHANGED',
             );
             return;
@@ -119,9 +134,13 @@ class SalesSyncCoordinator {
             if (result == null) {
               await _localDataSource.markBatchRetryable([
                 sale.clientSaleId,
-              ], errorCode: 'MISSING_SYNC_RESULT');
+              ], storeId: scope.storeId, ownerUserId: scope.ownerUserId, errorCode: 'MISSING_SYNC_RESULT');
             } else {
-              await _localDataSource.applySyncResult(result);
+              await _localDataSource.applySyncResult(
+                result,
+                storeId: scope.storeId,
+                ownerUserId: scope.ownerUserId,
+              );
             }
             processed++;
             _emit(
@@ -137,12 +156,16 @@ class SalesSyncCoordinator {
           if (_isPermanentBatchFailure(failure)) {
             await _localDataSource.markBatchPermanent(
               ids,
+              storeId: scope.storeId,
+              ownerUserId: scope.ownerUserId,
               errorCode: failure.code.name.toUpperCase(),
               message: failure.serverMessage,
             );
           } else {
             await _localDataSource.markBatchRetryable(
               ids,
+              storeId: scope.storeId,
+              ownerUserId: scope.ownerUserId,
               errorCode: failure.code.name.toUpperCase(),
               message: failure.serverMessage,
             );
@@ -190,4 +213,20 @@ class SalesSyncCoordinator {
   }
 
   Future<void> dispose() => _progressController.close();
+}
+
+class _SyncScope {
+  final String storeId;
+  final String ownerUserId;
+
+  const _SyncScope(this.storeId, this.ownerUserId);
+
+  @override
+  bool operator ==(Object other) =>
+      other is _SyncScope &&
+      other.storeId == storeId &&
+      other.ownerUserId == ownerUserId;
+
+  @override
+  int get hashCode => Object.hash(storeId, ownerUserId);
 }

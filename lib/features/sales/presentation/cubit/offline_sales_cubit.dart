@@ -41,27 +41,31 @@ class OfflineSalesCubit extends Cubit<OfflineSalesState> {
     });
   }
 
-  Future<void> authenticate(String ownerUserId) async {
-    if (isClosed || ownerUserId.isEmpty) return;
-    _coordinator.setActiveOwner(ownerUserId);
-    _currentUserStore.setUser(ownerUserId);
+  Future<void> authenticate({required String storeId, required String ownerUserId}) async {
+    if (isClosed || storeId.isEmpty || ownerUserId.isEmpty) return;
+    _coordinator.setActiveScope(storeId, ownerUserId);
+    _currentUserStore.setUser(userId: ownerUserId, storeId: storeId);
     await _salesSubscription?.cancel();
-    final otherOwnerCount = await _localDataSource.unsyncedCountForOtherOwners(
-      ownerUserId,
+    final otherOwnerCount = await _localDataSource.unsyncedCountOutsideScope(
+      storeId: storeId,
+      ownerUserId: ownerUserId,
     );
+    final unownedCount = await _localDataSource.unownedUnsyncedCount();
     if (!isClosed) {
       emit(
         OfflineSalesState.initial().copyWith(
+          storeId: storeId,
           ownerUserId: ownerUserId,
           otherOwnerUnsyncedCount: otherOwnerCount,
+          unownedUnsyncedCount: unownedCount,
         ),
       );
     }
     _salesSubscription = _localDataSource
-        .watchSalesForOwner(ownerUserId)
+        .watchSalesForOwner(storeId: storeId, ownerUserId: ownerUserId)
         .listen(
           (sales) {
-            if (isClosed || state.ownerUserId != ownerUserId) return;
+            if (isClosed || state.storeId != storeId || state.ownerUserId != ownerUserId) return;
             final pendingCount = sales
                 .where(
                   (sale) =>
@@ -77,12 +81,12 @@ class OfflineSalesCubit extends Cubit<OfflineSalesState> {
             emit(state.copyWith(lastSyncFailureCode: failure.code));
           },
         );
-    await _connectivityTrigger.start(ownerUserId);
-    unawaited(_coordinator.sync(ownerUserId));
+    await _connectivityTrigger.start(storeId: storeId, ownerUserId: ownerUserId);
+    unawaited(_coordinator.sync(storeId: storeId, ownerUserId: ownerUserId));
   }
 
   Future<void> signOut() async {
-    _coordinator.setActiveOwner(null);
+    _coordinator.setActiveScope(null, null);
     _currentUserStore.clear();
     await _connectivityTrigger.stop();
     await _salesSubscription?.cancel();
@@ -92,19 +96,22 @@ class OfflineSalesCubit extends Cubit<OfflineSalesState> {
 
   Future<void> syncNow() async {
     final owner = state.ownerUserId;
-    if (owner == null || state.isSyncing) return;
-    await _coordinator.sync(owner);
+    final store = state.storeId;
+    if (owner == null || store == null || state.isSyncing) return;
+    await _coordinator.sync(storeId: store, ownerUserId: owner);
   }
 
   Future<bool> retry(String clientSaleId) async {
     final owner = state.ownerUserId;
-    if (owner == null || state.isSyncing) return false;
+    final store = state.storeId;
+    if (owner == null || store == null || state.isSyncing) return false;
     try {
       final queued = await _localDataSource.retrySale(
         clientSaleId: clientSaleId,
+        storeId: store,
         ownerUserId: owner,
       );
-      if (queued) unawaited(_coordinator.sync(owner));
+      if (queued) unawaited(_coordinator.sync(storeId: store, ownerUserId: owner));
       return queued;
     } catch (error) {
       final failure = AppFailureMapper.fromException(error);

@@ -18,6 +18,7 @@ class CreateAccountScreen extends StatefulWidget {
 
 class _CreateAccountScreenState extends State<CreateAccountScreen> {
   final TextEditingController _fullNameController = TextEditingController();
+  final TextEditingController _storeNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
@@ -46,6 +47,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
   void _submit() {
     final result = AuthValidator.registration(
       fullName: _fullNameController.text,
+      storeName: _storeNameController.text,
       email: _emailController.text,
       password: _passwordController.text,
       confirmPassword: _confirmPasswordController.text,
@@ -57,6 +59,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
     final input = result.value!;
     context.read<AuthCubit>().register(
       fullName: input.fullName,
+      storeName: input.storeName,
       email: input.email,
       password: input.password,
     );
@@ -65,6 +68,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
   @override
   void dispose() {
     _fullNameController.dispose();
+    _storeNameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
@@ -105,6 +109,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
             child: CreateAccountScreenBody(
               onBackToLogin: () => _goToLogin(context),
               fullNameController: _fullNameController,
+              storeNameController: _storeNameController,
               emailController: _emailController,
               passwordController: _passwordController,
               confirmPasswordController: _confirmPasswordController,

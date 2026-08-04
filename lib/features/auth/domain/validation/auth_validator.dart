@@ -9,11 +9,13 @@ class LoginInput {
 
 class RegistrationInput {
   final String fullName;
+  final String storeName;
   final String email;
   final String password;
 
   const RegistrationInput({
     required this.fullName,
+    required this.storeName,
     required this.email,
     required this.password,
   });
@@ -40,17 +42,21 @@ class AuthValidator {
 
   static ValidationResult<RegistrationInput> registration({
     required String fullName,
+    required String storeName,
     required String email,
     required String password,
     required String confirmPassword,
   }) {
     final normalizedName = fullName.trim();
+    final normalizedStoreName = storeName.trim();
     final normalizedEmail = email.trim().toLowerCase();
-    if (normalizedName.isEmpty ||
-        normalizedEmail.isEmpty ||
+    if (normalizedName.isEmpty || normalizedEmail.isEmpty ||
         password.isEmpty ||
         confirmPassword.isEmpty) {
       return const ValidationResult.invalid(ValidationKey.requiredFields);
+    }
+    if (normalizedStoreName.isEmpty) {
+      return const ValidationResult.invalid(ValidationKey.storeNameRequired);
     }
     if (!_isValidEmail(normalizedEmail)) {
       return const ValidationResult.invalid(ValidationKey.invalidEmail);
@@ -64,6 +70,7 @@ class AuthValidator {
     return ValidationResult.valid(
       RegistrationInput(
         fullName: normalizedName,
+        storeName: normalizedStoreName,
         email: normalizedEmail,
         password: password,
       ),

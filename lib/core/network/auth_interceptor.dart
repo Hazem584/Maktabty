@@ -46,6 +46,7 @@ class AuthInterceptor extends Interceptor {
     try {
       final token = await _refreshToken();
       final response = await _retryRequest(err.requestOptions, token);
+      _sessionManager.notifySessionRefreshed();
       handler.resolve(response);
     } on _InvalidRefreshException {
       await _expireSession();

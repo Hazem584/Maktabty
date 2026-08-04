@@ -1,6 +1,6 @@
 import 'dart:async';
 
-enum AuthSessionEvent { expired }
+enum AuthSessionEvent { expired, refreshed }
 
 class AuthSessionManager {
   final StreamController<AuthSessionEvent> _controller =
@@ -11,6 +11,12 @@ class AuthSessionManager {
   void notifySessionExpired() {
     if (!_controller.isClosed) {
       _controller.add(AuthSessionEvent.expired);
+    }
+  }
+
+  void notifySessionRefreshed() {
+    if (!_controller.isClosed) {
+      _controller.add(AuthSessionEvent.refreshed);
     }
   }
 

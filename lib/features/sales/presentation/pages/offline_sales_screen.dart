@@ -45,6 +45,22 @@ class OfflineSalesScreen extends StatelessWidget {
               physics: const AlwaysScrollableScrollPhysics(),
               padding: const EdgeInsets.all(AppSpacing.l),
               children: [
+                if (state.unownedUnsyncedCount > 0) ...[
+                  Card(
+                    color: Theme.of(context).colorScheme.errorContainer,
+                    child: Padding(
+                      padding: const EdgeInsets.all(AppSpacing.m),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.gpp_maybe_outlined),
+                          const SizedBox(width: AppSpacing.m),
+                          Expanded(child: Text(context.l10n.offlineDataOwnershipWarning)),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.m),
+                ],
                 if (state.otherOwnerUnsyncedCount > 0) ...[
                   Card(
                     child: Padding(

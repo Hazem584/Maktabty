@@ -21,6 +21,7 @@ class SalesLocalDataSource {
 
   Future<LocalSaleEntity> createPendingSale({
     required String clientSaleId,
+    required String storeId,
     required String ownerUserId,
     required DateTime occurredAt,
     required List<SaleItemInput> items,
@@ -30,6 +31,9 @@ class SalesLocalDataSource {
     double? cardAmount,
     double discountAmount = 0,
   }) async {
+    if (storeId.isEmpty || ownerUserId.isEmpty) {
+      throw const LocalDatabaseException(operation: 'save sale without verified ownership');
+    }
     try {
       return await _database.transaction(() async {
         final now = DateTime.now().toUtc();
@@ -38,6 +42,7 @@ class SalesLocalDataSource {
             .insert(
               OfflineSalesCompanion.insert(
                 clientSaleId: clientSaleId,
+                storeId: Value(storeId),
                 ownerUserId: ownerUserId,
                 occurredAt: occurredAt.toUtc(),
                 paymentMethod: paymentMethod.apiValue,
@@ -54,7 +59,7 @@ class SalesLocalDataSource {
             );
 
         for (final item in items) {
-          final cached = await _cachedProduct(item.productId);
+          final cached = await _cachedProduct(storeId, item.productId);
           if (cached != null && !cached.isActive) {
             throw LocalArchivedProductException(item.productId);
           }
@@ -95,7 +100,7 @@ class SalesLocalDataSource {
           );
         }
 
-        return _getSaleByClientId(clientSaleId);
+        return _getSaleByClientId(clientSaleId, storeId: storeId, ownerUserId: ownerUserId);
       });
     } on LocalStockException {
       rethrow;
@@ -107,9 +112,9 @@ class SalesLocalDataSource {
     }
   }
 
-  Stream<List<LocalSaleEntity>> watchSalesForOwner(String ownerUserId) {
+  Stream<List<LocalSaleEntity>> watchSalesForOwner({required String storeId, required String ownerUserId}) {
     final query = _database.select(_database.offlineSales)
-      ..where((table) => table.ownerUserId.equals(ownerUserId))
+      ..where((table) => table.storeId.equals(storeId) & table.ownerUserId.equals(ownerUserId))
       ..orderBy([(table) => OrderingTerm.desc(table.occurredAt)]);
     return query.watch().asyncMap((rows) async {
       final sales = <LocalSaleEntity>[];
@@ -120,12 +125,13 @@ class SalesLocalDataSource {
     });
   }
 
-  Future<int> pendingCountForOwner(String ownerUserId) async {
+  Future<int> pendingCountForOwner({required String storeId, required String ownerUserId}) async {
     final count = _database.offlineSales.id.count();
     final query = _database.selectOnly(_database.offlineSales)
       ..addColumns([count])
       ..where(
-        _database.offlineSales.ownerUserId.equals(ownerUserId) &
+        _database.offlineSales.storeId.equals(storeId) &
+            _database.offlineSales.ownerUserId.equals(ownerUserId) &
             _database.offlineSales.syncStatus.isIn([
               LocalSaleSyncStatus.pending.databaseValue,
               LocalSaleSyncStatus.syncing.databaseValue,
@@ -136,12 +142,14 @@ class SalesLocalDataSource {
     return row.read(count) ?? 0;
   }
 
-  Future<int> unsyncedCountForOtherOwners(String ownerUserId) async {
+  Future<int> unsyncedCountOutsideScope({required String storeId, required String ownerUserId}) async {
     final count = _database.offlineSales.id.count();
     final query = _database.selectOnly(_database.offlineSales)
       ..addColumns([count])
       ..where(
-        _database.offlineSales.ownerUserId.equals(ownerUserId).not() &
+        _database.offlineSales.storeId.isNotNull() &
+            (_database.offlineSales.storeId.equals(storeId).not() |
+                _database.offlineSales.ownerUserId.equals(ownerUserId).not()) &
             _database.offlineSales.syncStatus.isNotIn([
               LocalSaleSyncStatus.synced.databaseValue,
             ]),
@@ -150,10 +158,25 @@ class SalesLocalDataSource {
     return row.read(count) ?? 0;
   }
 
-  Future<void> recoverStaleSyncing({required String ownerUserId}) async {
+  Future<int> unownedUnsyncedCount() async {
+    final count = _database.offlineSales.id.count();
+    final query = _database.selectOnly(_database.offlineSales)
+      ..addColumns([count])
+      ..where(
+        _database.offlineSales.storeId.isNull() &
+            _database.offlineSales.syncStatus.isNotIn([
+              LocalSaleSyncStatus.synced.databaseValue,
+            ]),
+      );
+    final row = await query.getSingle();
+    return row.read(count) ?? 0;
+  }
+
+  Future<void> recoverStaleSyncing({required String storeId, required String ownerUserId}) async {
     final cutoff = DateTime.now().toUtc().subtract(staleSyncTimeout);
     await (_database.update(_database.offlineSales)..where(
           (table) =>
+              table.storeId.equals(storeId) &
               table.ownerUserId.equals(ownerUserId) &
               table.syncStatus.equals(
                 LocalSaleSyncStatus.syncing.databaseValue,
@@ -171,6 +194,7 @@ class SalesLocalDataSource {
   }
 
   Future<List<LocalSaleEntity>> claimPendingBatch({
+    required String storeId,
     required String ownerUserId,
     int limit = maxBatchSize,
   }) async {
@@ -180,6 +204,7 @@ class SalesLocalDataSource {
       final query = _database.select(_database.offlineSales)
         ..where(
           (table) =>
+              table.storeId.equals(storeId) &
               table.ownerUserId.equals(ownerUserId) &
               table.syncStatus.equals(
                 LocalSaleSyncStatus.pending.databaseValue,
@@ -225,9 +250,9 @@ class SalesLocalDataSource {
     });
   }
 
-  Future<void> applySyncResult(SyncSaleResultModel result) async {
+  Future<void> applySyncResult(SyncSaleResultModel result, {required String storeId, required String ownerUserId}) async {
     await _database.transaction(() async {
-      final sale = await _saleRow(result.clientSaleId);
+      final sale = await _saleRow(result.clientSaleId, storeId: storeId, ownerUserId: ownerUserId);
       if (sale == null ||
           sale.syncStatus != LocalSaleSyncStatus.syncing.databaseValue) {
         return;
@@ -239,6 +264,7 @@ class SalesLocalDataSource {
         case SyncResultStatus.synced:
           await _releaseReservation(
             items,
+            storeId: storeId,
             committedToServer: true,
             syncStartedAt: sale.lastSyncAttemptAt,
           );
@@ -251,7 +277,7 @@ class SalesLocalDataSource {
           );
           return;
         case SyncResultStatus.alreadySynced:
-          await _releaseReservation(items, committedToServer: false);
+          await _releaseReservation(items, storeId: storeId, committedToServer: false);
           await _writeSaleResult(
             sale,
             status: LocalSaleSyncStatus.synced,
@@ -261,11 +287,11 @@ class SalesLocalDataSource {
           );
           return;
         case SyncResultStatus.stockConflict:
-          await _releaseReservation(items, committedToServer: false);
+          await _releaseReservation(items, storeId: storeId, committedToServer: false);
           final conflict = result.stockConflict;
           if (conflict?.productId != null &&
               conflict?.availableQuantity != null) {
-            final cached = await _cachedProduct(conflict!.productId!);
+            final cached = await _cachedProduct(storeId, conflict!.productId!);
             if (cached != null) {
               await _setCachedStock(
                 cached,
@@ -282,7 +308,7 @@ class SalesLocalDataSource {
           );
           return;
         case SyncResultStatus.idempotencyConflict:
-          await _releaseReservation(items, committedToServer: false);
+          await _releaseReservation(items, storeId: storeId, committedToServer: false);
           await _writeSaleResult(
             sale,
             status: LocalSaleSyncStatus.idempotencyConflict,
@@ -299,7 +325,7 @@ class SalesLocalDataSource {
               message: result.message,
             );
           } else {
-            await _releaseReservation(items, committedToServer: false);
+            await _releaseReservation(items, storeId: storeId, committedToServer: false);
             await _writeSaleResult(
               sale,
               status: LocalSaleSyncStatus.failed,
@@ -310,7 +336,7 @@ class SalesLocalDataSource {
           }
           return;
         case SyncResultStatus.unknown:
-          await _releaseReservation(items, committedToServer: false);
+          await _releaseReservation(items, storeId: storeId, committedToServer: false);
           await _writeSaleResult(
             sale,
             status: LocalSaleSyncStatus.failed,
@@ -326,12 +352,14 @@ class SalesLocalDataSource {
 
   Future<void> markBatchRetryable(
     Iterable<String> clientSaleIds, {
+    required String storeId,
+    required String ownerUserId,
     required String errorCode,
     String? message,
   }) async {
     await _database.transaction(() async {
       for (final clientSaleId in clientSaleIds) {
-        final sale = await _saleRow(clientSaleId);
+        final sale = await _saleRow(clientSaleId, storeId: storeId, ownerUserId: ownerUserId);
         if (sale == null ||
             sale.syncStatus != LocalSaleSyncStatus.syncing.databaseValue) {
           continue;
@@ -343,6 +371,8 @@ class SalesLocalDataSource {
 
   Future<void> markBatchPermanent(
     Iterable<String> clientSaleIds, {
+    required String storeId,
+    required String ownerUserId,
     required String errorCode,
     String? message,
   }) async {
@@ -361,16 +391,19 @@ class SalesLocalDataSource {
           sale: null,
           receipt: null,
         ),
+        storeId: storeId,
+        ownerUserId: ownerUserId,
       );
     }
   }
 
   Future<bool> retrySale({
     required String clientSaleId,
+    required String storeId,
     required String ownerUserId,
   }) async {
     return _database.transaction(() async {
-      final sale = await _saleRow(clientSaleId);
+      final sale = await _saleRow(clientSaleId, storeId: storeId, ownerUserId: ownerUserId);
       if (sale == null ||
           sale.ownerUserId != ownerUserId ||
           !LocalSaleSyncStatus.fromDatabase(sale.syncStatus).canRetry) {
@@ -379,7 +412,7 @@ class SalesLocalDataSource {
       if (!sale.reservationActive) {
         final items = await _itemRows(clientSaleId);
         for (final item in items) {
-          final cached = await _cachedProduct(item.productId);
+          final cached = await _cachedProduct(storeId, item.productId);
           if (cached != null && !cached.isActive) {
             throw LocalArchivedProductException(item.productId);
           }
@@ -395,7 +428,7 @@ class SalesLocalDataSource {
           }
         }
         for (final item in items) {
-          final cached = await _cachedProduct(item.productId);
+          final cached = await _cachedProduct(storeId, item.productId);
           await _setCachedStock(
             cached!,
             reservedStock: cached.reservedStock + item.quantity,
@@ -439,17 +472,17 @@ class SalesLocalDataSource {
     );
   }
 
-  Future<LocalSaleEntity> _getSaleByClientId(String clientSaleId) async {
-    final row = await _saleRow(clientSaleId);
+  Future<LocalSaleEntity> _getSaleByClientId(String clientSaleId, {required String storeId, required String ownerUserId}) async {
+    final row = await _saleRow(clientSaleId, storeId: storeId, ownerUserId: ownerUserId);
     if (row == null) {
       throw const LocalDatabaseException(operation: 'read saved sale');
     }
     return _hydrate(row);
   }
 
-  Future<OfflineSale?> _saleRow(String clientSaleId) {
+  Future<OfflineSale?> _saleRow(String clientSaleId, {required String storeId, required String ownerUserId}) {
     final query = _database.select(_database.offlineSales)
-      ..where((table) => table.clientSaleId.equals(clientSaleId));
+      ..where((table) => table.clientSaleId.equals(clientSaleId) & table.storeId.equals(storeId) & table.ownerUserId.equals(ownerUserId));
     return query.getSingleOrNull();
   }
 
@@ -460,21 +493,21 @@ class SalesLocalDataSource {
     return query.get();
   }
 
-  Future<CachedProduct?> _cachedProduct(String productId) {
-    final query = _database.select(_database.cachedProducts)
-      ..where((table) => table.productId.equals(productId));
+  Future<TenantCachedProduct?> _cachedProduct(String storeId, String productId) {
+    final query = _database.select(_database.tenantCachedProducts)
+      ..where((table) => table.storeId.equals(storeId) & table.productId.equals(productId));
     return query.getSingleOrNull();
   }
 
   Future<void> _setCachedStock(
-    CachedProduct product, {
+    TenantCachedProduct product, {
     int? serverStock,
     int? reservedStock,
   }) {
     return (_database.update(
-      _database.cachedProducts,
-    )..where((table) => table.productId.equals(product.productId))).write(
-      CachedProductsCompanion(
+      _database.tenantCachedProducts,
+    )..where((table) => table.storeId.equals(product.storeId) & table.productId.equals(product.productId))).write(
+      TenantCachedProductsCompanion(
         serverStock: Value(serverStock ?? product.serverStock),
         reservedStock: Value(reservedStock ?? product.reservedStock),
       ),
@@ -483,11 +516,12 @@ class SalesLocalDataSource {
 
   Future<void> _releaseReservation(
     List<OfflineSaleItem> items, {
+    required String storeId,
     required bool committedToServer,
     DateTime? syncStartedAt,
   }) async {
     for (final item in items) {
-      final cached = await _cachedProduct(item.productId);
+      final cached = await _cachedProduct(storeId, item.productId);
       if (cached == null) continue;
       final cacheMayAlreadyContainServerChange =
           syncStartedAt != null && !cached.lastCachedAt.isBefore(syncStartedAt);
@@ -573,6 +607,7 @@ class SalesLocalDataSource {
     return LocalSaleEntity(
       localId: sale.id,
       clientSaleId: sale.clientSaleId,
+      storeId: sale.storeId!,
       ownerUserId: sale.ownerUserId,
       occurredAt: sale.occurredAt.toUtc(),
       paymentMethod: PaymentMethodX.fromApi(sale.paymentMethod),

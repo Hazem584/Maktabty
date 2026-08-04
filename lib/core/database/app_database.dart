@@ -21,9 +21,29 @@ class CachedProducts extends Table {
   Set<Column<Object>> get primaryKey => {productId};
 }
 
+class TenantCachedProducts extends Table {
+  TextColumn get storeId => text()();
+  TextColumn get productId => text()();
+  TextColumn get name => text()();
+  TextColumn get code => text().nullable()();
+  IntColumn get sellingPriceMinor => integer()();
+  IntColumn get serverStock => integer()();
+  IntColumn get reservedStock => integer().withDefault(const Constant(0))();
+  BoolColumn get isActive => boolean().withDefault(const Constant(true))();
+  DateTimeColumn get archivedAt => dateTime().nullable()();
+  TextColumn get archiveReason => text().nullable()();
+  TextColumn get category => text().nullable()();
+  DateTimeColumn get serverUpdatedAt => dateTime().nullable()();
+  DateTimeColumn get lastCachedAt => dateTime()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {storeId, productId};
+}
+
 class OfflineSales extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get clientSaleId => text().unique()();
+  TextColumn get storeId => text().nullable()();
   TextColumn get ownerUserId => text()();
   DateTimeColumn get occurredAt => dateTime()();
   TextColumn get paymentMethod => text()();
@@ -63,7 +83,9 @@ class OfflineSaleItems extends Table {
   IntColumn get sellingPriceMinor => integer()();
 }
 
-@DriftDatabase(tables: [CachedProducts, OfflineSales, OfflineSaleItems])
+@DriftDatabase(
+  tables: [CachedProducts, TenantCachedProducts, OfflineSales, OfflineSaleItems],
+)
 class AppDatabase extends _$AppDatabase {
   AppDatabase()
     : super(
@@ -73,24 +95,26 @@ class AppDatabase extends _$AppDatabase {
         ),
       );
 
+  AppDatabase.forTesting(super.executor);
+
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onCreate: (migrator) async {
       await migrator.createAll();
       await customStatement(
-        'CREATE INDEX IF NOT EXISTS idx_offline_sales_owner_status '
-        'ON offline_sales (owner_user_id, sync_status, next_retry_at)',
+        'CREATE INDEX IF NOT EXISTS idx_offline_sales_scope_status '
+        'ON offline_sales (store_id, owner_user_id, sync_status, next_retry_at)',
       );
       await customStatement(
         'CREATE INDEX IF NOT EXISTS idx_offline_sale_items_client '
         'ON offline_sale_items (client_sale_id)',
       );
       await customStatement(
-        'CREATE UNIQUE INDEX IF NOT EXISTS idx_cached_products_code '
-        'ON cached_products (code) WHERE code IS NOT NULL',
+        'CREATE UNIQUE INDEX IF NOT EXISTS idx_tenant_cached_products_code '
+        'ON tenant_cached_products (store_id, code) WHERE code IS NOT NULL',
       );
     },
     onUpgrade: (migrator, from, to) async {
@@ -108,6 +132,18 @@ class AppDatabase extends _$AppDatabase {
         await migrator.addColumn(
           cachedProducts,
           cachedProducts.archiveReason,
+        );
+      }
+      if (from < 4) {
+        await migrator.createTable(tenantCachedProducts);
+        await migrator.addColumn(offlineSales, offlineSales.storeId);
+        await customStatement(
+          'CREATE INDEX IF NOT EXISTS idx_offline_sales_scope_status '
+          'ON offline_sales (store_id, owner_user_id, sync_status, next_retry_at)',
+        );
+        await customStatement(
+          'CREATE UNIQUE INDEX IF NOT EXISTS idx_tenant_cached_products_code '
+          'ON tenant_cached_products (store_id, code) WHERE code IS NOT NULL',
         );
       }
     },

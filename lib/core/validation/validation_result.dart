@@ -1,5 +1,6 @@
 enum ValidationKey {
   requiredFields,
+  storeNameRequired,
   invalidEmail,
   passwordTooShort,
   passwordsDoNotMatch,

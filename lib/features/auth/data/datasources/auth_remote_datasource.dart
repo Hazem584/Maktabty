@@ -29,17 +29,17 @@ class AuthRemoteDataSource {
 
   Future<AuthResponseModel> register({
     required String fullName,
+    required String storeName,
     required String email,
     required String password,
-    String? role,
   }) async {
     final response = await _dio.post(
       '/auth/register',
       data: {
         'fullName': fullName,
+        'storeName': storeName,
         'email': email,
         'password': password,
-        'role': ?role,
       },
       options: Options(
         extra: {'skipAuth': true},

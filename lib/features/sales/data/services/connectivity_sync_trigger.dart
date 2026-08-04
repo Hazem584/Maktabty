@@ -9,31 +9,35 @@ class ConnectivitySyncTrigger {
 
   StreamSubscription<List<ConnectivityResult>>? _subscription;
   String? _ownerUserId;
+  String? _storeId;
 
   ConnectivitySyncTrigger({
     required this._coordinator,
     Connectivity? connectivity,
   }) : _connectivity = connectivity ?? Connectivity();
 
-  Future<void> start(String ownerUserId) async {
+  Future<void> start({required String storeId, required String ownerUserId}) async {
+    _storeId = storeId;
     _ownerUserId = ownerUserId;
     _subscription ??= _connectivity.onConnectivityChanged.listen(_onChanged);
     final current = await _connectivity.checkConnectivity();
     if (_hasNetworkInterface(current)) {
-      unawaited(_coordinator.sync(ownerUserId));
+      unawaited(_coordinator.sync(storeId: storeId, ownerUserId: ownerUserId));
     }
   }
 
   Future<void> stop() async {
     _ownerUserId = null;
+    _storeId = null;
     await _subscription?.cancel();
     _subscription = null;
   }
 
   void _onChanged(List<ConnectivityResult> results) {
     final owner = _ownerUserId;
-    if (owner != null && _hasNetworkInterface(results)) {
-      unawaited(_coordinator.sync(owner));
+    final store = _storeId;
+    if (owner != null && store != null && _hasNetworkInterface(results)) {
+      unawaited(_coordinator.sync(storeId: store, ownerUserId: owner));
     }
   }
 

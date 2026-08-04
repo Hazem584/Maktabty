@@ -4,6 +4,11 @@ import 'package:maktabty/core/routes/route_not_found_screen.dart';
 import 'package:maktabty/features/auth/presentation/pages/create_account_screen.dart';
 import 'package:maktabty/features/auth/presentation/pages/auth_gate_screen.dart';
 import 'package:maktabty/features/auth/presentation/pages/login_screen.dart';
+import 'package:maktabty/features/cashiers/domain/entities/cashier_entity.dart';
+import 'package:maktabty/features/cashiers/presentation/pages/cashier_details_screen.dart';
+import 'package:maktabty/features/cashiers/presentation/pages/cashier_form_screen.dart';
+import 'package:maktabty/features/cashiers/presentation/pages/cashier_password_screen.dart';
+import 'package:maktabty/features/cashiers/presentation/pages/cashiers_screen.dart';
 import 'package:maktabty/features/home/presentation/pages/home_screen.dart';
 import 'package:maktabty/features/products/presentation/pages/add_product_screen.dart';
 import 'package:maktabty/features/products/presentation/pages/sell_product_screen.dart';
@@ -16,6 +21,7 @@ import 'package:maktabty/features/stock_movements/presentation/pages/stock_movem
 import 'package:maktabty/features/suppliers/domain/entities/supplier_entities.dart';
 import 'package:maktabty/features/suppliers/presentation/pages/suppliers_pages.dart';
 import 'package:maktabty/features/products/presentation/pages/archived_products_screen.dart';
+import 'package:maktabty/features/settings/presentation/pages/settings_screen.dart';
 
 class AppRoutes {
   const AppRoutes._();
@@ -24,6 +30,12 @@ class AppRoutes {
   static const String home = '/home';
   static const String login = '/login';
   static const String createAccount = '/create-account';
+  static const String settings = '/settings';
+  static const String cashiers = '/cashiers';
+  static const String cashierCreate = '/cashiers/create';
+  static const String cashierDetails = '/cashiers/details';
+  static const String cashierEdit = '/cashiers/edit';
+  static const String cashierPassword = '/cashiers/password';
   static const String addProduct = '/inventory/add-product';
   static const String sellProduct = '/sales/sell-product';
   static const String addWorkHours = '/work-hours/add';
@@ -41,8 +53,8 @@ class AppRoutes {
   static const String stockMovements = '/stock-movements';
   static const String archivedProducts = '/inventory/archived-products';
 
-  static Route<dynamic> onGenerateRoute(RouteSettings settings) {
-    switch (settings.name) {
+  static Route<dynamic> onGenerateRoute(RouteSettings routeSettings) {
+    switch (routeSettings.name) {
       case root:
         return MaterialPageRoute(builder: (_) => const AuthGateScreen());
       case home:
@@ -53,6 +65,48 @@ class AppRoutes {
         return MaterialPageRoute(builder: (_) => const LoginScreen());
       case createAccount:
         return MaterialPageRoute(builder: (_) => const CreateAccountScreen());
+      case settings:
+        return MaterialPageRoute(
+          builder: (_) => const AuthGuard(child: SettingsScreen()),
+        );
+      case cashiers:
+        return MaterialPageRoute(
+          builder: (_) => const OwnerGuard(child: CashiersScreen()),
+        );
+      case cashierCreate:
+        return MaterialPageRoute(
+          builder: (_) => const OwnerGuard(child: CashierFormScreen()),
+        );
+      case cashierDetails:
+        final cashierIdArgument = routeSettings.arguments;
+        if (cashierIdArgument is String && cashierIdArgument.isNotEmpty) {
+          return MaterialPageRoute(
+            builder: (_) => OwnerGuard(
+              child: CashierDetailsScreen(cashierId: cashierIdArgument),
+            ),
+          );
+        }
+        break;
+      case cashierEdit:
+        final editCashierArgument = routeSettings.arguments;
+        if (editCashierArgument is CashierEntity) {
+          return MaterialPageRoute(
+            builder: (_) => OwnerGuard(
+              child: CashierFormScreen(cashier: editCashierArgument),
+            ),
+          );
+        }
+        break;
+      case cashierPassword:
+        final passwordCashierArgument = routeSettings.arguments;
+        if (passwordCashierArgument is CashierEntity) {
+          return MaterialPageRoute(
+            builder: (_) => OwnerGuard(
+              child: CashierPasswordScreen(cashier: passwordCashierArgument),
+            ),
+          );
+        }
+        break;
       case addProduct:
         return MaterialPageRoute(
           builder: (_) => const AuthGuard(child: AddProductScreen()),
@@ -78,15 +132,15 @@ class AppRoutes {
       case supplierCreate:
         return MaterialPageRoute(builder: (_) => const OwnerGuard(child: SupplierFormScreen()));
       case supplierEdit:
-        final editSupplierArgument = settings.arguments;
+        final editSupplierArgument = routeSettings.arguments;
         if (editSupplierArgument is SupplierEntity) return MaterialPageRoute(builder: (_) => OwnerGuard(child: SupplierFormScreen(supplier: editSupplierArgument)));
         break;
       case supplierDetails:
-        final supplierIdArgument = settings.arguments;
+        final supplierIdArgument = routeSettings.arguments;
         if (supplierIdArgument is String) return MaterialPageRoute(builder: (_) => OwnerGuard(child: SupplierDetailsScreen(supplierId: supplierIdArgument)));
         break;
       case supplierPayment:
-        final paymentSupplierArgument = settings.arguments;
+        final paymentSupplierArgument = routeSettings.arguments;
         if (paymentSupplierArgument is SupplierEntity) return MaterialPageRoute(builder: (_) => OwnerGuard(child: SupplierPaymentScreen(supplier: paymentSupplierArgument)));
         break;
       case purchases:
@@ -94,15 +148,15 @@ class AppRoutes {
       case purchaseCreate:
         return MaterialPageRoute(builder: (_) => const OwnerGuard(child: PurchaseFormScreen()));
       case purchaseEdit:
-        final editInvoiceArgument = settings.arguments;
+        final editInvoiceArgument = routeSettings.arguments;
         if (editInvoiceArgument is PurchaseInvoiceEntity && editInvoiceArgument.isDraft) return MaterialPageRoute(builder: (_) => OwnerGuard(child: PurchaseFormScreen(invoice: editInvoiceArgument)));
         break;
       case purchaseDetails:
-        final purchaseIdArgument = settings.arguments;
+        final purchaseIdArgument = routeSettings.arguments;
         if (purchaseIdArgument is String) return MaterialPageRoute(builder: (_) => OwnerGuard(child: PurchaseDetailsScreen(purchaseId: purchaseIdArgument)));
         break;
       case stockMovements:
-        final filters = settings.arguments;
+        final filters = routeSettings.arguments;
         final values = filters is Map ? Map<String, Object?>.from(filters) : const <String, Object?>{};
         return MaterialPageRoute(builder: (_) => OwnerGuard(child: StockMovementsScreen(productId: values['productId'] as String?, purchaseInvoiceId: values['purchaseInvoiceId'] as String?, saleId: values['saleId'] as String?)));
       case archivedProducts:
@@ -111,10 +165,10 @@ class AppRoutes {
         );
       default:
         return MaterialPageRoute(
-          settings: settings,
-          builder: (_) => RouteNotFoundScreen(routeName: settings.name),
+          settings: routeSettings,
+          builder: (_) => RouteNotFoundScreen(routeName: routeSettings.name),
         );
     }
-    return MaterialPageRoute(settings: settings, builder: (_) => RouteNotFoundScreen(routeName: settings.name));
+    return MaterialPageRoute(settings: routeSettings, builder: (_) => RouteNotFoundScreen(routeName: routeSettings.name));
   }
 }

@@ -7,12 +7,16 @@ class UserModel {
   final String email;
   final String fullName;
   final String? role;
+  final String? storeId;
+  final bool? isActive;
 
   const UserModel({
     required this.id,
     required this.email,
     required this.fullName,
     this.role,
+    this.storeId,
+    this.isActive,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -24,10 +28,34 @@ class UserModel {
         requireString(json, const ['fullName', 'name'], operation: operation),
       ),
       role: json['role']?.toString(),
+      storeId: _optionalText(json['storeId']),
+      isActive: _optionalBool(json['isActive']),
     );
   }
 
   UserEntity toEntity() {
-    return UserEntity(id: id, email: email, fullName: fullName, role: role);
+    return UserEntity(
+      id: id,
+      email: email,
+      fullName: fullName,
+      role: role,
+      storeId: storeId,
+      isActive: isActive,
+    );
   }
+}
+
+String? _optionalText(Object? value) {
+  final text = value?.toString().trim();
+  return text == null || text.isEmpty ? null : text;
+}
+
+bool? _optionalBool(Object? value) {
+  if (value is bool) return value;
+  if (value is num) return value != 0;
+  if (value is String) {
+    if (value.toLowerCase() == 'true') return true;
+    if (value.toLowerCase() == 'false') return false;
+  }
+  return null;
 }

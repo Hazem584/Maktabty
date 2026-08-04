@@ -8,6 +8,7 @@ import 'package:maktabty/features/auth/presentation/widgets/create_account_form_
 class CreateAccountScreenBody extends StatelessWidget {
   final VoidCallback onBackToLogin;
   final TextEditingController fullNameController;
+  final TextEditingController storeNameController;
   final TextEditingController emailController;
   final TextEditingController passwordController;
   final TextEditingController confirmPasswordController;
@@ -18,6 +19,7 @@ class CreateAccountScreenBody extends StatelessWidget {
     super.key,
     required this.onBackToLogin,
     required this.fullNameController,
+    required this.storeNameController,
     required this.emailController,
     required this.passwordController,
     required this.confirmPasswordController,
@@ -53,6 +55,7 @@ class CreateAccountScreenBody extends StatelessWidget {
                   const SizedBox(height: AppSpacing.xl),
                   CreateAccountFormCard(
                     fullNameController: fullNameController,
+                    storeNameController: storeNameController,
                     emailController: emailController,
                     passwordController: passwordController,
                     confirmPasswordController: confirmPasswordController,

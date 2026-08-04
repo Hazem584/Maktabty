@@ -46,13 +46,15 @@ class SalesRepositoryImpl implements SalesRepository {
   }) async {
     try {
       final ownerUserId = _currentUserStore.userId;
-      if (ownerUserId == null || ownerUserId.isEmpty) {
+      final storeId = _currentUserStore.storeId;
+      if (ownerUserId == null || ownerUserId.isEmpty || storeId == null || storeId.isEmpty) {
         throw const UnauthorizedFailure();
       }
       final clientSaleId = _uuid.v4();
       final occurredAt = DateTime.now().toUtc();
       final localSale = await _localDataSource.createPendingSale(
         clientSaleId: clientSaleId,
+        storeId: storeId,
         ownerUserId: ownerUserId,
         occurredAt: occurredAt,
         items: items,
@@ -61,7 +63,7 @@ class SalesRepositoryImpl implements SalesRepository {
         cashAmount: cashAmount,
         cardAmount: cardAmount,
       );
-      unawaited(_syncCoordinator.sync(ownerUserId));
+      unawaited(_syncCoordinator.sync(storeId: storeId, ownerUserId: ownerUserId));
       return _toPendingResponse(localSale);
     } catch (error) {
       throw AppFailureMapper.fromException(error);

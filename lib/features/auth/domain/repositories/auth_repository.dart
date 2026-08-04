@@ -1,16 +1,17 @@
+import 'package:maktabty/features/auth/domain/entities/auth_result_entity.dart';
 import 'package:maktabty/features/auth/domain/entities/user_entity.dart';
 
 abstract class AuthRepository {
-  Future<UserEntity> login({required String email, required String password});
+  Future<AuthResultEntity> login({required String email, required String password});
 
-  Future<UserEntity> register({
+  Future<AuthResultEntity> register({
     required String fullName,
+    required String storeName,
     required String email,
     required String password,
-    String? role,
   });
 
-  Future<UserEntity> refresh();
+  Future<AuthResultEntity> refresh();
 
   Future<UserEntity> getMe();
 

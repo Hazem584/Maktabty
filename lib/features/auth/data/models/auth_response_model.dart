@@ -1,14 +1,17 @@
 import 'package:maktabty/features/auth/data/models/user_model.dart';
+import 'package:maktabty/features/auth/data/models/store_model.dart';
 import 'package:maktabty/core/network/data_parsing_exception.dart';
 
 class AuthResponseModel {
   final UserModel user;
+  final StoreModel? store;
   final String accessToken;
   final String refreshToken;
   final String tokenType;
 
   const AuthResponseModel({
     required this.user,
+    this.store,
     required this.accessToken,
     required this.refreshToken,
     required this.tokenType,
@@ -19,6 +22,7 @@ class AuthResponseModel {
     final userJson = _extractUserJson(json);
     return AuthResponseModel(
       user: UserModel.fromJson(userJson),
+      store: _extractStore(json),
       accessToken: requireString(json, const [
         'accessToken',
         'access_token',
@@ -28,6 +32,18 @@ class AuthResponseModel {
         'refresh_token',
       ], operation: operation),
       tokenType: (json['tokenType'] ?? 'Bearer').toString(),
+    );
+  }
+
+  static StoreModel? _extractStore(Map<String, dynamic> json) {
+    final value = json['store'];
+    if (value == null) return null;
+    return StoreModel.fromJson(
+      requireStringMap(
+        value,
+        operation: 'parse authentication response',
+        field: 'store',
+      ),
     );
   }
 

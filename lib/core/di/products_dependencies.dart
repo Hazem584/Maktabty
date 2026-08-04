@@ -33,6 +33,7 @@ void registerProductsDependencies(GetIt getIt) {
       () => ProductsRepositoryImpl(
         remoteDataSource: getIt(),
         localDataSource: getIt(),
+        currentUserStore: getIt(),
       ),
     );
   }

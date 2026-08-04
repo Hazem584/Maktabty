@@ -747,6 +747,800 @@ class CachedProductsCompanion extends UpdateCompanion<CachedProduct> {
   }
 }
 
+class $TenantCachedProductsTable extends TenantCachedProducts
+    with TableInfo<$TenantCachedProductsTable, TenantCachedProduct> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $TenantCachedProductsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _storeIdMeta = const VerificationMeta(
+    'storeId',
+  );
+  @override
+  late final GeneratedColumn<String> storeId = GeneratedColumn<String>(
+    'store_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _productIdMeta = const VerificationMeta(
+    'productId',
+  );
+  @override
+  late final GeneratedColumn<String> productId = GeneratedColumn<String>(
+    'product_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _codeMeta = const VerificationMeta('code');
+  @override
+  late final GeneratedColumn<String> code = GeneratedColumn<String>(
+    'code',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _sellingPriceMinorMeta = const VerificationMeta(
+    'sellingPriceMinor',
+  );
+  @override
+  late final GeneratedColumn<int> sellingPriceMinor = GeneratedColumn<int>(
+    'selling_price_minor',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _serverStockMeta = const VerificationMeta(
+    'serverStock',
+  );
+  @override
+  late final GeneratedColumn<int> serverStock = GeneratedColumn<int>(
+    'server_stock',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _reservedStockMeta = const VerificationMeta(
+    'reservedStock',
+  );
+  @override
+  late final GeneratedColumn<int> reservedStock = GeneratedColumn<int>(
+    'reserved_stock',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _isActiveMeta = const VerificationMeta(
+    'isActive',
+  );
+  @override
+  late final GeneratedColumn<bool> isActive = GeneratedColumn<bool>(
+    'is_active',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_active" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _archivedAtMeta = const VerificationMeta(
+    'archivedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> archivedAt = GeneratedColumn<DateTime>(
+    'archived_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _archiveReasonMeta = const VerificationMeta(
+    'archiveReason',
+  );
+  @override
+  late final GeneratedColumn<String> archiveReason = GeneratedColumn<String>(
+    'archive_reason',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _categoryMeta = const VerificationMeta(
+    'category',
+  );
+  @override
+  late final GeneratedColumn<String> category = GeneratedColumn<String>(
+    'category',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _serverUpdatedAtMeta = const VerificationMeta(
+    'serverUpdatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> serverUpdatedAt =
+      GeneratedColumn<DateTime>(
+        'server_updated_at',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _lastCachedAtMeta = const VerificationMeta(
+    'lastCachedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastCachedAt = GeneratedColumn<DateTime>(
+    'last_cached_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    storeId,
+    productId,
+    name,
+    code,
+    sellingPriceMinor,
+    serverStock,
+    reservedStock,
+    isActive,
+    archivedAt,
+    archiveReason,
+    category,
+    serverUpdatedAt,
+    lastCachedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'tenant_cached_products';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<TenantCachedProduct> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('store_id')) {
+      context.handle(
+        _storeIdMeta,
+        storeId.isAcceptableOrUnknown(data['store_id']!, _storeIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_storeIdMeta);
+    }
+    if (data.containsKey('product_id')) {
+      context.handle(
+        _productIdMeta,
+        productId.isAcceptableOrUnknown(data['product_id']!, _productIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_productIdMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('code')) {
+      context.handle(
+        _codeMeta,
+        code.isAcceptableOrUnknown(data['code']!, _codeMeta),
+      );
+    }
+    if (data.containsKey('selling_price_minor')) {
+      context.handle(
+        _sellingPriceMinorMeta,
+        sellingPriceMinor.isAcceptableOrUnknown(
+          data['selling_price_minor']!,
+          _sellingPriceMinorMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_sellingPriceMinorMeta);
+    }
+    if (data.containsKey('server_stock')) {
+      context.handle(
+        _serverStockMeta,
+        serverStock.isAcceptableOrUnknown(
+          data['server_stock']!,
+          _serverStockMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_serverStockMeta);
+    }
+    if (data.containsKey('reserved_stock')) {
+      context.handle(
+        _reservedStockMeta,
+        reservedStock.isAcceptableOrUnknown(
+          data['reserved_stock']!,
+          _reservedStockMeta,
+        ),
+      );
+    }
+    if (data.containsKey('is_active')) {
+      context.handle(
+        _isActiveMeta,
+        isActive.isAcceptableOrUnknown(data['is_active']!, _isActiveMeta),
+      );
+    }
+    if (data.containsKey('archived_at')) {
+      context.handle(
+        _archivedAtMeta,
+        archivedAt.isAcceptableOrUnknown(data['archived_at']!, _archivedAtMeta),
+      );
+    }
+    if (data.containsKey('archive_reason')) {
+      context.handle(
+        _archiveReasonMeta,
+        archiveReason.isAcceptableOrUnknown(
+          data['archive_reason']!,
+          _archiveReasonMeta,
+        ),
+      );
+    }
+    if (data.containsKey('category')) {
+      context.handle(
+        _categoryMeta,
+        category.isAcceptableOrUnknown(data['category']!, _categoryMeta),
+      );
+    }
+    if (data.containsKey('server_updated_at')) {
+      context.handle(
+        _serverUpdatedAtMeta,
+        serverUpdatedAt.isAcceptableOrUnknown(
+          data['server_updated_at']!,
+          _serverUpdatedAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_cached_at')) {
+      context.handle(
+        _lastCachedAtMeta,
+        lastCachedAt.isAcceptableOrUnknown(
+          data['last_cached_at']!,
+          _lastCachedAtMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_lastCachedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {storeId, productId};
+  @override
+  TenantCachedProduct map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return TenantCachedProduct(
+      storeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}store_id'],
+      )!,
+      productId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}product_id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      code: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}code'],
+      ),
+      sellingPriceMinor: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}selling_price_minor'],
+      )!,
+      serverStock: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}server_stock'],
+      )!,
+      reservedStock: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}reserved_stock'],
+      )!,
+      isActive: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_active'],
+      )!,
+      archivedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}archived_at'],
+      ),
+      archiveReason: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}archive_reason'],
+      ),
+      category: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}category'],
+      ),
+      serverUpdatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}server_updated_at'],
+      ),
+      lastCachedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_cached_at'],
+      )!,
+    );
+  }
+
+  @override
+  $TenantCachedProductsTable createAlias(String alias) {
+    return $TenantCachedProductsTable(attachedDatabase, alias);
+  }
+}
+
+class TenantCachedProduct extends DataClass
+    implements Insertable<TenantCachedProduct> {
+  final String storeId;
+  final String productId;
+  final String name;
+  final String? code;
+  final int sellingPriceMinor;
+  final int serverStock;
+  final int reservedStock;
+  final bool isActive;
+  final DateTime? archivedAt;
+  final String? archiveReason;
+  final String? category;
+  final DateTime? serverUpdatedAt;
+  final DateTime lastCachedAt;
+  const TenantCachedProduct({
+    required this.storeId,
+    required this.productId,
+    required this.name,
+    this.code,
+    required this.sellingPriceMinor,
+    required this.serverStock,
+    required this.reservedStock,
+    required this.isActive,
+    this.archivedAt,
+    this.archiveReason,
+    this.category,
+    this.serverUpdatedAt,
+    required this.lastCachedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['store_id'] = Variable<String>(storeId);
+    map['product_id'] = Variable<String>(productId);
+    map['name'] = Variable<String>(name);
+    if (!nullToAbsent || code != null) {
+      map['code'] = Variable<String>(code);
+    }
+    map['selling_price_minor'] = Variable<int>(sellingPriceMinor);
+    map['server_stock'] = Variable<int>(serverStock);
+    map['reserved_stock'] = Variable<int>(reservedStock);
+    map['is_active'] = Variable<bool>(isActive);
+    if (!nullToAbsent || archivedAt != null) {
+      map['archived_at'] = Variable<DateTime>(archivedAt);
+    }
+    if (!nullToAbsent || archiveReason != null) {
+      map['archive_reason'] = Variable<String>(archiveReason);
+    }
+    if (!nullToAbsent || category != null) {
+      map['category'] = Variable<String>(category);
+    }
+    if (!nullToAbsent || serverUpdatedAt != null) {
+      map['server_updated_at'] = Variable<DateTime>(serverUpdatedAt);
+    }
+    map['last_cached_at'] = Variable<DateTime>(lastCachedAt);
+    return map;
+  }
+
+  TenantCachedProductsCompanion toCompanion(bool nullToAbsent) {
+    return TenantCachedProductsCompanion(
+      storeId: Value(storeId),
+      productId: Value(productId),
+      name: Value(name),
+      code: code == null && nullToAbsent ? const Value.absent() : Value(code),
+      sellingPriceMinor: Value(sellingPriceMinor),
+      serverStock: Value(serverStock),
+      reservedStock: Value(reservedStock),
+      isActive: Value(isActive),
+      archivedAt: archivedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(archivedAt),
+      archiveReason: archiveReason == null && nullToAbsent
+          ? const Value.absent()
+          : Value(archiveReason),
+      category: category == null && nullToAbsent
+          ? const Value.absent()
+          : Value(category),
+      serverUpdatedAt: serverUpdatedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(serverUpdatedAt),
+      lastCachedAt: Value(lastCachedAt),
+    );
+  }
+
+  factory TenantCachedProduct.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return TenantCachedProduct(
+      storeId: serializer.fromJson<String>(json['storeId']),
+      productId: serializer.fromJson<String>(json['productId']),
+      name: serializer.fromJson<String>(json['name']),
+      code: serializer.fromJson<String?>(json['code']),
+      sellingPriceMinor: serializer.fromJson<int>(json['sellingPriceMinor']),
+      serverStock: serializer.fromJson<int>(json['serverStock']),
+      reservedStock: serializer.fromJson<int>(json['reservedStock']),
+      isActive: serializer.fromJson<bool>(json['isActive']),
+      archivedAt: serializer.fromJson<DateTime?>(json['archivedAt']),
+      archiveReason: serializer.fromJson<String?>(json['archiveReason']),
+      category: serializer.fromJson<String?>(json['category']),
+      serverUpdatedAt: serializer.fromJson<DateTime?>(json['serverUpdatedAt']),
+      lastCachedAt: serializer.fromJson<DateTime>(json['lastCachedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'storeId': serializer.toJson<String>(storeId),
+      'productId': serializer.toJson<String>(productId),
+      'name': serializer.toJson<String>(name),
+      'code': serializer.toJson<String?>(code),
+      'sellingPriceMinor': serializer.toJson<int>(sellingPriceMinor),
+      'serverStock': serializer.toJson<int>(serverStock),
+      'reservedStock': serializer.toJson<int>(reservedStock),
+      'isActive': serializer.toJson<bool>(isActive),
+      'archivedAt': serializer.toJson<DateTime?>(archivedAt),
+      'archiveReason': serializer.toJson<String?>(archiveReason),
+      'category': serializer.toJson<String?>(category),
+      'serverUpdatedAt': serializer.toJson<DateTime?>(serverUpdatedAt),
+      'lastCachedAt': serializer.toJson<DateTime>(lastCachedAt),
+    };
+  }
+
+  TenantCachedProduct copyWith({
+    String? storeId,
+    String? productId,
+    String? name,
+    Value<String?> code = const Value.absent(),
+    int? sellingPriceMinor,
+    int? serverStock,
+    int? reservedStock,
+    bool? isActive,
+    Value<DateTime?> archivedAt = const Value.absent(),
+    Value<String?> archiveReason = const Value.absent(),
+    Value<String?> category = const Value.absent(),
+    Value<DateTime?> serverUpdatedAt = const Value.absent(),
+    DateTime? lastCachedAt,
+  }) => TenantCachedProduct(
+    storeId: storeId ?? this.storeId,
+    productId: productId ?? this.productId,
+    name: name ?? this.name,
+    code: code.present ? code.value : this.code,
+    sellingPriceMinor: sellingPriceMinor ?? this.sellingPriceMinor,
+    serverStock: serverStock ?? this.serverStock,
+    reservedStock: reservedStock ?? this.reservedStock,
+    isActive: isActive ?? this.isActive,
+    archivedAt: archivedAt.present ? archivedAt.value : this.archivedAt,
+    archiveReason: archiveReason.present
+        ? archiveReason.value
+        : this.archiveReason,
+    category: category.present ? category.value : this.category,
+    serverUpdatedAt: serverUpdatedAt.present
+        ? serverUpdatedAt.value
+        : this.serverUpdatedAt,
+    lastCachedAt: lastCachedAt ?? this.lastCachedAt,
+  );
+  TenantCachedProduct copyWithCompanion(TenantCachedProductsCompanion data) {
+    return TenantCachedProduct(
+      storeId: data.storeId.present ? data.storeId.value : this.storeId,
+      productId: data.productId.present ? data.productId.value : this.productId,
+      name: data.name.present ? data.name.value : this.name,
+      code: data.code.present ? data.code.value : this.code,
+      sellingPriceMinor: data.sellingPriceMinor.present
+          ? data.sellingPriceMinor.value
+          : this.sellingPriceMinor,
+      serverStock: data.serverStock.present
+          ? data.serverStock.value
+          : this.serverStock,
+      reservedStock: data.reservedStock.present
+          ? data.reservedStock.value
+          : this.reservedStock,
+      isActive: data.isActive.present ? data.isActive.value : this.isActive,
+      archivedAt: data.archivedAt.present
+          ? data.archivedAt.value
+          : this.archivedAt,
+      archiveReason: data.archiveReason.present
+          ? data.archiveReason.value
+          : this.archiveReason,
+      category: data.category.present ? data.category.value : this.category,
+      serverUpdatedAt: data.serverUpdatedAt.present
+          ? data.serverUpdatedAt.value
+          : this.serverUpdatedAt,
+      lastCachedAt: data.lastCachedAt.present
+          ? data.lastCachedAt.value
+          : this.lastCachedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TenantCachedProduct(')
+          ..write('storeId: $storeId, ')
+          ..write('productId: $productId, ')
+          ..write('name: $name, ')
+          ..write('code: $code, ')
+          ..write('sellingPriceMinor: $sellingPriceMinor, ')
+          ..write('serverStock: $serverStock, ')
+          ..write('reservedStock: $reservedStock, ')
+          ..write('isActive: $isActive, ')
+          ..write('archivedAt: $archivedAt, ')
+          ..write('archiveReason: $archiveReason, ')
+          ..write('category: $category, ')
+          ..write('serverUpdatedAt: $serverUpdatedAt, ')
+          ..write('lastCachedAt: $lastCachedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    storeId,
+    productId,
+    name,
+    code,
+    sellingPriceMinor,
+    serverStock,
+    reservedStock,
+    isActive,
+    archivedAt,
+    archiveReason,
+    category,
+    serverUpdatedAt,
+    lastCachedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is TenantCachedProduct &&
+          other.storeId == this.storeId &&
+          other.productId == this.productId &&
+          other.name == this.name &&
+          other.code == this.code &&
+          other.sellingPriceMinor == this.sellingPriceMinor &&
+          other.serverStock == this.serverStock &&
+          other.reservedStock == this.reservedStock &&
+          other.isActive == this.isActive &&
+          other.archivedAt == this.archivedAt &&
+          other.archiveReason == this.archiveReason &&
+          other.category == this.category &&
+          other.serverUpdatedAt == this.serverUpdatedAt &&
+          other.lastCachedAt == this.lastCachedAt);
+}
+
+class TenantCachedProductsCompanion
+    extends UpdateCompanion<TenantCachedProduct> {
+  final Value<String> storeId;
+  final Value<String> productId;
+  final Value<String> name;
+  final Value<String?> code;
+  final Value<int> sellingPriceMinor;
+  final Value<int> serverStock;
+  final Value<int> reservedStock;
+  final Value<bool> isActive;
+  final Value<DateTime?> archivedAt;
+  final Value<String?> archiveReason;
+  final Value<String?> category;
+  final Value<DateTime?> serverUpdatedAt;
+  final Value<DateTime> lastCachedAt;
+  final Value<int> rowid;
+  const TenantCachedProductsCompanion({
+    this.storeId = const Value.absent(),
+    this.productId = const Value.absent(),
+    this.name = const Value.absent(),
+    this.code = const Value.absent(),
+    this.sellingPriceMinor = const Value.absent(),
+    this.serverStock = const Value.absent(),
+    this.reservedStock = const Value.absent(),
+    this.isActive = const Value.absent(),
+    this.archivedAt = const Value.absent(),
+    this.archiveReason = const Value.absent(),
+    this.category = const Value.absent(),
+    this.serverUpdatedAt = const Value.absent(),
+    this.lastCachedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  TenantCachedProductsCompanion.insert({
+    required String storeId,
+    required String productId,
+    required String name,
+    this.code = const Value.absent(),
+    required int sellingPriceMinor,
+    required int serverStock,
+    this.reservedStock = const Value.absent(),
+    this.isActive = const Value.absent(),
+    this.archivedAt = const Value.absent(),
+    this.archiveReason = const Value.absent(),
+    this.category = const Value.absent(),
+    this.serverUpdatedAt = const Value.absent(),
+    required DateTime lastCachedAt,
+    this.rowid = const Value.absent(),
+  }) : storeId = Value(storeId),
+       productId = Value(productId),
+       name = Value(name),
+       sellingPriceMinor = Value(sellingPriceMinor),
+       serverStock = Value(serverStock),
+       lastCachedAt = Value(lastCachedAt);
+  static Insertable<TenantCachedProduct> custom({
+    Expression<String>? storeId,
+    Expression<String>? productId,
+    Expression<String>? name,
+    Expression<String>? code,
+    Expression<int>? sellingPriceMinor,
+    Expression<int>? serverStock,
+    Expression<int>? reservedStock,
+    Expression<bool>? isActive,
+    Expression<DateTime>? archivedAt,
+    Expression<String>? archiveReason,
+    Expression<String>? category,
+    Expression<DateTime>? serverUpdatedAt,
+    Expression<DateTime>? lastCachedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (storeId != null) 'store_id': storeId,
+      if (productId != null) 'product_id': productId,
+      if (name != null) 'name': name,
+      if (code != null) 'code': code,
+      if (sellingPriceMinor != null) 'selling_price_minor': sellingPriceMinor,
+      if (serverStock != null) 'server_stock': serverStock,
+      if (reservedStock != null) 'reserved_stock': reservedStock,
+      if (isActive != null) 'is_active': isActive,
+      if (archivedAt != null) 'archived_at': archivedAt,
+      if (archiveReason != null) 'archive_reason': archiveReason,
+      if (category != null) 'category': category,
+      if (serverUpdatedAt != null) 'server_updated_at': serverUpdatedAt,
+      if (lastCachedAt != null) 'last_cached_at': lastCachedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  TenantCachedProductsCompanion copyWith({
+    Value<String>? storeId,
+    Value<String>? productId,
+    Value<String>? name,
+    Value<String?>? code,
+    Value<int>? sellingPriceMinor,
+    Value<int>? serverStock,
+    Value<int>? reservedStock,
+    Value<bool>? isActive,
+    Value<DateTime?>? archivedAt,
+    Value<String?>? archiveReason,
+    Value<String?>? category,
+    Value<DateTime?>? serverUpdatedAt,
+    Value<DateTime>? lastCachedAt,
+    Value<int>? rowid,
+  }) {
+    return TenantCachedProductsCompanion(
+      storeId: storeId ?? this.storeId,
+      productId: productId ?? this.productId,
+      name: name ?? this.name,
+      code: code ?? this.code,
+      sellingPriceMinor: sellingPriceMinor ?? this.sellingPriceMinor,
+      serverStock: serverStock ?? this.serverStock,
+      reservedStock: reservedStock ?? this.reservedStock,
+      isActive: isActive ?? this.isActive,
+      archivedAt: archivedAt ?? this.archivedAt,
+      archiveReason: archiveReason ?? this.archiveReason,
+      category: category ?? this.category,
+      serverUpdatedAt: serverUpdatedAt ?? this.serverUpdatedAt,
+      lastCachedAt: lastCachedAt ?? this.lastCachedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (storeId.present) {
+      map['store_id'] = Variable<String>(storeId.value);
+    }
+    if (productId.present) {
+      map['product_id'] = Variable<String>(productId.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (code.present) {
+      map['code'] = Variable<String>(code.value);
+    }
+    if (sellingPriceMinor.present) {
+      map['selling_price_minor'] = Variable<int>(sellingPriceMinor.value);
+    }
+    if (serverStock.present) {
+      map['server_stock'] = Variable<int>(serverStock.value);
+    }
+    if (reservedStock.present) {
+      map['reserved_stock'] = Variable<int>(reservedStock.value);
+    }
+    if (isActive.present) {
+      map['is_active'] = Variable<bool>(isActive.value);
+    }
+    if (archivedAt.present) {
+      map['archived_at'] = Variable<DateTime>(archivedAt.value);
+    }
+    if (archiveReason.present) {
+      map['archive_reason'] = Variable<String>(archiveReason.value);
+    }
+    if (category.present) {
+      map['category'] = Variable<String>(category.value);
+    }
+    if (serverUpdatedAt.present) {
+      map['server_updated_at'] = Variable<DateTime>(serverUpdatedAt.value);
+    }
+    if (lastCachedAt.present) {
+      map['last_cached_at'] = Variable<DateTime>(lastCachedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TenantCachedProductsCompanion(')
+          ..write('storeId: $storeId, ')
+          ..write('productId: $productId, ')
+          ..write('name: $name, ')
+          ..write('code: $code, ')
+          ..write('sellingPriceMinor: $sellingPriceMinor, ')
+          ..write('serverStock: $serverStock, ')
+          ..write('reservedStock: $reservedStock, ')
+          ..write('isActive: $isActive, ')
+          ..write('archivedAt: $archivedAt, ')
+          ..write('archiveReason: $archiveReason, ')
+          ..write('category: $category, ')
+          ..write('serverUpdatedAt: $serverUpdatedAt, ')
+          ..write('lastCachedAt: $lastCachedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $OfflineSalesTable extends OfflineSales
     with TableInfo<$OfflineSalesTable, OfflineSale> {
   @override
@@ -777,6 +1571,17 @@ class $OfflineSalesTable extends OfflineSales
     type: DriftSqlType.string,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
+  );
+  static const VerificationMeta _storeIdMeta = const VerificationMeta(
+    'storeId',
+  );
+  @override
+  late final GeneratedColumn<String> storeId = GeneratedColumn<String>(
+    'store_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
   );
   static const VerificationMeta _ownerUserIdMeta = const VerificationMeta(
     'ownerUserId',
@@ -1044,6 +1849,7 @@ class $OfflineSalesTable extends OfflineSales
   List<GeneratedColumn> get $columns => [
     id,
     clientSaleId,
+    storeId,
     ownerUserId,
     occurredAt,
     paymentMethod,
@@ -1093,6 +1899,12 @@ class $OfflineSalesTable extends OfflineSales
       );
     } else if (isInserting) {
       context.missing(_clientSaleIdMeta);
+    }
+    if (data.containsKey('store_id')) {
+      context.handle(
+        _storeIdMeta,
+        storeId.isAcceptableOrUnknown(data['store_id']!, _storeIdMeta),
+      );
     }
     if (data.containsKey('owner_user_id')) {
       context.handle(
@@ -1321,6 +2133,10 @@ class $OfflineSalesTable extends OfflineSales
         DriftSqlType.string,
         data['${effectivePrefix}client_sale_id'],
       )!,
+      storeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}store_id'],
+      ),
       ownerUserId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}owner_user_id'],
@@ -1425,6 +2241,7 @@ class $OfflineSalesTable extends OfflineSales
 class OfflineSale extends DataClass implements Insertable<OfflineSale> {
   final int id;
   final String clientSaleId;
+  final String? storeId;
   final String ownerUserId;
   final DateTime occurredAt;
   final String paymentMethod;
@@ -1451,6 +2268,7 @@ class OfflineSale extends DataClass implements Insertable<OfflineSale> {
   const OfflineSale({
     required this.id,
     required this.clientSaleId,
+    this.storeId,
     required this.ownerUserId,
     required this.occurredAt,
     required this.paymentMethod,
@@ -1480,6 +2298,9 @@ class OfflineSale extends DataClass implements Insertable<OfflineSale> {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['client_sale_id'] = Variable<String>(clientSaleId);
+    if (!nullToAbsent || storeId != null) {
+      map['store_id'] = Variable<String>(storeId);
+    }
     map['owner_user_id'] = Variable<String>(ownerUserId);
     map['occurred_at'] = Variable<DateTime>(occurredAt);
     map['payment_method'] = Variable<String>(paymentMethod);
@@ -1542,6 +2363,9 @@ class OfflineSale extends DataClass implements Insertable<OfflineSale> {
     return OfflineSalesCompanion(
       id: Value(id),
       clientSaleId: Value(clientSaleId),
+      storeId: storeId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(storeId),
       ownerUserId: Value(ownerUserId),
       occurredAt: Value(occurredAt),
       paymentMethod: Value(paymentMethod),
@@ -1606,6 +2430,7 @@ class OfflineSale extends DataClass implements Insertable<OfflineSale> {
     return OfflineSale(
       id: serializer.fromJson<int>(json['id']),
       clientSaleId: serializer.fromJson<String>(json['clientSaleId']),
+      storeId: serializer.fromJson<String?>(json['storeId']),
       ownerUserId: serializer.fromJson<String>(json['ownerUserId']),
       occurredAt: serializer.fromJson<DateTime>(json['occurredAt']),
       paymentMethod: serializer.fromJson<String>(json['paymentMethod']),
@@ -1647,6 +2472,7 @@ class OfflineSale extends DataClass implements Insertable<OfflineSale> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'clientSaleId': serializer.toJson<String>(clientSaleId),
+      'storeId': serializer.toJson<String?>(storeId),
       'ownerUserId': serializer.toJson<String>(ownerUserId),
       'occurredAt': serializer.toJson<DateTime>(occurredAt),
       'paymentMethod': serializer.toJson<String>(paymentMethod),
@@ -1680,6 +2506,7 @@ class OfflineSale extends DataClass implements Insertable<OfflineSale> {
   OfflineSale copyWith({
     int? id,
     String? clientSaleId,
+    Value<String?> storeId = const Value.absent(),
     String? ownerUserId,
     DateTime? occurredAt,
     String? paymentMethod,
@@ -1706,6 +2533,7 @@ class OfflineSale extends DataClass implements Insertable<OfflineSale> {
   }) => OfflineSale(
     id: id ?? this.id,
     clientSaleId: clientSaleId ?? this.clientSaleId,
+    storeId: storeId.present ? storeId.value : this.storeId,
     ownerUserId: ownerUserId ?? this.ownerUserId,
     occurredAt: occurredAt ?? this.occurredAt,
     paymentMethod: paymentMethod ?? this.paymentMethod,
@@ -1754,6 +2582,7 @@ class OfflineSale extends DataClass implements Insertable<OfflineSale> {
       clientSaleId: data.clientSaleId.present
           ? data.clientSaleId.value
           : this.clientSaleId,
+      storeId: data.storeId.present ? data.storeId.value : this.storeId,
       ownerUserId: data.ownerUserId.present
           ? data.ownerUserId.value
           : this.ownerUserId,
@@ -1829,6 +2658,7 @@ class OfflineSale extends DataClass implements Insertable<OfflineSale> {
     return (StringBuffer('OfflineSale(')
           ..write('id: $id, ')
           ..write('clientSaleId: $clientSaleId, ')
+          ..write('storeId: $storeId, ')
           ..write('ownerUserId: $ownerUserId, ')
           ..write('occurredAt: $occurredAt, ')
           ..write('paymentMethod: $paymentMethod, ')
@@ -1860,6 +2690,7 @@ class OfflineSale extends DataClass implements Insertable<OfflineSale> {
   int get hashCode => Object.hashAll([
     id,
     clientSaleId,
+    storeId,
     ownerUserId,
     occurredAt,
     paymentMethod,
@@ -1890,6 +2721,7 @@ class OfflineSale extends DataClass implements Insertable<OfflineSale> {
       (other is OfflineSale &&
           other.id == this.id &&
           other.clientSaleId == this.clientSaleId &&
+          other.storeId == this.storeId &&
           other.ownerUserId == this.ownerUserId &&
           other.occurredAt == this.occurredAt &&
           other.paymentMethod == this.paymentMethod &&
@@ -1918,6 +2750,7 @@ class OfflineSale extends DataClass implements Insertable<OfflineSale> {
 class OfflineSalesCompanion extends UpdateCompanion<OfflineSale> {
   final Value<int> id;
   final Value<String> clientSaleId;
+  final Value<String?> storeId;
   final Value<String> ownerUserId;
   final Value<DateTime> occurredAt;
   final Value<String> paymentMethod;
@@ -1944,6 +2777,7 @@ class OfflineSalesCompanion extends UpdateCompanion<OfflineSale> {
   const OfflineSalesCompanion({
     this.id = const Value.absent(),
     this.clientSaleId = const Value.absent(),
+    this.storeId = const Value.absent(),
     this.ownerUserId = const Value.absent(),
     this.occurredAt = const Value.absent(),
     this.paymentMethod = const Value.absent(),
@@ -1971,6 +2805,7 @@ class OfflineSalesCompanion extends UpdateCompanion<OfflineSale> {
   OfflineSalesCompanion.insert({
     this.id = const Value.absent(),
     required String clientSaleId,
+    this.storeId = const Value.absent(),
     required String ownerUserId,
     required DateTime occurredAt,
     required String paymentMethod,
@@ -2004,6 +2839,7 @@ class OfflineSalesCompanion extends UpdateCompanion<OfflineSale> {
   static Insertable<OfflineSale> custom({
     Expression<int>? id,
     Expression<String>? clientSaleId,
+    Expression<String>? storeId,
     Expression<String>? ownerUserId,
     Expression<DateTime>? occurredAt,
     Expression<String>? paymentMethod,
@@ -2031,6 +2867,7 @@ class OfflineSalesCompanion extends UpdateCompanion<OfflineSale> {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (clientSaleId != null) 'client_sale_id': clientSaleId,
+      if (storeId != null) 'store_id': storeId,
       if (ownerUserId != null) 'owner_user_id': ownerUserId,
       if (occurredAt != null) 'occurred_at': occurredAt,
       if (paymentMethod != null) 'payment_method': paymentMethod,
@@ -2063,6 +2900,7 @@ class OfflineSalesCompanion extends UpdateCompanion<OfflineSale> {
   OfflineSalesCompanion copyWith({
     Value<int>? id,
     Value<String>? clientSaleId,
+    Value<String?>? storeId,
     Value<String>? ownerUserId,
     Value<DateTime>? occurredAt,
     Value<String>? paymentMethod,
@@ -2090,6 +2928,7 @@ class OfflineSalesCompanion extends UpdateCompanion<OfflineSale> {
     return OfflineSalesCompanion(
       id: id ?? this.id,
       clientSaleId: clientSaleId ?? this.clientSaleId,
+      storeId: storeId ?? this.storeId,
       ownerUserId: ownerUserId ?? this.ownerUserId,
       occurredAt: occurredAt ?? this.occurredAt,
       paymentMethod: paymentMethod ?? this.paymentMethod,
@@ -2126,6 +2965,9 @@ class OfflineSalesCompanion extends UpdateCompanion<OfflineSale> {
     }
     if (clientSaleId.present) {
       map['client_sale_id'] = Variable<String>(clientSaleId.value);
+    }
+    if (storeId.present) {
+      map['store_id'] = Variable<String>(storeId.value);
     }
     if (ownerUserId.present) {
       map['owner_user_id'] = Variable<String>(ownerUserId.value);
@@ -2208,6 +3050,7 @@ class OfflineSalesCompanion extends UpdateCompanion<OfflineSale> {
     return (StringBuffer('OfflineSalesCompanion(')
           ..write('id: $id, ')
           ..write('clientSaleId: $clientSaleId, ')
+          ..write('storeId: $storeId, ')
           ..write('ownerUserId: $ownerUserId, ')
           ..write('occurredAt: $occurredAt, ')
           ..write('paymentMethod: $paymentMethod, ')
@@ -2779,6 +3622,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $CachedProductsTable cachedProducts = $CachedProductsTable(this);
+  late final $TenantCachedProductsTable tenantCachedProducts =
+      $TenantCachedProductsTable(this);
   late final $OfflineSalesTable offlineSales = $OfflineSalesTable(this);
   late final $OfflineSaleItemsTable offlineSaleItems = $OfflineSaleItemsTable(
     this,
@@ -2789,6 +3634,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [
     cachedProducts,
+    tenantCachedProducts,
     offlineSales,
     offlineSaleItems,
   ];
@@ -3143,10 +3989,393 @@ typedef $$CachedProductsTableProcessedTableManager =
       CachedProduct,
       PrefetchHooks Function()
     >;
+typedef $$TenantCachedProductsTableCreateCompanionBuilder =
+    TenantCachedProductsCompanion Function({
+      required String storeId,
+      required String productId,
+      required String name,
+      Value<String?> code,
+      required int sellingPriceMinor,
+      required int serverStock,
+      Value<int> reservedStock,
+      Value<bool> isActive,
+      Value<DateTime?> archivedAt,
+      Value<String?> archiveReason,
+      Value<String?> category,
+      Value<DateTime?> serverUpdatedAt,
+      required DateTime lastCachedAt,
+      Value<int> rowid,
+    });
+typedef $$TenantCachedProductsTableUpdateCompanionBuilder =
+    TenantCachedProductsCompanion Function({
+      Value<String> storeId,
+      Value<String> productId,
+      Value<String> name,
+      Value<String?> code,
+      Value<int> sellingPriceMinor,
+      Value<int> serverStock,
+      Value<int> reservedStock,
+      Value<bool> isActive,
+      Value<DateTime?> archivedAt,
+      Value<String?> archiveReason,
+      Value<String?> category,
+      Value<DateTime?> serverUpdatedAt,
+      Value<DateTime> lastCachedAt,
+      Value<int> rowid,
+    });
+
+class $$TenantCachedProductsTableFilterComposer
+    extends Composer<_$AppDatabase, $TenantCachedProductsTable> {
+  $$TenantCachedProductsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get storeId => $composableBuilder(
+    column: $table.storeId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get productId => $composableBuilder(
+    column: $table.productId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get code => $composableBuilder(
+    column: $table.code,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get sellingPriceMinor => $composableBuilder(
+    column: $table.sellingPriceMinor,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get serverStock => $composableBuilder(
+    column: $table.serverStock,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get reservedStock => $composableBuilder(
+    column: $table.reservedStock,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isActive => $composableBuilder(
+    column: $table.isActive,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get archivedAt => $composableBuilder(
+    column: $table.archivedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get archiveReason => $composableBuilder(
+    column: $table.archiveReason,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get category => $composableBuilder(
+    column: $table.category,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get serverUpdatedAt => $composableBuilder(
+    column: $table.serverUpdatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastCachedAt => $composableBuilder(
+    column: $table.lastCachedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$TenantCachedProductsTableOrderingComposer
+    extends Composer<_$AppDatabase, $TenantCachedProductsTable> {
+  $$TenantCachedProductsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get storeId => $composableBuilder(
+    column: $table.storeId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get productId => $composableBuilder(
+    column: $table.productId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get code => $composableBuilder(
+    column: $table.code,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get sellingPriceMinor => $composableBuilder(
+    column: $table.sellingPriceMinor,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get serverStock => $composableBuilder(
+    column: $table.serverStock,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get reservedStock => $composableBuilder(
+    column: $table.reservedStock,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isActive => $composableBuilder(
+    column: $table.isActive,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get archivedAt => $composableBuilder(
+    column: $table.archivedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get archiveReason => $composableBuilder(
+    column: $table.archiveReason,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get category => $composableBuilder(
+    column: $table.category,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get serverUpdatedAt => $composableBuilder(
+    column: $table.serverUpdatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastCachedAt => $composableBuilder(
+    column: $table.lastCachedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$TenantCachedProductsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $TenantCachedProductsTable> {
+  $$TenantCachedProductsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get storeId =>
+      $composableBuilder(column: $table.storeId, builder: (column) => column);
+
+  GeneratedColumn<String> get productId =>
+      $composableBuilder(column: $table.productId, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get code =>
+      $composableBuilder(column: $table.code, builder: (column) => column);
+
+  GeneratedColumn<int> get sellingPriceMinor => $composableBuilder(
+    column: $table.sellingPriceMinor,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get serverStock => $composableBuilder(
+    column: $table.serverStock,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get reservedStock => $composableBuilder(
+    column: $table.reservedStock,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isActive =>
+      $composableBuilder(column: $table.isActive, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get archivedAt => $composableBuilder(
+    column: $table.archivedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get archiveReason => $composableBuilder(
+    column: $table.archiveReason,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get category =>
+      $composableBuilder(column: $table.category, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get serverUpdatedAt => $composableBuilder(
+    column: $table.serverUpdatedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get lastCachedAt => $composableBuilder(
+    column: $table.lastCachedAt,
+    builder: (column) => column,
+  );
+}
+
+class $$TenantCachedProductsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $TenantCachedProductsTable,
+          TenantCachedProduct,
+          $$TenantCachedProductsTableFilterComposer,
+          $$TenantCachedProductsTableOrderingComposer,
+          $$TenantCachedProductsTableAnnotationComposer,
+          $$TenantCachedProductsTableCreateCompanionBuilder,
+          $$TenantCachedProductsTableUpdateCompanionBuilder,
+          (
+            TenantCachedProduct,
+            BaseReferences<
+              _$AppDatabase,
+              $TenantCachedProductsTable,
+              TenantCachedProduct
+            >,
+          ),
+          TenantCachedProduct,
+          PrefetchHooks Function()
+        > {
+  $$TenantCachedProductsTableTableManager(
+    _$AppDatabase db,
+    $TenantCachedProductsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$TenantCachedProductsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$TenantCachedProductsTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$TenantCachedProductsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> storeId = const Value.absent(),
+                Value<String> productId = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<String?> code = const Value.absent(),
+                Value<int> sellingPriceMinor = const Value.absent(),
+                Value<int> serverStock = const Value.absent(),
+                Value<int> reservedStock = const Value.absent(),
+                Value<bool> isActive = const Value.absent(),
+                Value<DateTime?> archivedAt = const Value.absent(),
+                Value<String?> archiveReason = const Value.absent(),
+                Value<String?> category = const Value.absent(),
+                Value<DateTime?> serverUpdatedAt = const Value.absent(),
+                Value<DateTime> lastCachedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => TenantCachedProductsCompanion(
+                storeId: storeId,
+                productId: productId,
+                name: name,
+                code: code,
+                sellingPriceMinor: sellingPriceMinor,
+                serverStock: serverStock,
+                reservedStock: reservedStock,
+                isActive: isActive,
+                archivedAt: archivedAt,
+                archiveReason: archiveReason,
+                category: category,
+                serverUpdatedAt: serverUpdatedAt,
+                lastCachedAt: lastCachedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String storeId,
+                required String productId,
+                required String name,
+                Value<String?> code = const Value.absent(),
+                required int sellingPriceMinor,
+                required int serverStock,
+                Value<int> reservedStock = const Value.absent(),
+                Value<bool> isActive = const Value.absent(),
+                Value<DateTime?> archivedAt = const Value.absent(),
+                Value<String?> archiveReason = const Value.absent(),
+                Value<String?> category = const Value.absent(),
+                Value<DateTime?> serverUpdatedAt = const Value.absent(),
+                required DateTime lastCachedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => TenantCachedProductsCompanion.insert(
+                storeId: storeId,
+                productId: productId,
+                name: name,
+                code: code,
+                sellingPriceMinor: sellingPriceMinor,
+                serverStock: serverStock,
+                reservedStock: reservedStock,
+                isActive: isActive,
+                archivedAt: archivedAt,
+                archiveReason: archiveReason,
+                category: category,
+                serverUpdatedAt: serverUpdatedAt,
+                lastCachedAt: lastCachedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$TenantCachedProductsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $TenantCachedProductsTable,
+      TenantCachedProduct,
+      $$TenantCachedProductsTableFilterComposer,
+      $$TenantCachedProductsTableOrderingComposer,
+      $$TenantCachedProductsTableAnnotationComposer,
+      $$TenantCachedProductsTableCreateCompanionBuilder,
+      $$TenantCachedProductsTableUpdateCompanionBuilder,
+      (
+        TenantCachedProduct,
+        BaseReferences<
+          _$AppDatabase,
+          $TenantCachedProductsTable,
+          TenantCachedProduct
+        >,
+      ),
+      TenantCachedProduct,
+      PrefetchHooks Function()
+    >;
 typedef $$OfflineSalesTableCreateCompanionBuilder =
     OfflineSalesCompanion Function({
       Value<int> id,
       required String clientSaleId,
+      Value<String?> storeId,
       required String ownerUserId,
       required DateTime occurredAt,
       required String paymentMethod,
@@ -3175,6 +4404,7 @@ typedef $$OfflineSalesTableUpdateCompanionBuilder =
     OfflineSalesCompanion Function({
       Value<int> id,
       Value<String> clientSaleId,
+      Value<String?> storeId,
       Value<String> ownerUserId,
       Value<DateTime> occurredAt,
       Value<String> paymentMethod,
@@ -3244,6 +4474,11 @@ class $$OfflineSalesTableFilterComposer
 
   ColumnFilters<String> get clientSaleId => $composableBuilder(
     column: $table.clientSaleId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get storeId => $composableBuilder(
+    column: $table.storeId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -3407,6 +4642,11 @@ class $$OfflineSalesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get storeId => $composableBuilder(
+    column: $table.storeId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get ownerUserId => $composableBuilder(
     column: $table.ownerUserId,
     builder: (column) => ColumnOrderings(column),
@@ -3539,6 +4779,9 @@ class $$OfflineSalesTableAnnotationComposer
     column: $table.clientSaleId,
     builder: (column) => column,
   );
+
+  GeneratedColumn<String> get storeId =>
+      $composableBuilder(column: $table.storeId, builder: (column) => column);
 
   GeneratedColumn<String> get ownerUserId => $composableBuilder(
     column: $table.ownerUserId,
@@ -3709,6 +4952,7 @@ class $$OfflineSalesTableTableManager
               ({
                 Value<int> id = const Value.absent(),
                 Value<String> clientSaleId = const Value.absent(),
+                Value<String?> storeId = const Value.absent(),
                 Value<String> ownerUserId = const Value.absent(),
                 Value<DateTime> occurredAt = const Value.absent(),
                 Value<String> paymentMethod = const Value.absent(),
@@ -3735,6 +4979,7 @@ class $$OfflineSalesTableTableManager
               }) => OfflineSalesCompanion(
                 id: id,
                 clientSaleId: clientSaleId,
+                storeId: storeId,
                 ownerUserId: ownerUserId,
                 occurredAt: occurredAt,
                 paymentMethod: paymentMethod,
@@ -3763,6 +5008,7 @@ class $$OfflineSalesTableTableManager
               ({
                 Value<int> id = const Value.absent(),
                 required String clientSaleId,
+                Value<String?> storeId = const Value.absent(),
                 required String ownerUserId,
                 required DateTime occurredAt,
                 required String paymentMethod,
@@ -3789,6 +5035,7 @@ class $$OfflineSalesTableTableManager
               }) => OfflineSalesCompanion.insert(
                 id: id,
                 clientSaleId: clientSaleId,
+                storeId: storeId,
                 ownerUserId: ownerUserId,
                 occurredAt: occurredAt,
                 paymentMethod: paymentMethod,
@@ -4266,6 +5513,8 @@ class $AppDatabaseManager {
   $AppDatabaseManager(this._db);
   $$CachedProductsTableTableManager get cachedProducts =>
       $$CachedProductsTableTableManager(_db, _db.cachedProducts);
+  $$TenantCachedProductsTableTableManager get tenantCachedProducts =>
+      $$TenantCachedProductsTableTableManager(_db, _db.tenantCachedProducts);
   $$OfflineSalesTableTableManager get offlineSales =>
       $$OfflineSalesTableTableManager(_db, _db.offlineSales);
   $$OfflineSaleItemsTableTableManager get offlineSaleItems =>

@@ -27,6 +27,7 @@ class AuthCubit extends Cubit<AuthState> {
   StreamSubscription<AuthSessionEvent>? _sessionSubscription;
   bool _initialized = false;
   bool _initializing = false;
+  bool _refreshingAuthenticatedUser = false;
 
   AuthCubit({
     required this._loginUseCase,
@@ -40,6 +41,10 @@ class AuthCubit extends Cubit<AuthState> {
     _sessionSubscription = _sessionManager.stream.listen((event) {
       if (!isClosed && event == AuthSessionEvent.expired) {
         emit(AuthState.unauthenticated(failure: const UnauthorizedFailure()));
+      } else if (!isClosed &&
+          event == AuthSessionEvent.refreshed &&
+          state.status == AuthStatus.authenticated) {
+        unawaited(_reloadTrustedUserAfterRefresh());
       }
     });
   }
@@ -58,7 +63,18 @@ class AuthCubit extends Cubit<AuthState> {
         return;
       }
 
-      final user = await _refreshUseCase().timeout(_startupTimeout);
+      final result = await _refreshUseCase().timeout(_startupTimeout);
+      final user = result.user;
+      if (!user.hasTrustedStoreMembership) {
+        await _tokenStorage.clearAll();
+        _initialized = true;
+        if (!isClosed) {
+          emit(
+            AuthState.unauthenticated(failure: const UnauthorizedFailure()),
+          );
+        }
+        return;
+      }
       await _cacheUserSafely(user);
       _initialized = true;
       if (!isClosed) emit(AuthState.authenticated(user));
@@ -105,7 +121,15 @@ class AuthCubit extends Cubit<AuthState> {
     if (isClosed || state.status == AuthStatus.loading) return;
     emit(AuthState.loading());
     try {
-      final user = await _loginUseCase(email: email, password: password);
+      final result = await _loginUseCase(email: email, password: password);
+      final user = result.user;
+      if (!user.hasTrustedStoreMembership) {
+        await _tokenStorage.clearAll();
+        if (!isClosed) {
+          emit(AuthState.failure(const UnauthorizedFailure()));
+        }
+        return;
+      }
       await _cacheUserSafely(user);
       if (!isClosed) emit(AuthState.authenticated(user));
     } on AppFailure catch (failure) {
@@ -123,19 +147,27 @@ class AuthCubit extends Cubit<AuthState> {
 
   Future<void> register({
     required String fullName,
+    required String storeName,
     required String email,
     required String password,
-    String? role,
   }) async {
     if (isClosed || state.status == AuthStatus.loading) return;
     emit(AuthState.loading());
     try {
-      final user = await _registerUseCase(
+      final result = await _registerUseCase(
         fullName: fullName,
+        storeName: storeName,
         email: email,
         password: password,
-        role: role,
       );
+      final user = result.user;
+      if (!user.hasTrustedStoreMembership) {
+        await _tokenStorage.clearAll();
+        if (!isClosed) {
+          emit(AuthState.failure(const UnauthorizedFailure()));
+        }
+        return;
+      }
       await _cacheUserSafely(user);
       if (!isClosed) emit(AuthState.authenticated(user));
     } on AppFailure catch (failure) {
@@ -148,6 +180,15 @@ class AuthCubit extends Cubit<AuthState> {
   Future<void> getMe() async {
     try {
       final user = await _getMeUseCase();
+      if (!user.hasTrustedStoreMembership) {
+        await _tokenStorage.clearAll();
+        if (!isClosed) {
+          emit(
+            AuthState.unauthenticated(failure: const UnauthorizedFailure()),
+          );
+        }
+        return;
+      }
       await _cacheUserSafely(user);
       if (!isClosed) emit(AuthState.authenticated(user));
     } on AppFailure catch (failure) {
@@ -183,6 +224,8 @@ class AuthCubit extends Cubit<AuthState> {
         email: user.email,
         fullName: user.fullName,
         role: user.role,
+        storeId: user.storeId,
+        isActive: user.isActive,
       );
     } catch (_) {
       // Authentication remains valid even if optional identity caching fails.
@@ -192,15 +235,50 @@ class AuthCubit extends Cubit<AuthState> {
   Future<UserEntity?> _readCachedUser() async {
     try {
       final stored = await _tokenStorage.getUserIdentity();
-      if (stored == null) return null;
-      return UserEntity(
+      if (stored == null ||
+          stored.storeId?.trim().isEmpty != false ||
+          stored.isActive != true) {
+        return null;
+      }
+      final user = UserEntity(
         id: stored.id,
         email: stored.email,
         fullName: stored.fullName,
         role: stored.role,
+        storeId: stored.storeId,
+        isActive: stored.isActive,
       );
+      return user.hasTrustedStoreMembership ? user : null;
     } catch (_) {
       return null;
+    }
+  }
+
+  Future<void> _reloadTrustedUserAfterRefresh() async {
+    if (_refreshingAuthenticatedUser || isClosed) return;
+    _refreshingAuthenticatedUser = true;
+    try {
+      final user = await _getMeUseCase();
+      if (!user.hasTrustedStoreMembership) {
+        await _tokenStorage.clearAll();
+        if (!isClosed) {
+          emit(
+            AuthState.unauthenticated(failure: const UnauthorizedFailure()),
+          );
+        }
+        return;
+      }
+      await _cacheUserSafely(user);
+      if (!isClosed) emit(AuthState.authenticated(user));
+    } on AppFailure catch (failure) {
+      if (failure.isUnauthorized) {
+        await _tokenStorage.clearAll();
+        if (!isClosed) emit(AuthState.unauthenticated(failure: failure));
+      }
+    } catch (_) {
+      // Keep the current trusted identity on a temporary refresh-follow-up error.
+    } finally {
+      _refreshingAuthenticatedUser = false;
     }
   }
 }

@@ -6,6 +6,7 @@ import 'package:maktabty/features/auth/presentation/widgets/primary_button.dart'
 
 class CreateAccountFormCard extends StatelessWidget {
   final TextEditingController fullNameController;
+  final TextEditingController storeNameController;
   final TextEditingController emailController;
   final TextEditingController passwordController;
   final TextEditingController confirmPasswordController;
@@ -15,6 +16,7 @@ class CreateAccountFormCard extends StatelessWidget {
   const CreateAccountFormCard({
     super.key,
     required this.fullNameController,
+    required this.storeNameController,
     required this.emailController,
     required this.passwordController,
     required this.confirmPasswordController,
@@ -48,6 +50,14 @@ class CreateAccountFormCard extends StatelessWidget {
             icon: Icons.badge_outlined,
             textInputAction: TextInputAction.next,
             controller: fullNameController,
+            enabled: !isLoading,
+          ),
+          const SizedBox(height: AppSpacing.m),
+          AppTextField(
+            hintText: context.l10n.storeName,
+            icon: Icons.storefront_outlined,
+            textInputAction: TextInputAction.next,
+            controller: storeNameController,
             enabled: !isLoading,
           ),
           const SizedBox(height: AppSpacing.m),

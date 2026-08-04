@@ -2,6 +2,7 @@ import 'package:maktabty/core/errors/app_failure.dart';
 import 'package:maktabty/core/network/app_failure_mapper.dart';
 import 'package:maktabty/core/storage/token_storage.dart';
 import 'package:maktabty/features/auth/data/datasources/auth_remote_datasource.dart';
+import 'package:maktabty/features/auth/domain/entities/auth_result_entity.dart';
 import 'package:maktabty/features/auth/domain/entities/user_entity.dart';
 import 'package:maktabty/features/auth/domain/repositories/auth_repository.dart';
 
@@ -15,7 +16,7 @@ class AuthRepositoryImpl implements AuthRepository {
   });
 
   @override
-  Future<UserEntity> login({
+  Future<AuthResultEntity> login({
     required String email,
     required String password,
   }) async {
@@ -30,7 +31,10 @@ class AuthRepositoryImpl implements AuthRepository {
       if (response.refreshToken.isNotEmpty) {
         await _tokenStorage.saveRefreshToken(response.refreshToken);
       }
-      return response.user.toEntity();
+      return AuthResultEntity(
+        user: response.user.toEntity(),
+        store: response.store?.toEntity(),
+      );
     } catch (error) {
       final failure = AppFailureMapper.fromException(error);
       if (failure is UnauthorizedFailure) {
@@ -41,18 +45,18 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<UserEntity> register({
+  Future<AuthResultEntity> register({
     required String fullName,
+    required String storeName,
     required String email,
     required String password,
-    String? role,
   }) async {
     try {
       final response = await _remoteDataSource.register(
         fullName: fullName,
+        storeName: storeName,
         email: email,
         password: password,
-        role: role,
       );
       if (response.accessToken.isNotEmpty) {
         await _tokenStorage.saveAccessToken(response.accessToken);
@@ -60,14 +64,17 @@ class AuthRepositoryImpl implements AuthRepository {
       if (response.refreshToken.isNotEmpty) {
         await _tokenStorage.saveRefreshToken(response.refreshToken);
       }
-      return response.user.toEntity();
+      return AuthResultEntity(
+        user: response.user.toEntity(),
+        store: response.store?.toEntity(),
+      );
     } catch (error) {
       throw AppFailureMapper.fromException(error);
     }
   }
 
   @override
-  Future<UserEntity> refresh() async {
+  Future<AuthResultEntity> refresh() async {
     final refreshToken = await _tokenStorage.getRefreshToken();
     if (refreshToken == null || refreshToken.isEmpty) {
       throw const UnauthorizedFailure();
@@ -83,7 +90,10 @@ class AuthRepositoryImpl implements AuthRepository {
       if (response.refreshToken.isNotEmpty) {
         await _tokenStorage.saveRefreshToken(response.refreshToken);
       }
-      return response.user.toEntity();
+      return AuthResultEntity(
+        user: response.user.toEntity(),
+        store: response.store?.toEntity(),
+      );
     } catch (error) {
       throw AppFailureMapper.fromException(error);
     }

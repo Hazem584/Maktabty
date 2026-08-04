@@ -54,6 +54,7 @@ extension L10nX on BuildContext {
   String localizeValidation(ValidationKey key) {
     return switch (key) {
       ValidationKey.requiredFields => l10n.missingFields,
+      ValidationKey.storeNameRequired => l10n.storeNameRequired,
       ValidationKey.invalidEmail => l10n.invalidEmail,
       ValidationKey.passwordTooShort => l10n.passwordTooShort,
       ValidationKey.passwordsDoNotMatch => l10n.passwordsDoNotMatch,
@@ -109,6 +110,6 @@ extension L10nX on BuildContext {
         normalized.contains('exceed') && normalized.contains('remaining')) {
       return l10n.paymentExceedsRemaining;
     }
-    return message;
+    return null;
   }
 }

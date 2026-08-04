@@ -59,6 +59,7 @@ class LocalSaleItemEntity extends Equatable {
 class LocalSaleEntity extends Equatable {
   final int localId;
   final String clientSaleId;
+  final String storeId;
   final String ownerUserId;
   final DateTime occurredAt;
   final PaymentMethod paymentMethod;
@@ -84,6 +85,7 @@ class LocalSaleEntity extends Equatable {
   const LocalSaleEntity({
     required this.localId,
     required this.clientSaleId,
+    required this.storeId,
     required this.ownerUserId,
     required this.occurredAt,
     required this.paymentMethod,
@@ -117,6 +119,7 @@ class LocalSaleEntity extends Equatable {
   List<Object?> get props => [
     localId,
     clientSaleId,
+    storeId,
     ownerUserId,
     occurredAt,
     paymentMethod,

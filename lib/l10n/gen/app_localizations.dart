@@ -2575,6 +2575,204 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The payment exceeds the invoice\'s remaining amount. Refresh and try again.'**
   String get paymentExceedsRemaining;
+
+  /// No description provided for @storeName.
+  ///
+  /// In en, this message translates to:
+  /// **'Store or business name'**
+  String get storeName;
+
+  /// No description provided for @storeNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your store or business name.'**
+  String get storeNameRequired;
+
+  /// No description provided for @settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get settings;
+
+  /// No description provided for @openSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Open settings'**
+  String get openSettings;
+
+  /// No description provided for @language.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get language;
+
+  /// No description provided for @chooseLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the application language'**
+  String get chooseLanguage;
+
+  /// No description provided for @cashiers.
+  ///
+  /// In en, this message translates to:
+  /// **'Cashiers'**
+  String get cashiers;
+
+  /// No description provided for @manageCashiers.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage cashiers'**
+  String get manageCashiers;
+
+  /// No description provided for @ownerAdministration.
+  ///
+  /// In en, this message translates to:
+  /// **'Owner administration'**
+  String get ownerAdministration;
+
+  /// No description provided for @addCashier.
+  ///
+  /// In en, this message translates to:
+  /// **'Add cashier'**
+  String get addCashier;
+
+  /// No description provided for @editCashier.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit cashier'**
+  String get editCashier;
+
+  /// No description provided for @cashierDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Cashier details'**
+  String get cashierDetails;
+
+  /// No description provided for @searchCashiers.
+  ///
+  /// In en, this message translates to:
+  /// **'Search cashiers'**
+  String get searchCashiers;
+
+  /// No description provided for @noCashiers.
+  ///
+  /// In en, this message translates to:
+  /// **'No cashiers found.'**
+  String get noCashiers;
+
+  /// No description provided for @disabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Disabled'**
+  String get disabled;
+
+  /// No description provided for @enableCashier.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable cashier'**
+  String get enableCashier;
+
+  /// No description provided for @disableCashier.
+  ///
+  /// In en, this message translates to:
+  /// **'Disable cashier'**
+  String get disableCashier;
+
+  /// No description provided for @enableCashierConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable this cashier? They will be able to sign in again.'**
+  String get enableCashierConfirmation;
+
+  /// No description provided for @disableCashierConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Disable this cashier? Their sessions will be revoked, and they must sign in again after you re-enable the account.'**
+  String get disableCashierConfirmation;
+
+  /// No description provided for @resetPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset password'**
+  String get resetPassword;
+
+  /// No description provided for @newPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'New password'**
+  String get newPassword;
+
+  /// No description provided for @confirmNewPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm new password'**
+  String get confirmNewPassword;
+
+  /// No description provided for @passwordResetConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset this cashier\'s password? Existing sessions will be revoked.'**
+  String get passwordResetConfirmation;
+
+  /// No description provided for @passwordResetSessionNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Resetting the password revokes existing sessions. The cashier must sign in again with the new password.'**
+  String get passwordResetSessionNotice;
+
+  /// No description provided for @passwordResetSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Cashier password reset successfully.'**
+  String get passwordResetSuccess;
+
+  /// No description provided for @cashierCreatedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Cashier created successfully.'**
+  String get cashierCreatedSuccess;
+
+  /// No description provided for @cashierUpdatedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Cashier updated successfully.'**
+  String get cashierUpdatedSuccess;
+
+  /// No description provided for @cashierEnabledSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Cashier enabled successfully.'**
+  String get cashierEnabledSuccess;
+
+  /// No description provided for @cashierDisabledSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Cashier disabled successfully.'**
+  String get cashierDisabledSuccess;
+
+  /// No description provided for @cashierSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save the cashier. Please try again.'**
+  String get cashierSaveFailed;
+
+  /// No description provided for @cashierUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'This cashier is unavailable.'**
+  String get cashierUnavailable;
+
+  /// No description provided for @duplicateCashierEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'A cashier with this email already exists.'**
+  String get duplicateCashierEmail;
+
+  /// No description provided for @offlineDataOwnershipWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Some older offline sales have no verified store ownership. They are quarantined and will not be synchronized or assigned to this account.'**
+  String get offlineDataOwnershipWarning;
 }
 
 class _AppLocalizationsDelegate

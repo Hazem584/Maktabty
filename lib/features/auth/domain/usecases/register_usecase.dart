@@ -1,4 +1,4 @@
-import 'package:maktabty/features/auth/domain/entities/user_entity.dart';
+import 'package:maktabty/features/auth/domain/entities/auth_result_entity.dart';
 import 'package:maktabty/features/auth/domain/repositories/auth_repository.dart';
 
 class RegisterUseCase {
@@ -6,17 +6,17 @@ class RegisterUseCase {
 
   const RegisterUseCase(this._repository);
 
-  Future<UserEntity> call({
+  Future<AuthResultEntity> call({
     required String fullName,
+    required String storeName,
     required String email,
     required String password,
-    String? role,
   }) {
     return _repository.register(
       fullName: fullName,
+      storeName: storeName,
       email: email,
       password: password,
-      role: role,
     );
   }
 }

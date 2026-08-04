@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:maktabty/core/errors/app_failure.dart';
 import 'package:maktabty/core/network/auth_session_manager.dart';
 import 'package:maktabty/core/storage/token_storage.dart';
+import 'package:maktabty/features/auth/domain/entities/auth_result_entity.dart';
 import 'package:maktabty/features/auth/domain/entities/user_entity.dart';
 import 'package:maktabty/features/auth/domain/usecases/get_me_usecase.dart';
 import 'package:maktabty/features/auth/domain/usecases/login_usecase.dart';
@@ -109,11 +110,15 @@ void main() {
       if (calls == 1) {
         throw const NetworkFailure();
       }
-      return const UserEntity(
-        id: 'u1',
-        email: 'owner@example.com',
-        fullName: 'Owner',
-        role: 'owner',
+      return const AuthResultEntity(
+        user: UserEntity(
+          id: 'u1',
+          email: 'owner@example.com',
+          fullName: 'Owner',
+          role: 'owner',
+          storeId: 'store-1',
+          isActive: true,
+        ),
       );
     });
 
@@ -130,6 +135,49 @@ void main() {
     await cubit.logout();
 
     expect(cubit.state.status, AuthStatus.unauthenticated);
+  });
+
+  test('old cached identity without store membership is never authenticated', () async {
+    when(() => storage.getRefreshToken()).thenAnswer((_) async => 'refresh');
+    when(() => refresh()).thenThrow(const NetworkFailure());
+    when(() => storage.getUserIdentity()).thenAnswer(
+      (_) async => const StoredUserIdentity(
+        id: 'u1',
+        email: 'owner@example.com',
+        fullName: 'Owner',
+        role: 'OWNER',
+        storeId: null,
+        isActive: null,
+      ),
+    );
+
+    await cubit.initialize();
+
+    expect(cubit.state.status, AuthStatus.startupFailure);
+    expect(cubit.state.user, isNull);
+  });
+
+  test('global expired-session event clears authenticated state', () async {
+    sessionManager.notifySessionExpired();
+    await Future<void>.delayed(Duration.zero);
+    expect(cubit.state.status, AuthStatus.unauthenticated);
+    expect(cubit.state.failure, isA<UnauthorizedFailure>());
+  });
+
+  test('successful interceptor refresh reloads the trusted current user', () async {
+    when(() => login(email: 'owner@example.com', password: 'password123')).thenAnswer(
+      (_) async => const AuthResultEntity(
+        user: UserEntity(id: 'u1', email: 'owner@example.com', fullName: 'Owner', role: 'OWNER', storeId: 'store-1', isActive: true),
+      ),
+    );
+    when(() => getMe()).thenAnswer(
+      (_) async => const UserEntity(id: 'u1', email: 'owner@example.com', fullName: 'Updated Owner', role: 'OWNER', storeId: 'store-1', isActive: true),
+    );
+    await cubit.login(email: 'owner@example.com', password: 'password123');
+    sessionManager.notifySessionRefreshed();
+    await Future<void>.delayed(Duration.zero);
+    await Future<void>.delayed(Duration.zero);
+    expect(cubit.state.user?.fullName, 'Updated Owner');
   });
 
   test(

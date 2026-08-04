@@ -33,7 +33,12 @@ class App extends StatelessWidget {
           final offlineSales = context.read<OfflineSalesCubit>();
           if (authState.status == AuthStatus.authenticated &&
               authState.user != null) {
-            unawaited(offlineSales.authenticate(authState.user!.id));
+            unawaited(
+              offlineSales.authenticate(
+                storeId: authState.user!.storeId!,
+                ownerUserId: authState.user!.id,
+              ),
+            );
           } else if (authState.status == AuthStatus.unauthenticated) {
             unawaited(offlineSales.signOut());
           }

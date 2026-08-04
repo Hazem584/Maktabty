@@ -1313,4 +1313,109 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get paymentExceedsRemaining =>
       'تتجاوز الدفعة المبلغ المتبقي على الفاتورة. حدّث البيانات وحاول مجددًا.';
+
+  @override
+  String get storeName => 'اسم المتجر أو النشاط التجاري';
+
+  @override
+  String get storeNameRequired => 'أدخل اسم المتجر أو النشاط التجاري.';
+
+  @override
+  String get settings => 'الإعدادات';
+
+  @override
+  String get openSettings => 'فتح الإعدادات';
+
+  @override
+  String get language => 'اللغة';
+
+  @override
+  String get chooseLanguage => 'اختر لغة التطبيق';
+
+  @override
+  String get cashiers => 'الكاشير';
+
+  @override
+  String get manageCashiers => 'إدارة الكاشير';
+
+  @override
+  String get ownerAdministration => 'إدارة المالك';
+
+  @override
+  String get addCashier => 'إضافة كاشير';
+
+  @override
+  String get editCashier => 'تعديل بيانات الكاشير';
+
+  @override
+  String get cashierDetails => 'تفاصيل الكاشير';
+
+  @override
+  String get searchCashiers => 'البحث في حسابات الكاشير';
+
+  @override
+  String get noCashiers => 'لا توجد حسابات كاشير.';
+
+  @override
+  String get disabled => 'موقوف';
+
+  @override
+  String get enableCashier => 'تفعيل حساب الكاشير';
+
+  @override
+  String get disableCashier => 'إيقاف حساب الكاشير';
+
+  @override
+  String get enableCashierConfirmation =>
+      'هل تريد تفعيل هذا الحساب؟ سيتمكن الكاشير من تسجيل الدخول مرة أخرى.';
+
+  @override
+  String get disableCashierConfirmation =>
+      'هل تريد إيقاف هذا الحساب؟ ستُلغى جلسات الكاشير الحالية، وسيحتاج إلى تسجيل الدخول من جديد بعد إعادة التفعيل.';
+
+  @override
+  String get resetPassword => 'إعادة تعيين كلمة المرور';
+
+  @override
+  String get newPassword => 'كلمة المرور الجديدة';
+
+  @override
+  String get confirmNewPassword => 'تأكيد كلمة المرور الجديدة';
+
+  @override
+  String get passwordResetConfirmation =>
+      'هل تريد إعادة تعيين كلمة مرور هذا الكاشير؟ ستُلغى جلساته الحالية.';
+
+  @override
+  String get passwordResetSessionNotice =>
+      'إعادة تعيين كلمة المرور تلغي الجلسات الحالية، وسيحتاج الكاشير إلى تسجيل الدخول من جديد بكلمة المرور الجديدة.';
+
+  @override
+  String get passwordResetSuccess => 'تمت إعادة تعيين كلمة مرور الكاشير بنجاح.';
+
+  @override
+  String get cashierCreatedSuccess => 'تم إنشاء حساب الكاشير بنجاح.';
+
+  @override
+  String get cashierUpdatedSuccess => 'تم تحديث بيانات الكاشير بنجاح.';
+
+  @override
+  String get cashierEnabledSuccess => 'تم تفعيل حساب الكاشير بنجاح.';
+
+  @override
+  String get cashierDisabledSuccess => 'تم إيقاف حساب الكاشير بنجاح.';
+
+  @override
+  String get cashierSaveFailed => 'تعذّر حفظ بيانات الكاشير. حاول مرة أخرى.';
+
+  @override
+  String get cashierUnavailable => 'حساب الكاشير هذا غير متاح.';
+
+  @override
+  String get duplicateCashierEmail =>
+      'يوجد حساب كاشير بهذا البريد الإلكتروني بالفعل.';
+
+  @override
+  String get offlineDataOwnershipWarning =>
+      'توجد مبيعات قديمة دون اتصال لا يمكن التحقق من متجرها. تم عزلها ولن تُزامن أو تُنسب إلى هذا الحساب.';
 }

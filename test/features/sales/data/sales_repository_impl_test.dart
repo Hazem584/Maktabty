@@ -85,9 +85,15 @@ void main() {
     localDataSource = MockSalesLocalDataSource();
     syncCoordinator = MockSalesSyncCoordinator();
     uuid = MockUuid();
-    currentUserStore = CurrentUserStore()..setUser('u1');
+    currentUserStore = CurrentUserStore()
+      ..setUser(userId: 'u1', storeId: 'store-1');
     when(() => uuid.v4()).thenReturn('client-sale-1');
-    when(() => syncCoordinator.sync(any())).thenAnswer((_) async {});
+    when(
+      () => syncCoordinator.sync(
+        storeId: any(named: 'storeId'),
+        ownerUserId: any(named: 'ownerUserId'),
+      ),
+    ).thenAnswer((_) async {});
     repository = SalesRepositoryImpl(
       remoteDataSource: remoteDataSource,
       localDataSource: localDataSource,
@@ -105,6 +111,7 @@ void main() {
     when(
       () => localDataSource.createPendingSale(
         clientSaleId: 'client-sale-1',
+        storeId: 'store-1',
         ownerUserId: 'u1',
         occurredAt: any(named: 'occurredAt'),
         items: items,
@@ -118,6 +125,7 @@ void main() {
       (_) async => LocalSaleEntity(
         localId: 1,
         clientSaleId: 'client-sale-1',
+        storeId: 'store-1',
         ownerUserId: 'u1',
         occurredAt: DateTime(2026),
         paymentMethod: PaymentMethod.cash,
@@ -159,7 +167,9 @@ void main() {
     expect(result.sale.id, 'client-sale-1');
     expect(result.sale.totalAmount, 20);
     expect(result.receipt.receiptNo, isEmpty);
-    verify(() => syncCoordinator.sync('u1')).called(1);
+    verify(
+      () => syncCoordinator.sync(storeId: 'store-1', ownerUserId: 'u1'),
+    ).called(1);
   });
 
   test('createSale maps local database errors to AppFailure', () async {
@@ -168,6 +178,7 @@ void main() {
     when(
       () => localDataSource.createPendingSale(
         clientSaleId: 'client-sale-1',
+        storeId: 'store-1',
         ownerUserId: 'u1',
         occurredAt: any(named: 'occurredAt'),
         items: items,

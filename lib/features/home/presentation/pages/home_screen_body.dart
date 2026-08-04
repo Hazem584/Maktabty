@@ -159,14 +159,29 @@ class HomeScreenBody extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                context.l10n.dashboard,
-                style: Theme.of(context).textTheme.headlineSmall,
+              Expanded(
+                child: Text(
+                  context.l10n.dashboard,
+                  style: Theme.of(context).textTheme.headlineSmall,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
-              IconButton(
-                onPressed: () => _confirmLogout(context),
-                icon: const Icon(Icons.logout),
-                tooltip: context.l10n.logout,
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    onPressed: () =>
+                        Navigator.of(context).pushNamed(AppRoutes.settings),
+                    icon: const Icon(Icons.settings_outlined),
+                    tooltip: context.l10n.openSettings,
+                  ),
+                  IconButton(
+                    onPressed: () => _confirmLogout(context),
+                    icon: const Icon(Icons.logout),
+                    tooltip: context.l10n.logout,
+                  ),
+                ],
               ),
             ],
           ),
@@ -193,6 +208,18 @@ class HomeScreenBody extends StatelessWidget {
             },
           ),
           if (isOwner) ...[
+            const SizedBox(height: AppSpacing.m),
+            Text(
+              context.l10n.ownerAdministration,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: AppSpacing.s),
+            FilledButton.tonalIcon(
+              onPressed: () =>
+                  Navigator.of(context).pushNamed(AppRoutes.cashiers),
+              icon: const Icon(Icons.badge_outlined),
+              label: Text(context.l10n.manageCashiers),
+            ),
             const SizedBox(height: AppSpacing.m),
             Text(
               context.l10n.procurementAndStock,
