@@ -9,6 +9,7 @@ enum FailureCode {
   receiveTimeout,
   unauthorized,
   forbidden,
+  accountDisabled,
   validation,
   invalidCredentials,
   notFound,
@@ -68,6 +69,11 @@ final class UnauthorizedFailure extends AppFailure {
 final class ForbiddenFailure extends AppFailure {
   const ForbiddenFailure({super.statusCode = 403})
     : super(code: FailureCode.forbidden);
+}
+
+final class AccountDisabledFailure extends AppFailure {
+  const AccountDisabledFailure({super.statusCode = 403})
+    : super(code: FailureCode.accountDisabled);
 }
 
 final class ValidationFailure extends AppFailure {

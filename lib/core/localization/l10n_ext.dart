@@ -32,6 +32,7 @@ extension L10nX on BuildContext {
       FailureCode.receiveTimeout => l10n.apiResponseTimedOut,
       FailureCode.unauthorized => l10n.sessionExpired,
       FailureCode.forbidden => l10n.noPermission,
+      FailureCode.accountDisabled => l10n.accountDisabledMessage,
       FailureCode.invalidCredentials => l10n.invalidEmailOrPassword,
       FailureCode.notFound =>
         notFoundFallback ??

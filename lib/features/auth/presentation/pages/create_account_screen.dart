@@ -93,12 +93,6 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
 
         if (state.status == AuthStatus.authenticated) {
           _showToast(context.l10n.createAccountSuccess);
-          Future.delayed(const Duration(milliseconds: 350), () {
-            if (!mounted) return;
-            Navigator.of(
-              context,
-            ).pushNamedAndRemoveUntil(AppRoutes.home, (route) => false);
-          });
         }
       },
       builder: (context, state) {

@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:maktabty/core/errors/app_failure.dart';
 import 'package:maktabty/core/network/auth_interceptor.dart';
 import 'package:maktabty/core/network/auth_session_manager.dart';
 import 'package:maktabty/core/storage/token_storage.dart';
@@ -67,8 +69,8 @@ void main() {
     });
   });
 
-  tearDown(() {
-    sessionManager.dispose();
+  tearDown(() async {
+    await sessionManager.dispose();
   });
 
   ({Dio client, Dio refreshClient}) createClients(
@@ -86,6 +88,13 @@ void main() {
       ),
     );
     return (client: client, refreshClient: refreshClient);
+  }
+
+  Future<void> establishNewSession() async {
+    await sessionManager.establishSession(() async {
+      await storage.saveAccessToken('new-session-access');
+      await storage.saveRefreshToken('new-session-refresh');
+    });
   }
 
   test('concurrent 401 responses share one refresh and both retry', () async {
@@ -153,7 +162,7 @@ void main() {
       throwsA(isA<DioException>()),
     );
 
-    expect(await expiredEvent, AuthSessionEvent.expired);
+    expect((await expiredEvent).type, AuthSessionEventType.expired);
     expect(clearCount, 1);
     expect(accessToken, isNull);
     expect(refreshToken, isNull);
@@ -179,7 +188,7 @@ void main() {
         throwsA(isA<DioException>()),
       );
 
-      expect(await expiredEvent, AuthSessionEvent.expired);
+      expect((await expiredEvent).type, AuthSessionEventType.expired);
       expect(refreshCalls, 1);
       expect(protectedCalls, 2);
       expect(clearCount, 1);
@@ -215,6 +224,161 @@ void main() {
     expect(retried?.headers['X-Request-ID'], 'request-1');
     expect(retried?.data, {'name': 'safe-value'});
     expect(retried?.extra['authRetryCount'], 1);
+  });
+
+  test('ACCOUNT_DISABLED bypasses refresh and expires current session', () async {
+    var refreshCalls = 0;
+    final sessionEvent = sessionManager.stream.first;
+    final clients = createClients((options) async {
+      if (options.uri.path == '/auth/refresh') {
+        refreshCalls++;
+      }
+      return jsonResponse(403, {
+        'statusCode': 403,
+        'code': 'ACCOUNT_DISABLED',
+      });
+    });
+
+    await expectLater(
+      clients.client.get<dynamic>('/protected'),
+      throwsA(isA<DioException>()),
+    );
+
+    final event = await sessionEvent;
+    expect(event.type, AuthSessionEventType.accountDisabled);
+    expect(event.failure, isA<AccountDisabledFailure>());
+    expect(refreshCalls, 0);
+    expect(clearCount, 1);
+  });
+
+  test('generic 403 neither refreshes nor invalidates the session', () async {
+    var refreshCalls = 0;
+    final clients = createClients((options) async {
+      if (options.uri.path == '/auth/refresh') refreshCalls++;
+      return jsonResponse(403, {'message': 'Forbidden'});
+    });
+
+    await expectLater(
+      clients.client.get<dynamic>('/protected'),
+      throwsA(isA<DioException>()),
+    );
+
+    expect(refreshCalls, 0);
+    expect(clearCount, 0);
+    expect(accessToken, 'old-access');
+  });
+
+  test('late 401 from old generation cannot clear newer tokens', () async {
+    final requestStarted = Completer<void>();
+    final releaseRequest = Completer<void>();
+    var refreshCalls = 0;
+    final clients = createClients((options) async {
+      if (options.uri.path == '/auth/refresh') {
+        refreshCalls++;
+      }
+      requestStarted.complete();
+      await releaseRequest.future;
+      return jsonResponse(401, {'message': 'Unauthorized'});
+    });
+
+    final oldRequest = clients.client.get<dynamic>('/protected');
+    await requestStarted.future;
+    await establishNewSession();
+    releaseRequest.complete();
+
+    await expectLater(oldRequest, throwsA(isA<DioException>()));
+    expect(refreshCalls, 0);
+    expect(clearCount, 0);
+    expect(accessToken, 'new-session-access');
+    expect(refreshToken, 'new-session-refresh');
+  });
+
+  test('late disabled response cannot log out a newer session', () async {
+    final requestStarted = Completer<void>();
+    final releaseRequest = Completer<void>();
+    final clients = createClients((options) async {
+      requestStarted.complete();
+      await releaseRequest.future;
+      return jsonResponse(403, {'code': 'ACCOUNT_DISABLED'});
+    });
+
+    final oldRequest = clients.client.get<dynamic>('/protected');
+    await requestStarted.future;
+    await establishNewSession();
+    releaseRequest.complete();
+
+    await expectLater(oldRequest, throwsA(isA<DioException>()));
+    expect(clearCount, 0);
+    expect(accessToken, 'new-session-access');
+    expect(refreshToken, 'new-session-refresh');
+  });
+
+  test('old refresh failure cannot expire a newer session', () async {
+    final refreshStarted = Completer<void>();
+    final releaseRefresh = Completer<void>();
+    final clients = createClients((options) async {
+      if (options.uri.path == '/auth/refresh') {
+        refreshStarted.complete();
+        await releaseRefresh.future;
+        return jsonResponse(401, {'message': 'Invalid refresh token'});
+      }
+      return jsonResponse(401, {'message': 'Unauthorized'});
+    });
+
+    final oldRequest = clients.client.get<dynamic>('/protected');
+    await refreshStarted.future;
+    await establishNewSession();
+    releaseRefresh.complete();
+
+    await expectLater(oldRequest, throwsA(isA<DioException>()));
+    expect(clearCount, 0);
+    expect(accessToken, 'new-session-access');
+    expect(refreshToken, 'new-session-refresh');
+  });
+
+  test('old refresh success cannot overwrite newer tokens', () async {
+    final refreshStarted = Completer<void>();
+    final releaseRefresh = Completer<void>();
+    final clients = createClients((options) async {
+      if (options.uri.path == '/auth/refresh') {
+        refreshStarted.complete();
+        await releaseRefresh.future;
+        return jsonResponse(200, {
+          'accessToken': 'stale-refreshed-access',
+          'refreshToken': 'stale-refreshed-refresh',
+        });
+      }
+      return jsonResponse(401, {'message': 'Unauthorized'});
+    });
+
+    final oldRequest = clients.client.get<dynamic>('/protected');
+    await refreshStarted.future;
+    await establishNewSession();
+    releaseRefresh.complete();
+
+    await expectLater(oldRequest, throwsA(isA<DioException>()));
+    expect(clearCount, 0);
+    expect(accessToken, 'new-session-access');
+    expect(refreshToken, 'new-session-refresh');
+  });
+
+  test('disabled refresh emits disabled reason and clears once', () async {
+    final sessionEvent = sessionManager.stream.first;
+    final clients = createClients((options) async {
+      if (options.uri.path == '/auth/refresh') {
+        return jsonResponse(403, {'code': 'ACCOUNT_DISABLED'});
+      }
+      return jsonResponse(401, {'message': 'Unauthorized'});
+    });
+
+    await expectLater(
+      clients.client.get<dynamic>('/protected'),
+      throwsA(isA<DioException>()),
+    );
+
+    final event = await sessionEvent;
+    expect(event.type, AuthSessionEventType.accountDisabled);
+    expect(clearCount, 1);
   });
 
   test('public auth endpoints never receive an Authorization header', () async {

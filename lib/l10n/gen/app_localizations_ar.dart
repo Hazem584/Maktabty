@@ -651,6 +651,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get sessionExpired => 'انتهت الجلسة. يرجى تسجيل الدخول مرة أخرى.';
 
   @override
+  String get accountDisabledMessage =>
+      'تم إيقاف حسابك. تواصل مع مالك المتجر لإعادة تفعيله.';
+
+  @override
   String get internalServerError => 'خطأ داخلي في الخادم.';
 
   @override

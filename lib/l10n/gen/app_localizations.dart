@@ -1340,6 +1340,12 @@ abstract class AppLocalizations {
   /// **'Session expired. Please sign in again.'**
   String get sessionExpired;
 
+  /// No description provided for @accountDisabledMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This account is disabled. Contact your store owner to reactivate it.'**
+  String get accountDisabledMessage;
+
   /// No description provided for @internalServerError.
   ///
   /// In en, this message translates to:

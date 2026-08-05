@@ -57,7 +57,7 @@ void main() {
 
   tearDown(() async {
     await cubit.close();
-    sessionManager.dispose();
+    await sessionManager.dispose();
   });
 
   test(
@@ -158,10 +158,61 @@ void main() {
   });
 
   test('global expired-session event clears authenticated state', () async {
-    sessionManager.notifySessionExpired();
+    await sessionManager.invalidateSessionIfCurrent(
+      expectedGeneration: sessionManager.currentGeneration,
+      clearSession: storage.clearAll,
+    );
     await Future<void>.delayed(Duration.zero);
     expect(cubit.state.status, AuthStatus.unauthenticated);
     expect(cubit.state.failure, isA<UnauthorizedFailure>());
+  });
+
+  test('disabled-account login preserves its dedicated failure', () async {
+    when(
+      () => login(
+        email: 'cashier@example.com',
+        password: 'password123',
+      ),
+    ).thenThrow(const AccountDisabledFailure());
+
+    await cubit.login(
+      email: 'cashier@example.com',
+      password: 'password123',
+    );
+
+    expect(cubit.state.status, AuthStatus.failure);
+    expect(cubit.state.failure, isA<AccountDisabledFailure>());
+  });
+
+  test('invalid credentials remain distinguishable from disabled login', () async {
+    when(
+      () => login(
+        email: 'cashier@example.com',
+        password: 'wrong-password',
+      ),
+    ).thenThrow(
+      const ValidationFailure(code: FailureCode.invalidCredentials),
+    );
+
+    await cubit.login(
+      email: 'cashier@example.com',
+      password: 'wrong-password',
+    );
+
+    expect(cubit.state.status, AuthStatus.failure);
+    expect(cubit.state.failure?.code, FailureCode.invalidCredentials);
+  });
+
+  test('disabled-session event preserves its reason', () async {
+    await sessionManager.invalidateSessionIfCurrent(
+      expectedGeneration: sessionManager.currentGeneration,
+      clearSession: storage.clearAll,
+      failure: const AccountDisabledFailure(),
+    );
+    await Future<void>.delayed(Duration.zero);
+
+    expect(cubit.state.status, AuthStatus.unauthenticated);
+    expect(cubit.state.failure, isA<AccountDisabledFailure>());
   });
 
   test('successful interceptor refresh reloads the trusted current user', () async {
@@ -174,7 +225,9 @@ void main() {
       (_) async => const UserEntity(id: 'u1', email: 'owner@example.com', fullName: 'Updated Owner', role: 'OWNER', storeId: 'store-1', isActive: true),
     );
     await cubit.login(email: 'owner@example.com', password: 'password123');
-    sessionManager.notifySessionRefreshed();
+    sessionManager.notifySessionRefreshed(
+      sessionManager.currentGeneration,
+    );
     await Future<void>.delayed(Duration.zero);
     await Future<void>.delayed(Duration.zero);
     expect(cubit.state.user?.fullName, 'Updated Owner');

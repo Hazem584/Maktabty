@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:maktabty/core/routes/app_routes.dart';
 import 'package:maktabty/core/widgets/app_toast.dart';
 import 'package:maktabty/core/localization/l10n_ext.dart';
 import 'package:maktabty/features/auth/domain/validation/auth_validator.dart';
 import 'package:maktabty/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:maktabty/features/auth/presentation/cubit/auth_state.dart';
 import 'package:maktabty/features/auth/presentation/pages/login_screen_body.dart';
+import 'package:maktabty/core/routes/app_routes.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -64,12 +64,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
         if (state.status == AuthStatus.authenticated) {
           AppToast.show(context.l10n.signInSuccess);
-          Future.delayed(const Duration(milliseconds: 350), () {
-            if (!mounted) return;
-            Navigator.of(
-              context,
-            ).pushNamedAndRemoveUntil(AppRoutes.home, (route) => false);
-          });
         }
       },
       builder: (context, state) {

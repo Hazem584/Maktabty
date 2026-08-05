@@ -229,6 +229,7 @@
   "invalidEmail": "البريد الإلكتروني غير صالح.",
   "passwordTooShort": "كلمة المرور يجب أن تكون 8 أحرف على الأقل.",
   "sessionExpired": "انتهت الجلسة. يرجى تسجيل الدخول مرة أخرى.",
+  "accountDisabledMessage": "تم إيقاف حسابك. تواصل مع مالك المتجر لإعادة تفعيله.",
   "internalServerError": "خطأ داخلي في الخادم.",
   "unauthorized": "غير مصرح.",
   "noInternet": "لا يوجد اتصال بالإنترنت.",

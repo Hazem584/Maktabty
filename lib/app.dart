@@ -7,6 +7,7 @@ import 'package:maktabty/core/di/service_locator.dart';
 import 'package:maktabty/core/localization/locale_cubit.dart';
 import 'package:maktabty/core/localization/locale_state.dart';
 import 'package:maktabty/core/routes/app_navigator.dart';
+import 'package:maktabty/core/routes/auth_navigation_coordinator.dart';
 import 'package:maktabty/core/routes/app_routes.dart';
 import 'package:maktabty/core/theme/app_scroll_behavior.dart';
 import 'package:maktabty/core/theme/app_theme.dart';
@@ -26,23 +27,37 @@ class App extends StatelessWidget {
         BlocProvider<LocaleCubit>.value(value: sl<LocaleCubit>()..load()),
         BlocProvider<OfflineSalesCubit>.value(value: sl<OfflineSalesCubit>()),
       ],
-      child: BlocListener<AuthCubit, AuthState>(
-        listenWhen: (previous, current) =>
-            previous.status != current.status || previous.user != current.user,
-        listener: (context, authState) {
-          final offlineSales = context.read<OfflineSalesCubit>();
-          if (authState.status == AuthStatus.authenticated &&
-              authState.user != null) {
-            unawaited(
-              offlineSales.authenticate(
-                storeId: authState.user!.storeId!,
-                ownerUserId: authState.user!.id,
-              ),
-            );
-          } else if (authState.status == AuthStatus.unauthenticated) {
-            unawaited(offlineSales.signOut());
-          }
-        },
+      child: MultiBlocListener(
+        listeners: [
+          BlocListener<AuthCubit, AuthState>(
+            listenWhen: (previous, current) =>
+                previous.status != current.status ||
+                previous.user != current.user,
+            listener: (context, authState) {
+              final offlineSales = context.read<OfflineSalesCubit>();
+              if (authState.status == AuthStatus.authenticated &&
+                  authState.user != null) {
+                unawaited(
+                  offlineSales.authenticate(
+                    storeId: authState.user!.storeId!,
+                    ownerUserId: authState.user!.id,
+                  ),
+                );
+              } else if (authState.status == AuthStatus.unauthenticated) {
+                unawaited(offlineSales.signOut());
+              }
+            },
+          ),
+          BlocListener<AuthCubit, AuthState>(
+            listenWhen: (previous, current) =>
+                previous.status != current.status ||
+                (current.status == AuthStatus.unauthenticated &&
+                    previous.failure != current.failure),
+            listener: (context, authState) {
+              AuthNavigationCoordinator.handle(authState);
+            },
+          ),
+        ],
         child: BlocBuilder<LocaleCubit, LocaleState>(
           builder: (context, state) {
             return MaterialApp(

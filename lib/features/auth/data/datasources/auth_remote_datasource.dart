@@ -69,8 +69,21 @@ class AuthRemoteDataSource {
     return _parseAuthResponse(response.data);
   }
 
-  Future<void> logout({required String refreshToken}) async {
-    await _dio.post('/auth/logout', data: {'refreshToken': refreshToken});
+  Future<void> logout({
+    required String refreshToken,
+    String? accessToken,
+  }) async {
+    await _dio.post(
+      '/auth/logout',
+      data: {'refreshToken': refreshToken},
+      options: Options(
+        extra: {'skipAuth': true},
+        headers: {
+          if (accessToken != null && accessToken.isNotEmpty)
+            'Authorization': 'Bearer $accessToken',
+        },
+      ),
+    );
   }
 
   AuthResponseModel _parseAuthResponse(dynamic data) {

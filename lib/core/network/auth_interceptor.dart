@@ -1,15 +1,16 @@
-import 'dart:async';
-
 import 'package:dio/dio.dart';
+import 'package:maktabty/core/errors/app_failure.dart';
 import 'package:maktabty/core/network/auth_session_manager.dart';
 import 'package:maktabty/core/storage/token_storage.dart';
 
 class AuthInterceptor extends Interceptor {
+  static const String sessionGenerationKey = 'authSessionGeneration';
+
   final TokenStorage _tokenStorage;
   final Dio _refreshDio;
   final AuthSessionManager _sessionManager;
 
-  Completer<String>? _refreshCompleter;
+  final Map<int, Future<String>> _refreshOperations = {};
 
   AuthInterceptor({
     required this._tokenStorage,
@@ -28,7 +29,13 @@ class AuthInterceptor extends Interceptor {
       return;
     }
 
+    final generation = _sessionManager.currentGeneration;
+    options.extra[sessionGenerationKey] = generation;
     final accessToken = await _tokenStorage.getAccessToken();
+    if (!_sessionManager.isCurrent(generation)) {
+      handler.next(options);
+      return;
+    }
     if (accessToken != null && accessToken.isNotEmpty) {
       options.headers['Authorization'] = 'Bearer $accessToken';
     }
@@ -38,18 +45,54 @@ class AuthInterceptor extends Interceptor {
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) async {
+    final expectedGeneration = _requestGeneration(err.requestOptions);
+    if (_isAccountDisabled(err) &&
+        !_isPublicAuthEndpoint(err.requestOptions.path)) {
+      if (expectedGeneration != null) {
+        await _expireSession(
+          expectedGeneration,
+          const AccountDisabledFailure(),
+        );
+      }
+      handler.next(err);
+      return;
+    }
+
     if (!_shouldAttemptRefresh(err)) {
       handler.next(err);
       return;
     }
 
+    if (expectedGeneration == null) {
+      handler.next(err);
+      return;
+    }
+
     try {
-      final token = await _refreshToken();
+      final token = await _refreshToken(expectedGeneration);
+      if (!_sessionManager.isCurrent(expectedGeneration)) {
+        handler.next(err);
+        return;
+      }
       final response = await _retryRequest(err.requestOptions, token);
-      _sessionManager.notifySessionRefreshed();
+      if (!_sessionManager.isCurrent(expectedGeneration)) {
+        handler.next(err);
+        return;
+      }
       handler.resolve(response);
     } on _InvalidRefreshException {
-      await _expireSession();
+      await _expireSession(
+        expectedGeneration,
+        const UnauthorizedFailure(),
+      );
+      handler.next(err);
+    } on _AccountDisabledRefreshException catch (error) {
+      final invalidated = await _expireSession(
+        expectedGeneration,
+        const AccountDisabledFailure(),
+      );
+      handler.next(invalidated ? error.error : err);
+    } on _StaleSessionException {
       handler.next(err);
     } on _TemporaryRefreshException catch (error) {
       handler.next(
@@ -61,8 +104,16 @@ class AuthInterceptor extends Interceptor {
         ),
       );
     } on DioException catch (retryError) {
-      if (retryError.response?.statusCode == 401) {
-        await _expireSession();
+      if (_isAccountDisabled(retryError)) {
+        await _expireSession(
+          expectedGeneration,
+          const AccountDisabledFailure(),
+        );
+      } else if (retryError.response?.statusCode == 401) {
+        await _expireSession(
+          expectedGeneration,
+          const UnauthorizedFailure(),
+        );
       }
       handler.next(retryError);
     } catch (error) {
@@ -83,6 +134,11 @@ class AuthInterceptor extends Interceptor {
     final options = err.requestOptions;
     if ((options.extra['authRetryCount'] as int? ?? 0) >= 1) return false;
     if (options.extra['skipAuth'] == true) return false;
+    final expectedGeneration = _requestGeneration(options);
+    if (expectedGeneration == null ||
+        !_sessionManager.isCurrent(expectedGeneration)) {
+      return false;
+    }
 
     if (_isPublicAuthEndpoint(options.path)) {
       return false;
@@ -91,15 +147,29 @@ class AuthInterceptor extends Interceptor {
     return true;
   }
 
-  Future<String> _refreshToken() async {
-    if (_refreshCompleter != null) {
-      return _refreshCompleter!.future;
-    }
+  Future<String> _refreshToken(int expectedGeneration) {
+    final existing = _refreshOperations[expectedGeneration];
+    if (existing != null) return existing;
 
-    _refreshCompleter = Completer<String>();
-    final completer = _refreshCompleter!;
+    late final Future<String> operation;
+    operation = _performRefresh(expectedGeneration).whenComplete(() {
+      if (identical(_refreshOperations[expectedGeneration], operation)) {
+        _refreshOperations.remove(expectedGeneration);
+      }
+    });
+    _refreshOperations[expectedGeneration] = operation;
+    return operation;
+  }
+
+  Future<String> _performRefresh(int expectedGeneration) async {
     try {
+      if (!_sessionManager.isCurrent(expectedGeneration)) {
+        throw const _StaleSessionException();
+      }
       final refreshToken = await _tokenStorage.getRefreshToken();
+      if (!_sessionManager.isCurrent(expectedGeneration)) {
+        throw const _StaleSessionException();
+      }
       if (refreshToken == null || refreshToken.isEmpty) {
         throw const _InvalidRefreshException('Missing refresh token.');
       }
@@ -111,40 +181,42 @@ class AuthInterceptor extends Interceptor {
       );
 
       final tokens = _extractTokens(response.data);
-      await _tokenStorage.saveAccessToken(tokens.accessToken);
-      if (tokens.refreshToken != null) {
-        await _tokenStorage.saveRefreshToken(tokens.refreshToken!);
-      }
-      completer.complete(tokens.accessToken);
-    } on DioException catch (error, stackTrace) {
-      final status = error.response?.statusCode;
-      if (status == 401 || status == 403) {
-        completer.completeError(
-          const _InvalidRefreshException('Refresh credentials were rejected.'),
-          stackTrace,
-        );
-      } else {
-        completer.completeError(
-          const _TemporaryRefreshException(
-            'The session could not be refreshed right now. Please retry.',
-          ),
-          stackTrace,
-        );
-      }
-    } on _InvalidRefreshException catch (error, stackTrace) {
-      completer.completeError(error, stackTrace);
-    } catch (_, stackTrace) {
-      completer.completeError(
-        const _TemporaryRefreshException(
-          'The refresh response was not valid. Please retry.',
-        ),
-        stackTrace,
+      final saved = await _sessionManager.updateSessionIfCurrent(
+        expectedGeneration: expectedGeneration,
+        updateSession: () async {
+          await _tokenStorage.saveAccessToken(tokens.accessToken);
+          if (tokens.refreshToken != null) {
+            await _tokenStorage.saveRefreshToken(tokens.refreshToken!);
+          }
+        },
       );
-    } finally {
-      _refreshCompleter = null;
+      if (!saved) {
+        throw const _StaleSessionException();
+      }
+      _sessionManager.notifySessionRefreshed(expectedGeneration);
+      return tokens.accessToken;
+    } on DioException catch (error) {
+      final status = error.response?.statusCode;
+      if (_isAccountDisabled(error)) {
+        throw _AccountDisabledRefreshException(error);
+      }
+      if (status == 401 || status == 403) {
+        throw const _InvalidRefreshException(
+          'Refresh credentials were rejected.',
+        );
+      }
+      throw const _TemporaryRefreshException(
+        'The session could not be refreshed right now. Please retry.',
+      );
+    } on _InvalidRefreshException {
+      rethrow;
+    } on _StaleSessionException {
+      rethrow;
+    } catch (_) {
+      throw const _TemporaryRefreshException(
+        'The refresh response was not valid. Please retry.',
+      );
     }
-
-    return completer.future;
   }
 
   Future<Response<dynamic>> _retryRequest(
@@ -218,9 +290,27 @@ class AuthInterceptor extends Interceptor {
         path.endsWith('/auth/refresh');
   }
 
-  Future<void> _expireSession() async {
-    await _tokenStorage.clearAll();
-    _sessionManager.notifySessionExpired();
+  int? _requestGeneration(RequestOptions options) {
+    final value = options.extra[sessionGenerationKey];
+    return value is int ? value : null;
+  }
+
+  bool _isAccountDisabled(DioException error) {
+    if (error.response?.statusCode != 403) return false;
+    final data = error.response?.data;
+    if (data is! Map) return false;
+    return data['code'] == 'ACCOUNT_DISABLED';
+  }
+
+  Future<bool> _expireSession(
+    int expectedGeneration,
+    AppFailure failure,
+  ) {
+    return _sessionManager.invalidateSessionIfCurrent(
+      expectedGeneration: expectedGeneration,
+      clearSession: _tokenStorage.clearAll,
+      failure: failure,
+    );
   }
 }
 
@@ -235,6 +325,16 @@ class _InvalidRefreshException implements Exception {
   final String message;
 
   const _InvalidRefreshException(this.message);
+}
+
+class _AccountDisabledRefreshException implements Exception {
+  final DioException error;
+
+  const _AccountDisabledRefreshException(this.error);
+}
+
+class _StaleSessionException implements Exception {
+  const _StaleSessionException();
 }
 
 class _TemporaryRefreshException implements Exception {

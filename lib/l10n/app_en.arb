@@ -224,6 +224,7 @@
   "invalidEmail": "Please enter a valid email.",
   "passwordTooShort": "Password must be at least 8 characters.",
   "sessionExpired": "Session expired. Please sign in again.",
+  "accountDisabledMessage": "This account is disabled. Contact your store owner to reactivate it.",
   "internalServerError": "Internal server error.",
   "unauthorized": "Unauthorized access.",
   "noInternet": "No internet connection. Please try again.",

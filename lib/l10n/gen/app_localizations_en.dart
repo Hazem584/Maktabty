@@ -656,6 +656,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sessionExpired => 'Session expired. Please sign in again.';
 
   @override
+  String get accountDisabledMessage =>
+      'This account is disabled. Contact your store owner to reactivate it.';
+
+  @override
   String get internalServerError => 'Internal server error.';
 
   @override

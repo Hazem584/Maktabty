@@ -39,12 +39,14 @@ class AuthCubit extends Cubit<AuthState> {
     required this._sessionManager,
   }) : super(AuthState.initial()) {
     _sessionSubscription = _sessionManager.stream.listen((event) {
-      if (!isClosed && event == AuthSessionEvent.expired) {
-        emit(AuthState.unauthenticated(failure: const UnauthorizedFailure()));
+      if (!isClosed &&
+          (event.type == AuthSessionEventType.expired ||
+              event.type == AuthSessionEventType.accountDisabled)) {
+        emit(AuthState.unauthenticated(failure: event.failure));
       } else if (!isClosed &&
-          event == AuthSessionEvent.refreshed &&
+          event.type == AuthSessionEventType.refreshed &&
           state.status == AuthStatus.authenticated) {
-        unawaited(_reloadTrustedUserAfterRefresh());
+        unawaited(_reloadTrustedUserAfterRefresh(event.generation));
       }
     });
   }
@@ -66,7 +68,7 @@ class AuthCubit extends Cubit<AuthState> {
       final result = await _refreshUseCase().timeout(_startupTimeout);
       final user = result.user;
       if (!user.hasTrustedStoreMembership) {
-        await _tokenStorage.clearAll();
+        await _endCurrentSession();
         _initialized = true;
         if (!isClosed) {
           emit(
@@ -79,8 +81,8 @@ class AuthCubit extends Cubit<AuthState> {
       _initialized = true;
       if (!isClosed) emit(AuthState.authenticated(user));
     } on AppFailure catch (failure) {
-      if (failure.isUnauthorized) {
-        await _tokenStorage.clearAll();
+      if (failure.isUnauthorized || failure is AccountDisabledFailure) {
+        await _endCurrentSession();
         _initialized = true;
         if (!isClosed) {
           emit(AuthState.unauthenticated(failure: failure));
@@ -124,7 +126,7 @@ class AuthCubit extends Cubit<AuthState> {
       final result = await _loginUseCase(email: email, password: password);
       final user = result.user;
       if (!user.hasTrustedStoreMembership) {
-        await _tokenStorage.clearAll();
+        await _endCurrentSession();
         if (!isClosed) {
           emit(AuthState.failure(const UnauthorizedFailure()));
         }
@@ -162,7 +164,7 @@ class AuthCubit extends Cubit<AuthState> {
       );
       final user = result.user;
       if (!user.hasTrustedStoreMembership) {
-        await _tokenStorage.clearAll();
+        await _endCurrentSession();
         if (!isClosed) {
           emit(AuthState.failure(const UnauthorizedFailure()));
         }
@@ -178,21 +180,27 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   Future<void> getMe() async {
+    final expectedGeneration = _sessionManager.currentGeneration;
     try {
       final user = await _getMeUseCase();
+      if (!_sessionManager.isCurrent(expectedGeneration)) return;
       if (!user.hasTrustedStoreMembership) {
-        await _tokenStorage.clearAll();
-        if (!isClosed) {
-          emit(
-            AuthState.unauthenticated(failure: const UnauthorizedFailure()),
-          );
-        }
+        await _expireSession(
+          expectedGeneration,
+          const UnauthorizedFailure(),
+        );
         return;
       }
-      await _cacheUserSafely(user);
-      if (!isClosed) emit(AuthState.authenticated(user));
+      await _cacheUserSafely(user, expectedGeneration: expectedGeneration);
+      if (!isClosed && _sessionManager.isCurrent(expectedGeneration)) {
+        emit(AuthState.authenticated(user));
+      }
     } on AppFailure catch (failure) {
-      if (!isClosed) emit(AuthState.failure(failure));
+      if (failure.isUnauthorized || failure is AccountDisabledFailure) {
+        await _expireSession(expectedGeneration, failure);
+      } else if (!isClosed) {
+        emit(AuthState.failure(failure));
+      }
     } catch (_) {
       if (!isClosed) emit(AuthState.failure(const UnknownFailure()));
     }
@@ -204,7 +212,7 @@ class AuthCubit extends Cubit<AuthState> {
     try {
       await _logoutUseCase().timeout(_loginTimeout);
     } catch (_) {
-      await _tokenStorage.clearAll();
+      await _endCurrentSession();
     } finally {
       _initialized = true;
       if (!isClosed) emit(AuthState.unauthenticated());
@@ -217,16 +225,30 @@ class AuthCubit extends Cubit<AuthState> {
     await super.close();
   }
 
-  Future<void> _cacheUserSafely(UserEntity user) async {
+  Future<void> _cacheUserSafely(
+    UserEntity user, {
+    int? expectedGeneration,
+  }) async {
     try {
-      await _tokenStorage.saveUserIdentity(
-        id: user.id,
-        email: user.email,
-        fullName: user.fullName,
-        role: user.role,
-        storeId: user.storeId,
-        isActive: user.isActive,
-      );
+      Future<void> saveIdentity() {
+        return _tokenStorage.saveUserIdentity(
+          id: user.id,
+          email: user.email,
+          fullName: user.fullName,
+          role: user.role,
+          storeId: user.storeId,
+          isActive: user.isActive,
+        );
+      }
+
+      if (expectedGeneration == null) {
+        await saveIdentity();
+      } else {
+        await _sessionManager.updateSessionIfCurrent(
+          expectedGeneration: expectedGeneration,
+          updateSession: saveIdentity,
+        );
+      }
     } catch (_) {
       // Authentication remains valid even if optional identity caching fails.
     }
@@ -254,31 +276,53 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
-  Future<void> _reloadTrustedUserAfterRefresh() async {
-    if (_refreshingAuthenticatedUser || isClosed) return;
+  Future<void> _reloadTrustedUserAfterRefresh(int expectedGeneration) async {
+    if (_refreshingAuthenticatedUser ||
+        isClosed ||
+        !_sessionManager.isCurrent(expectedGeneration)) {
+      return;
+    }
     _refreshingAuthenticatedUser = true;
     try {
       final user = await _getMeUseCase();
+      if (!_sessionManager.isCurrent(expectedGeneration)) return;
       if (!user.hasTrustedStoreMembership) {
-        await _tokenStorage.clearAll();
-        if (!isClosed) {
-          emit(
-            AuthState.unauthenticated(failure: const UnauthorizedFailure()),
-          );
-        }
+        await _expireSession(
+          expectedGeneration,
+          const UnauthorizedFailure(),
+        );
         return;
       }
-      await _cacheUserSafely(user);
-      if (!isClosed) emit(AuthState.authenticated(user));
+      await _cacheUserSafely(
+        user,
+        expectedGeneration: expectedGeneration,
+      );
+      if (!isClosed && _sessionManager.isCurrent(expectedGeneration)) {
+        emit(AuthState.authenticated(user));
+      }
     } on AppFailure catch (failure) {
-      if (failure.isUnauthorized) {
-        await _tokenStorage.clearAll();
-        if (!isClosed) emit(AuthState.unauthenticated(failure: failure));
+      if (failure.isUnauthorized || failure is AccountDisabledFailure) {
+        await _expireSession(expectedGeneration, failure);
       }
     } catch (_) {
       // Keep the current trusted identity on a temporary refresh-follow-up error.
     } finally {
       _refreshingAuthenticatedUser = false;
     }
+  }
+
+  Future<void> _endCurrentSession() async {
+    await _sessionManager.endSession(_tokenStorage.clearAll);
+  }
+
+  Future<void> _expireSession(
+    int expectedGeneration,
+    AppFailure failure,
+  ) async {
+    await _sessionManager.invalidateSessionIfCurrent(
+      expectedGeneration: expectedGeneration,
+      clearSession: _tokenStorage.clearAll,
+      failure: failure,
+    );
   }
 }

@@ -62,6 +62,12 @@ class AppFailureMapper {
 
   static AppFailure _fromResponse(Response<dynamic>? response) {
     final statusCode = response?.statusCode;
+    final machineCode = _machineCode(response?.data);
+
+    if (statusCode == 403 && machineCode == 'ACCOUNT_DISABLED') {
+      return const AccountDisabledFailure();
+    }
+
     final message = _safeServerMessage(response?.data);
 
     return switch (statusCode) {
@@ -74,6 +80,12 @@ class AppFailureMapper {
       final code? when code >= 500 => ServerFailure(statusCode: code),
       _ => const UnknownFailure(),
     };
+  }
+
+  static String? _machineCode(dynamic data) {
+    if (data is! Map) return null;
+    final code = data['code'];
+    return code is String ? code : null;
   }
 
   static String? _safeServerMessage(dynamic data) {

@@ -24,7 +24,11 @@ void registerAuthDependencies(GetIt getIt) {
   if (!getIt.isRegistered<AuthRepository>()) {
     getIt.registerLazySingleton<AuthRepository>(
       () =>
-          AuthRepositoryImpl(remoteDataSource: getIt(), tokenStorage: getIt()),
+          AuthRepositoryImpl(
+            remoteDataSource: getIt(),
+            tokenStorage: getIt(),
+            sessionManager: getIt(),
+          ),
     );
   }
   if (!getIt.isRegistered<LoginUseCase>()) {
