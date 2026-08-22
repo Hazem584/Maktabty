@@ -42,10 +42,9 @@ class ProductArchiveCubit extends Cubit<ProductArchiveState> {
 
   ProductArchiveCubit({
     required this._archiveProduct,
-    required RestoreProductUseCase restoreProduct,
+    required this._restoreProduct,
     required this._getProduct,
-  }) : _restoreProduct = restoreProduct,
-       super(ProductArchiveState.idle());
+  }) : super(ProductArchiveState.idle());
 
   Future<void> archive(ArchiveProductInput input) async {
     if (state.status == ProductArchiveStatus.submitting) return;

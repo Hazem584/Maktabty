@@ -64,7 +64,7 @@ void main() {
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
         ],
-        navigatorObservers: [if (observer != null) observer],
+        navigatorObservers: [?observer],
         home: home,
       ),
     );

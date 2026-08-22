@@ -13,12 +13,10 @@ class ProductsRepositoryImpl implements ProductsRepository {
   final CurrentUserStore _currentUserStore;
 
   ProductsRepositoryImpl({
-    required ProductsRemoteDataSource remoteDataSource,
+    required this._remoteDataSource,
     required ProductsLocalDataSource localDataSource,
-    required CurrentUserStore currentUserStore,
-  }) : _remoteDataSource = remoteDataSource,
-       _localDataSource = localDataSource,
-       _currentUserStore = currentUserStore;
+    required this._currentUserStore,
+  }) : _localDataSource = localDataSource;
 
   @override
   Future<PaginatedProductsEntity> getProducts({
