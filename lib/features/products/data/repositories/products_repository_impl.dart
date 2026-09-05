@@ -14,9 +14,9 @@ class ProductsRepositoryImpl implements ProductsRepository {
 
   ProductsRepositoryImpl({
     required this._remoteDataSource,
-    required ProductsLocalDataSource localDataSource,
+    required this._localDataSource,
     required this._currentUserStore,
-  }) : _localDataSource = localDataSource;
+  });
 
   @override
   Future<PaginatedProductsEntity> getProducts({
